@@ -62,43 +62,55 @@ class CustomBenchmarkRequest(BaseModel):
 
 OPEN_SOURCE_CRISIS_CATALOG: List[Dict[str, Any]] = [
     {
-        "ecosystem": "Linux Kernel (`Rust-for-Linux` & Memory Safety)",
-        "scale": "40M+ LoC C & Rust",
-        "challenge": "Mapping C lifetimes into safe Rust abstractions, containing `unsafe`, handling fallible allocations (`Result` vs `panic!`), zeroing kernel-to-userspace stack padding, and preventing integer overflows before allocation.",
-        "built_in_benchmark": "c_to_rust_framecodec",
-        "secondary_benchmark": "linux_git_c_hardening",
+        "ecosystem": "Linux Kernel (Memory Safety, Stack Leaks & `get_cycles` Purge)",
+        "scale": "40M+ LoC C Subsystem",
+        "challenge": "Zeroing kernel-to-userspace struct alignment padding (`0xAA` stack leak), replacing `strcpy()` with bounded `kobj_strscpy()`, purging fake `get_cycles()`, and enforcing checked overflow arithmetic.",
+        "built_in_benchmark": "linux_git_c_hardening",
+        "frontpage_card_label": "Frontpage Card #3 (linux_git_c_hardening)",
+        "custom_slug": "linux_kernel_uapi_hardening",
         "links": [
-            "https://www.youtube.com/watch?v=QqXopaeIHZs",
+            "https://www.youtube.com/watch?v=g9TEuezEm9c&t=38",
             "https://pdos.csail.mit.edu/papers/chen-kbugs.pdf",
             "https://gist.github.com/andy-shev/a2cb1ee4767d6d2f5d20db53ecb9aabc",
         ],
     },
     {
-        "ecosystem": "Git Core VCS (SHA-256 Transition & Global State Removal)",
+        "ecosystem": "Git Core VCS (SHA-1 → SHA-256 Transition & Global State Removal)",
         "scale": "30-year C Codebase",
-        "challenge": "Eliminating global mutable repository state (`the_repository`) and hardcoded 20-byte SHA-1 assumptions to make object parsing reentrant and cryptographically agile (SHA-1 + SHA-256).",
+        "challenge": "Eliminating file-scoped mutable state (`the_repo_hash_ctx`) and hardcoded 20-byte SHA-1 assumptions to make object formatting reentrant and cryptographically agile (20B SHA-1 + 32B SHA-256).",
         "built_in_benchmark": "linux_git_c_hardening",
+        "frontpage_card_label": "Frontpage Card #3 (linux_git_c_hardening)",
+        "custom_slug": "git_sha256_reentrant_oid",
         "links": ["https://git-scm.com/docs/hash-function-transition"],
     },
     {
-        "ecosystem": "Ladybird Browser Engine (C++ to Safe Rust Migration)",
-        "scale": "Multi-process Web Engine",
-        "challenge": "Incrementally porting custom C/C++ codecs, parsers, and IPC state machines to memory-safe Rust without breaking wire/spec equivalence.",
+        "ecosystem": "Ladybird & Rust-for-Linux (C/C++ Codec to 0-`unsafe` Safe Rust)",
+        "scale": "C-to-Rust FFI & Codec Bridge",
+        "challenge": "Porting legacy C binary codecs, RLE compression, and stateful streaming sessions into 100% safe Rust (`0 unsafe`, fallible `Result<T, CodecError>`) verified by a 107-check C-vs-Rust differential fuzzer.",
         "built_in_benchmark": "c_to_rust_framecodec",
-        "links": ["https://ladybird.org/"],
+        "frontpage_card_label": "Frontpage Card #2 (c_to_rust_framecodec)",
+        "custom_slug": "ladybird_safe_rust_codec",
+        "links": [
+            "https://ladybird.org/",
+            "https://www.youtube.com/watch?v=QqXopaeIHZs",
+        ],
     },
     {
         "ecosystem": "Apache Superset Monorepo (TypeScript 6.0 Strict Upgrade)",
         "scale": "1,400+ TS/TSX Files",
         "challenge": "Enabling `strict: true`, `exactOptionalPropertyTypes`, `noUncheckedIndexedAccess`, and `verbatimModuleSyntax` across coupled `@superset-ui/*` packages without `any` escapes.",
         "built_in_benchmark": "superset_ts6",
+        "frontpage_card_label": "Frontpage Card #1 (superset_ts6)",
+        "custom_slug": "superset_ts6_strict_custom",
         "links": ["https://github.com/apache/superset/issues/39539"],
     },
     {
         "ecosystem": "Ray / Python Ecosystem (Drop Pydantic v1 & Strict Typing)",
         "scale": "Multi-Service Python Platform",
-        "challenge": "Removing deprecated Pydantic v1 validators, root_validators, and `.dict()` shims while enforcing `mypy --strict` and zero deprecation warnings.",
+        "challenge": "Removing deprecated Pydantic v1 `@validator`, `@root_validator`, and `.dict()` shims across coupled services while enforcing `mypy --strict` and zero deprecation warnings.",
         "built_in_benchmark": "py_v1_to_v2",
+        "frontpage_card_label": "Frontpage Card #4 (py_v1_to_v2)",
+        "custom_slug": "ray_pydantic_v2_strict",
         "links": ["https://github.com/ray-project/ray/issues/58876"],
     },
 ]
@@ -159,6 +171,17 @@ async def list_benchmarks() -> List[Dict[str, Any]]:
 @app.get("/api/open-source-presets")
 async def get_open_source_presets() -> List[Dict[str, Any]]:
     return OPEN_SOURCE_CRISIS_CATALOG
+
+
+@app.get("/api/live-traffic")
+async def get_live_traffic() -> Dict[str, Any]:
+    calls = orchestrator.client.get_live_traffic(limit=30)
+    in_flight = sum(1 for c in calls if c.get("status") == "IN_FLIGHT")
+    return {
+        "in_flight_count": in_flight,
+        "total_calls": len(calls),
+        "calls": calls,
+    }
 
 
 @app.post("/api/benchmarks/custom")

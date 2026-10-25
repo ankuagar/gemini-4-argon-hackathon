@@ -5,14 +5,12 @@ int kobj_strscpy(char *dst, const char *src, size_t dst_size) {
     if (!dst || !src || dst_size == 0) {
         return KOBJ_EINVAL;
     }
-
     size_t i = 0;
     while (i < dst_size - 1 && src[i] != '\0') {
         dst[i] = src[i];
         i++;
     }
     dst[i] = '\0';
-
     if (src[i] != '\0') {
         return KOBJ_E2BIG;
     }
@@ -37,7 +35,6 @@ int kobj_build_ioctl_FromContext(
 
     kobj_ioctl_resp_t resp;
     memset(&resp, 0, sizeof(resp));
-
     resp.flags = flags;
     resp.status = status;
     resp.timestamp_ns = ctx->last_timestamp_ns;
@@ -47,9 +44,9 @@ int kobj_build_ioctl_FromContext(
         return label_rc;
     }
 
-    int oid_rc = kobj_oid_to_hex(oid, resp.oid_hex, sizeof(resp.oid_hex));
-    if (oid_rc != KOBJ_OK) {
-        return oid_rc;
+    int rc = kobj_oid_to_hex(oid, resp.oid_hex, sizeof(resp.oid_hex));
+    if (rc != KOBJ_OK) {
+        return rc;
     }
 
     memcpy(user_out_buf, &resp, sizeof(resp));

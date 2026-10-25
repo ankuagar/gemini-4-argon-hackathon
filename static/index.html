@@ -247,21 +247,32 @@
       </div>
 
       <!-- LIVE PROGRESS / SPINNER BANNER (Only visible while an API call is actively running) -->
-      <div id="liveActivityBanner" class="hidden mt-4 pt-4 border-t border-slate-200 flex items-center justify-between gap-4 bg-indigo-50/80 -mx-5 px-5 py-3.5">
-        <div class="flex items-center gap-3">
-          <div class="w-5 h-5 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin shrink-0"></div>
-          <div>
-            <div id="liveActivityTitle" class="text-xs font-bold text-indigo-950">
-              Calling Gemini 4 Argon (`gemini-4-argon`) + Flash Subagents (`gemini-3.8-flash`)
+      <div id="liveActivityBanner" class="hidden mt-4 pt-4 border-t border-slate-200 bg-indigo-50/80 -mx-5 px-5 py-3.5 space-y-2.5">
+        <div class="flex items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <div class="w-5 h-5 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin shrink-0"></div>
+            <div>
+              <div id="liveActivityTitle" class="text-xs font-bold text-indigo-950">
+                Calling Gemini 4 Argon (`gemini-4-argon`) + Flash Subagents (`gemini-3.8-flash`)
+              </div>
+              <div id="liveActivitySub" class="text-[11px] text-indigo-700">
+                Analyzing cross-file dependencies and constructing structured interface contracts...
+              </div>
             </div>
-            <div id="liveActivitySub" class="text-[11px] text-indigo-700">
-              Analyzing cross-file dependencies and constructing structured interface contracts...
+          </div>
+          <div class="flex items-center gap-3 shrink-0">
+            <button onclick="toggleLiveTrafficDrawer()" type="button" class="px-2.5 py-1 rounded-lg bg-white hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-[11px] font-bold shadow-sm transition">
+              📡 Live API Calls <span id="bannerTrafficCountPill" class="mono">(0)</span> ▾
+            </button>
+            <div class="text-right">
+              <div id="liveTimerDisplay" class="text-sm font-bold mono text-indigo-700 tabular">0.0s</div>
+              <div class="text-[10px] text-indigo-600 font-medium">Elapsed Live</div>
             </div>
           </div>
         </div>
-        <div class="text-right shrink-0">
-          <div id="liveTimerDisplay" class="text-sm font-bold mono text-indigo-700 tabular">0.0s</div>
-          <div class="text-[10px] text-indigo-600 font-medium">Elapsed Live</div>
+        <!-- Live In-Flight Mini Ticker inside Banner -->
+        <div id="liveBannerCallTicker" class="text-[11px] mono bg-white/90 border border-indigo-200/80 rounded-lg px-3 py-2 text-slate-700 space-y-1 max-h-36 overflow-y-auto">
+          <div class="text-slate-500">Dispatching live <span class="text-indigo-700 font-semibold">client.interactions.create(...)</span> requests...</div>
         </div>
       </div>
 
@@ -280,9 +291,33 @@
               Live API Tokens: 0
             </span>
           </div>
-          <button onclick="toggleJudgeExplainer()" id="judgeExplainerBtn" class="text-xs font-semibold text-indigo-700 hover:text-indigo-900 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 px-3 py-1 rounded-lg transition">
-            ℹ️ How Live `gemini-4-argon` API &amp; Local Compilers Connect ▾
-          </button>
+          <div class="flex items-center gap-2 flex-wrap">
+            <button onclick="toggleLiveTrafficDrawer()" id="liveTrafficBtn" class="text-xs font-bold text-emerald-800 hover:text-emerald-950 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-3 py-1 rounded-lg transition">
+              📡 Live Argon API Traffic <span id="judgeTrafficCountSpan" class="mono">(0 calls)</span> ▾
+            </button>
+            <button onclick="toggleJudgeExplainer()" id="judgeExplainerBtn" class="text-xs font-semibold text-indigo-700 hover:text-indigo-900 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 px-3 py-1 rounded-lg transition">
+              ℹ️ How Live `gemini-4-argon` API &amp; Local Compilers Connect ▾
+            </button>
+          </div>
+        </div>
+
+        <!-- Expandable Live Argon API Traffic Inspector Drawer -->
+        <div id="liveTrafficDrawer" class="hidden p-4 rounded-xl bg-slate-900 text-slate-100 border border-slate-800 space-y-2.5 text-xs">
+          <div class="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-slate-800">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span class="font-bold text-white">Live `client.interactions.create(...)` Network &amp; SDK Call Log</span>
+              <span class="text-[10px] mono px-2 py-0.5 rounded bg-slate-800 text-indigo-300 border border-slate-700">Real-Time Interactions API Telemetry</span>
+            </div>
+            <button onclick="pollLiveTraffic()" class="text-[11px] mono px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700">
+              ↻ Refresh Now
+            </button>
+          </div>
+          <div id="liveTrafficList" class="space-y-2 max-h-72 overflow-y-auto pr-1">
+            <div class="text-slate-400 text-[11px] mono py-2">
+              No Gemini 4 Argon API calls recorded in this server process yet — click Step 1 or Step 3 to watch live API calls stream in real time.
+            </div>
+          </div>
         </div>
 
         <!-- Expandable Judge Explainer Drawer -->
@@ -576,40 +611,55 @@
         <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200">
           <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
             <div>
-              <span class="text-[11px] font-bold uppercase tracking-wider text-indigo-700">Interactive Architecture &amp; Pipeline Walkthrough (Hackathon Pattern #5)</span>
-              <h3 class="text-sm font-extrabold text-slate-900 mt-0.5">Click any stage in the pipeline below to inspect its live model config, API parameters &amp; verification role</h3>
+              <span class="text-[11px] font-bold uppercase tracking-wider text-indigo-700">How ArgonLedger Works Under the Hood (End-to-End Flow)</span>
+              <h3 class="text-sm font-extrabold text-slate-900 mt-0.5">Click any step below to see what happens in plain English, what data flows in/out, and which Gemini API call runs</h3>
             </div>
             <span class="text-xs mono px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 font-semibold">
-              Shared 1M Context Window • Server-Side State
+              Maps 1-to-1 with the 3-Step Wizard Above
             </span>
           </div>
 
-          <!-- 5 Interactive Pipeline Nodes -->
+          <!-- 5 Interactive Pipeline Nodes (Mapped clearly to UI Steps) -->
           <div class="grid grid-cols-1 md:grid-cols-5 gap-2.5 mb-4">
             <button onclick="selectArchNode(0)" id="archNode-0" class="arch-node-active text-left p-3 rounded-xl border border-slate-200 bg-white transition hover:border-indigo-300">
-              <div class="text-[10px] mono font-bold text-indigo-700">STAGE 1</div>
-              <div class="text-xs font-bold text-slate-900 mt-0.5">Initial Sandbox &amp; Audit</div>
-              <div class="text-[11px] text-slate-500 mt-1">gcc / cargo / tsc / mypy + 0xAA stack check</div>
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] mono font-bold text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded">ON LOAD</span>
+                <span class="text-[10px] mono text-slate-400">1 →</span>
+              </div>
+              <div class="text-xs font-bold text-slate-900 mt-1.5">0. Initial Repo Audit</div>
+              <div class="text-[11px] text-slate-500 mt-0.5">Runs compiler &amp; tests on the broken starting code</div>
             </button>
             <button onclick="selectArchNode(1)" id="archNode-1" class="text-left p-3 rounded-xl border border-slate-200 bg-white transition hover:border-indigo-300">
-              <div class="text-[10px] mono font-bold text-sky-700">STAGE 2 (PARALLEL)</div>
-              <div class="text-xs font-bold text-slate-900 mt-0.5">Argon Lead + Flash Subagents</div>
-              <div class="text-[11px] text-slate-500 mt-1">gemini-4-argon + 4x gemini-3.8-flash</div>
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] mono font-bold text-indigo-700 bg-indigo-50 px-1.5 py-0.5 rounded">STEP 1 BUTTON</span>
+                <span class="text-[10px] mono text-slate-400">2 →</span>
+              </div>
+              <div class="text-xs font-bold text-slate-900 mt-1.5">1. Extract Contract Ledger</div>
+              <div class="text-[11px] text-slate-500 mt-0.5">1 Argon Lead + 4 Flash Subagents map all files</div>
             </button>
             <button onclick="selectArchNode(2)" id="archNode-2" class="text-left p-3 rounded-xl border border-slate-200 bg-white transition hover:border-indigo-300">
-              <div class="text-[10px] mono font-bold text-amber-700">STAGE 3 (HITL GATE)</div>
-              <div class="text-xs font-bold text-slate-900 mt-0.5">Human Maintainer Gate</div>
-              <div class="text-[11px] text-slate-500 mt-1">Review &amp; lock JSON contracts before codegen</div>
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] mono font-bold text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded">STEP 2 GATE</span>
+                <span class="text-[10px] mono text-slate-400">3 →</span>
+              </div>
+              <div class="text-xs font-bold text-slate-900 mt-1.5">2. Human Review Gate</div>
+              <div class="text-[11px] text-slate-500 mt-0.5">You inspect &amp; lock the shared file contracts</div>
             </button>
             <button onclick="selectArchNode(3)" id="archNode-3" class="text-left p-3 rounded-xl border border-slate-200 bg-white transition hover:border-indigo-300">
-              <div class="text-[10px] mono font-bold text-indigo-700">STAGE 4 (CACHED)</div>
-              <div class="text-xs font-bold text-slate-900 mt-0.5">Whole-Repo Synthesis</div>
-              <div class="text-[11px] text-slate-500 mt-1">previous_interaction_id + background=True</div>
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] mono font-bold text-indigo-700 bg-indigo-50 px-1.5 py-0.5 rounded">STEP 3A &amp; 3B</span>
+                <span class="text-[10px] mono text-slate-400">4 →</span>
+              </div>
+              <div class="text-xs font-bold text-slate-900 mt-1.5">3. Whole-Repo Rewrite</div>
+              <div class="text-[11px] text-slate-500 mt-0.5">Argon rewrites all files together using cached state</div>
             </button>
             <button onclick="selectArchNode(4)" id="archNode-4" class="text-left p-3 rounded-xl border border-slate-200 bg-white transition hover:border-indigo-300">
-              <div class="text-[10px] mono font-bold text-emerald-700">STAGE 5 (CLOSED LOOP)</div>
-              <div class="text-xs font-bold text-slate-900 mt-0.5">Autonomous Verification Loop</div>
-              <div class="text-[11px] text-slate-500 mt-1">Compiler + 107-check C-vs-Rust Fuzzer</div>
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] mono font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">STEP 3C AUTO-VERIFY</span>
+                <span class="text-[10px] mono text-emerald-600">✓ Done</span>
+              </div>
+              <div class="text-xs font-bold text-slate-900 mt-1.5">4. Compiler Auto-Repair</div>
+              <div class="text-[11px] text-slate-500 mt-0.5">Runs real compiler/tests &amp; auto-fixes any errors</div>
             </button>
           </div>
 
@@ -681,7 +731,7 @@
   <!-- MODAL: OPEN-SOURCE REFACTORING CRISIS CATALOG & CUSTOM REPO IMPORTER -->
   <div id="customRepoModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm hidden items-center justify-center p-4">
     <div class="bg-white border border-slate-200 rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto p-6 shadow-2xl space-y-5">
-      <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+      <div class="flex items-start justify-between border-b border-slate-200 pb-3">
         <div>
           <span class="text-[10px] mono uppercase px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200 font-semibold">
             Open-Source Crisis Catalog &amp; Custom Repository Importer
@@ -689,65 +739,128 @@
           <h2 class="text-base font-extrabold text-slate-900 mt-1">
             Load an Open-Source Crisis Template or Register Any Local Git Repository
           </h2>
+          <p class="text-xs text-slate-600 mt-0.5">
+            Test Gemini 4 Argon on real-world open-source refactoring crises or point it at any folder on your machine with a compiler/test command.
+          </p>
         </div>
         <button onclick="closeCustomRepoModal()" class="text-slate-400 hover:text-slate-700 text-lg font-bold px-2">✕</button>
       </div>
 
+      <!-- HOW TO USE THIS WINDOW: 2-WAY INFO GUIDE BANNER -->
+      <div class="p-3.5 rounded-xl bg-indigo-50/70 border border-indigo-200 text-xs space-y-2">
+        <div class="flex items-center justify-between">
+          <span class="font-extrabold text-indigo-950 flex items-center gap-1.5">
+            <span>💡 How to Use This Window (2 Ways)</span>
+          </span>
+          <span class="text-[10px] mono px-2 py-0.5 rounded bg-white text-indigo-700 border border-indigo-200 font-semibold">
+            Sandboxed Execution — Original Files Never Overwritten
+          </span>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-[11px] text-slate-700">
+          <div class="p-2.5 rounded-lg bg-white border border-indigo-100">
+            <div class="font-bold text-indigo-900 mb-0.5">Option A: Use an Open-Source Crisis Preset (Fastest)</div>
+            On any card below, click <strong>⚡ Launch Directly</strong> to open its built-in proving ground immediately, or click <strong>✏️ Pre-fill Form to Customize</strong> to load its files, compiler command, and prompt into the form below so you can tweak the rules.
+          </div>
+          <div class="p-2.5 rounded-lg bg-white border border-indigo-100">
+            <div class="font-bold text-indigo-900 mb-0.5">Option B: Import Your Own Local Git Repo</div>
+            Fill in the form below with any local folder path on your machine, list the <strong>Mutable Files</strong> Argon may edit, the <strong>Read-Only Test/Header Files</strong> it must honor, and a <strong>Verification Shell Command</strong> (<span class="mono">pytest</span>, <span class="mono">cargo test</span>, <span class="mono">tsc</span>, <span class="mono">make</span>).
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP A: 1-CLICK PRESET CARDS -->
       <div>
-        <div class="text-xs font-bold text-slate-700 mb-2">
-          1-Click Open-Source Refactoring Crisis Presets (Pre-fills form below):
+        <div class="flex items-center justify-between mb-2">
+          <div class="text-xs font-bold text-slate-800">
+            1. Open-Source Refactoring Crisis Catalog (Choose a preset to launch or customize):
+          </div>
+          <span id="presetAppliedBanner" class="hidden text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
+            ✓ Preset loaded into form below!
+          </span>
         </div>
         <div id="osPresetsList" class="grid grid-cols-1 md:grid-cols-2 gap-2.5"></div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2 border-t border-slate-200 text-xs">
-        <div>
-          <label class="block text-slate-600 font-medium mb-1">Benchmark ID (slug)</label>
-          <input id="custId" type="text" placeholder="e.g. linux_subsys_port" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900 mono" />
+      <!-- STEP B: CUSTOM REPOSITORY REGISTRATION FORM WITH FIELD-BY-FIELD TOOLTIPS -->
+      <div id="customRepoFormSection" class="pt-3 border-t border-slate-200 space-y-3">
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="text-xs font-bold text-slate-800">
+              2. Custom Proving Ground &amp; Verification Loop Configuration
+            </div>
+            <div class="text-[11px] text-slate-500">
+              Pre-filled automatically when you click <strong>✏️ Pre-fill Form</strong> above, or enter your own local repository paths below.
+            </div>
+          </div>
+          <button onclick="applyOsPreset(0)" type="button" class="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-[11px] font-bold transition">
+            ✨ Fill with Example Values
+          </button>
         </div>
-        <div>
-          <label class="block text-slate-600 font-medium mb-1">Title</label>
-          <input id="custTitle" type="text" placeholder="e.g. Linux Kernel C Subsystem Hardening" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900" />
-        </div>
-        <div>
-          <label class="block text-slate-600 font-medium mb-1">Language / Toolchain</label>
-          <input id="custLang" type="text" placeholder="C / Rust / TypeScript / Python" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900" />
-        </div>
-        <div>
-          <label class="block text-slate-600 font-medium mb-1">Persona / Maintainer Role</label>
-          <input id="custPersona" type="text" placeholder="e.g. Subsystem Maintainer" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900" />
-        </div>
-        <div class="md:col-span-2">
-          <label class="block text-slate-600 font-medium mb-1">Local Source Directory Path (Absolute or relative to project root)</label>
-          <input id="custSourceDir" type="text" placeholder="/Users/user/gemini-4-argon-hackathon/benchmarks/linux_git_c_hardening/initial" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900 mono" />
-        </div>
-        <div>
-          <label class="block text-slate-600 font-medium mb-1">Mutable Files (comma-separated relative paths)</label>
-          <input id="custMutable" type="text" placeholder="src/mod_a.c, src/mod_b.c" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900 mono" />
-        </div>
-        <div>
-          <label class="block text-slate-600 font-medium mb-1">Read-Only Context / Test Files (comma-separated)</label>
-          <input id="custReadonly" type="text" placeholder="tests/test_suite.c, Makefile" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900 mono" />
-        </div>
-        <div>
-          <label class="block text-slate-600 font-medium mb-1">Verification Shell Command (0 exit code = pass)</label>
-          <input id="custVerifyCmd" type="text" placeholder="make test" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900 mono" />
-        </div>
-        <div>
-          <label class="block text-slate-600 font-medium mb-1">Forbidden Escape / Legacy Regex Patterns (comma-separated)</label>
-          <input id="custForbidden" type="text" placeholder="\bget_cycles\s*\(, \bstrcpy\s*\(" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900 mono" />
-        </div>
-        <div class="md:col-span-2">
-          <label class="block text-slate-600 font-medium mb-1">Migration &amp; Verification Instructions for Gemini 4 Argon</label>
-          <textarea id="custInstructions" rows="3" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-slate-900 mono text-xs"></textarea>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+          <div>
+            <label class="block text-slate-700 font-semibold mb-0.5">Benchmark ID (slug)</label>
+            <p class="text-[10px] text-slate-500 mb-1">Unique short identifier for this workspace (letters, numbers, underscores).</p>
+            <input id="custId" type="text" placeholder="e.g. linux_subsys_port" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900 mono" />
+          </div>
+          <div>
+            <label class="block text-slate-700 font-semibold mb-0.5">Title</label>
+            <p class="text-[10px] text-slate-500 mb-1">Human-readable name shown in the top project selector cards.</p>
+            <input id="custTitle" type="text" placeholder="e.g. Linux Kernel C Subsystem Hardening" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900" />
+          </div>
+          <div>
+            <label class="block text-slate-700 font-semibold mb-0.5">Language / Toolchain</label>
+            <p class="text-[10px] text-slate-500 mb-1">Primary language badge (<span class="mono">c</span>, <span class="mono">rust</span>, <span class="mono">typescript</span>, <span class="mono">python</span>).</p>
+            <input id="custLang" type="text" placeholder="C / Rust / TypeScript / Python" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900" />
+          </div>
+          <div>
+            <label class="block text-slate-700 font-semibold mb-0.5">Persona / Maintainer Role</label>
+            <p class="text-[10px] text-slate-500 mb-1">Sets the architectural perspective for the Step 2 Human Maintainer Gate.</p>
+            <input id="custPersona" type="text" placeholder="e.g. Subsystem Maintainer" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900" />
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-slate-700 font-semibold mb-0.5">Local Source Directory Path (Absolute or relative to project root)</label>
+            <p class="text-[10px] text-slate-500 mb-1">ⓘ ArgonLedger copies this directory into an isolated sandbox (<span class="mono">runs/&lt;session_id&gt;/</span>) before running — your original folder is never modified.</p>
+            <input id="custSourceDir" type="text" placeholder="/Users/user/gemini-4-argon-hackathon/benchmarks/linux_git_c_hardening/initial" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900 mono" />
+          </div>
+          <div>
+            <label class="block text-slate-700 font-semibold mb-0.5">Mutable Files (comma-separated relative paths)</label>
+            <p class="text-[10px] text-slate-500 mb-1">ⓘ Files that <span class="mono">gemini-4-argon</span> is allowed to rewrite during Step 3 synthesis.</p>
+            <input id="custMutable" type="text" placeholder="src/mod_a.c, src/mod_b.c" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900 mono" />
+          </div>
+          <div>
+            <label class="block text-slate-700 font-semibold mb-0.5">Read-Only Context / Test Files (comma-separated)</label>
+            <p class="text-[10px] text-slate-500 mb-1">ⓘ Locked headers, test suites, or configs included in the 1M context window that Argon cannot tamper with.</p>
+            <input id="custReadonly" type="text" placeholder="tests/test_suite.c, Makefile" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900 mono" />
+          </div>
+          <div>
+            <label class="block text-slate-700 font-semibold mb-0.5">Verification Shell Command (0 exit code = pass)</label>
+            <p class="text-[10px] text-slate-500 mb-1">ⓘ Real shell command executed after each turn; non-zero stderr/stdout is fed back via <span class="mono">previous_interaction_id</span>.</p>
+            <input id="custVerifyCmd" type="text" placeholder="make test  OR  pytest -W error  OR  cargo test" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900 mono" />
+          </div>
+          <div>
+            <label class="block text-slate-700 font-semibold mb-0.5">Forbidden Escape / Legacy Regex Patterns (comma-separated)</label>
+            <p class="text-[10px] text-slate-500 mb-1">ⓘ Optional regexes that fail verification if Argon uses banned shortcuts (e.g. <span class="mono">\bunsafe\b</span>, <span class="mono">\bany\b</span>, <span class="mono">\bstrcpy\s*\(</span>).</p>
+            <input id="custForbidden" type="text" placeholder="\bget_cycles\s*\(, \bstrcpy\s*\(" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900 mono" />
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-slate-700 font-semibold mb-0.5">Migration &amp; Verification Instructions for Gemini 4 Argon</label>
+            <p class="text-[10px] text-slate-500 mb-1">ⓘ Describe the architectural refactoring goal, target API contracts, and invariants Argon must enforce across all mutable files.</p>
+            <textarea id="custInstructions" rows="3" placeholder="e.g. Refactor all mutable modules to eliminate global state, pass strict compiler checks, and satisfy all tests in tests/..." class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-slate-900 mono text-xs"></textarea>
+          </div>
         </div>
       </div>
 
-      <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-200">
-        <button onclick="closeCustomRepoModal()" class="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-semibold text-slate-700">Cancel</button>
-        <button onclick="submitCustomBenchmark()" class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-xs font-bold text-white shadow-sm">
-          Register &amp; Audit Proving Ground
-        </button>
+      <div class="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-slate-200">
+        <span class="text-[11px] text-slate-500">
+          Tip: Clicking <strong>Register &amp; Audit Proving Ground</strong> immediately runs the initial compiler audit and adds your repo to the top project bar.
+        </span>
+        <div class="flex items-center gap-2">
+          <button onclick="closeCustomRepoModal()" class="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-semibold text-slate-700">Cancel</button>
+          <button onclick="submitCustomBenchmark()" class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-xs font-bold text-white shadow-sm">
+            🚀 Register &amp; Audit Proving Ground
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -764,29 +877,39 @@
 
     const ARCH_NODE_DETAILS = [
       {
-        title: "Stage 1: Sandboxed Repository Ingestion & Real Toolchain Audit",
-        badge: "Deterministic Baseline Signal",
-        body: "Copies the target open-source repository into an isolated workspace (`runs/<session_id>/initial_ws`) and executes the real native compiler and test suite (`clang -Wall -Wextra`, `cargo test`, `tsc --noEmit`, or `mypy --strict` + `pytest`) plus regex static escape-hatch scanners. Records the exact starting defect count in ~1 second."
+        title: "Step 0 (Automatic on Card Click): Initial Sandbox & Broken-Code Audit",
+        badge: "No LLM Call • Real Local Compiler (~1s)",
+        plainEnglish: "Before calling any AI model, ArgonLedger copies the repository into a safe temporary folder (`runs/<session_id>/initial_ws`) so the original files are never touched, then runs the real compiler and test suite to prove the starting codebase is broken or legacy.",
+        inputOutput: "Input: Unmodified source files → Output: Card 1 ('Initial Unmigrated Repo' defect count & compiler errors).",
+        codeAndApi: "engine/verifier.py → verify_workspace() runs clang / cargo test / tsc --noEmit / mypy --strict + pytest."
       },
       {
-        title: "Stage 2: `gemini-4-argon` Lead Architect + Parallel `gemini-3.8-flash` Leaf Subagents (Patterns #1 & #4)",
-        badge: "Multi-Agent Orchestration",
-        body: "Simultaneously invokes `gemini-4-argon` across the full repository to synthesize the dependency-ordered Global Interface Contract Ledger (`response_format=InterfaceLedgerSchema`) while dispatching concurrent `gemini-3.8-flash` subagents via `ThreadPoolExecutor` to scan individual leaf files for memory/type hazards and codebase quirks with 0.0s extra wall-clock latency."
+        title: "Step 1 (Click 'Step 1' Button): Extract Cross-File Interface Contract Ledger",
+        badge: "5 Concurrent Live API Calls (1 Argon + 4 Flash)",
+        plainEnglish: "Instead of rewriting files blindly right away, 1 Lead Architect (`gemini-4-argon`) reads all files together to design a shared 'blueprint' (the Contract Ledger) of exact function signatures and types every file must obey. At the exact same time, 4 fast `gemini-3.8-flash` subagents scan individual files in parallel to flag hidden bugs.",
+        inputOutput: "Input: All repo files + compiler errors → Output: Structured JSON Contract Ledger + Server-Side `interaction.id`.",
+        codeAndApi: "engine/argon_client.py → generate_ledger(): 1x client.interactions.create(model='gemini-4-argon') + 4x parallel gemini-3.8-flash calls."
       },
       {
-        title: "Stage 3: Human Maintainer Gate (Pattern #1: Align on Intent Before Long Runs)",
-        badge: "Human-in-the-Loop Control",
-        body: "Pauses before any code is modified so the maintainer can inspect the extracted cross-file function signatures, struct layouts, and `gemini-3.8-flash` edge-case warnings. The maintainer can edit the JSON contracts directly or approve and lock them with 1 click."
+        title: "Step 2 (Human Maintainer Gate): Review & Lock the Shared Contracts",
+        badge: "Human-in-the-Loop Control (0 Tokens)",
+        plainEnglish: "ArgonLedger pauses before touching any code so you (the maintainer) can inspect the extracted function signatures, dependency order, and Flash bug warnings in Tab 1. You can edit the JSON blueprint directly or approve it as-is.",
+        inputOutput: "Input: Draft Contract Ledger → Output: Locked & Approved Contract Ledger ready for code generation.",
+        codeAndApi: "app.py → POST /api/sessions/{id}/approve locks session.ledger_approved = True."
       },
       {
-        title: "Stage 4: Server-Side Cached Whole-Repo Synthesis (`previous_interaction_id`)",
-        badge: "1M Shared Context Window",
-        body: "Passes `previous_interaction_id=session.ledger_interaction_id` to `client.interactions.create(model='gemini-4-argon')`. Because the full repository context is already cached in server-side state from Stage 2, Argon synthesizes all mutable files in a single coherent turn without re-uploading the repository bundle (2.8x faster) and supports `background=True` for >64K output tokens."
+        title: "Step 3a & 3b (Click 'Approve & Run'): Baseline Comparison + Whole-Repo Rewrite",
+        badge: "Server-Side Context Caching (2.8x Faster)",
+        plainEnglish: "First (Step 3a), we translate each file in isolation ('Myopic Baseline') to prove that file-by-file AI breaks cross-file imports. Second (Step 3b), `gemini-4-argon` rewrites all files together in one coordinated turn—reusing the server-side memory (`previous_interaction_id`) from Step 1 so we don't have to re-upload the repository!",
+        inputOutput: "Input: Approved Ledger + `previous_interaction_id` → Output: All rewritten source files in `runs/<session_id>/argon_ws/`.",
+        codeAndApi: "engine/argon_client.py → run_argon_migration() calls client.interactions.create(model='gemini-4-argon', previous_interaction_id=...)."
       },
       {
-        title: "Stage 5: Autonomous Compiler, Test & Differential Fuzzer Repair Loop (Pattern #2)",
+        title: "Step 3c (Automatic Closed Loop): Real Compiler & Test Auto-Repair",
         badge: "Zero-Regression Guarantee",
-        body: "Writes the synthesized files to `argon_ws/` and runs the real compiler, unit tests, and 107-check C-vs-Rust differential fuzzer (`fuzz_harness.py`). If any check fails, Argon feeds the exact compiler/test traceback back into `previous_interaction_id` with `thinking_level='low'` to patch only the failing file(s) until 100% of checks pass."
+        plainEnglish: "After Argon writes the new code, ArgonLedger immediately runs the real compiler, unit tests, and safety checks on disk. If even 1 compiler error or test failure remains, it automatically sends the exact compiler traceback back to `gemini-4-argon` (`thinking_level='low'`) to patch the failing file until 100% of checks pass.",
+        inputOutput: "Input: Rewritten files + real compiler/test output → Output: 100% verified code ready to inspect in Tab 2 (Code Diffs).",
+        codeAndApi: "engine/argon_client.py + engine/verifier.py loop up to 3 turns until compile_errors == 0 and tests_passed == tests_total."
       }
     ];
 
@@ -802,11 +925,24 @@
       const box = document.getElementById('archNodeDetailBox');
       if (box && d) {
         box.innerHTML = `
-          <div class="flex flex-wrap items-center justify-between gap-2 mb-1.5">
+          <div class="flex flex-wrap items-center justify-between gap-2 pb-2.5 mb-3 border-b border-slate-100">
             <span class="text-xs font-extrabold text-indigo-950">${escapeHtml(d.title)}</span>
-            <span class="text-[11px] mono px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200 font-semibold">${escapeHtml(d.badge)}</span>
+            <span class="text-[11px] mono px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 font-semibold">${escapeHtml(d.badge)}</span>
           </div>
-          <p class="text-xs text-slate-700 leading-relaxed">${escapeHtml(d.body)}</p>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+            <div class="p-3 rounded-lg bg-slate-50 border border-slate-200">
+              <div class="text-[10px] font-bold uppercase tracking-wider text-indigo-700 mb-1">1. What Happens (Plain English)</div>
+              <p class="text-slate-700 leading-relaxed text-[11px]">${escapeHtml(d.plainEnglish)}</p>
+            </div>
+            <div class="p-3 rounded-lg bg-slate-50 border border-slate-200">
+              <div class="text-[10px] font-bold uppercase tracking-wider text-emerald-700 mb-1">2. Data Flow (Input → Output)</div>
+              <p class="text-slate-700 leading-relaxed text-[11px] font-medium">${escapeHtml(d.inputOutput)}</p>
+            </div>
+            <div class="p-3 rounded-lg bg-slate-900 text-slate-100 border border-slate-800">
+              <div class="text-[10px] font-bold uppercase tracking-wider text-amber-300 mb-1">3. Under the Hood (Code &amp; API)</div>
+              <p class="mono text-[11px] text-indigo-200 leading-relaxed">${escapeHtml(d.codeAndApi)}</p>
+            </div>
+          </div>
         `;
       }
     }
@@ -825,6 +961,7 @@
     async function initApp() {
       selectArchNode(0);
       loadProjectDocs();
+      pollLiveTraffic();
       const [benchRes, presetRes] = await Promise.all([
         fetch('/api/benchmarks'),
         fetch('/api/open-source-presets')
@@ -885,7 +1022,120 @@
       await startAndAuditSession();
     }
 
+    let liveTrafficPollInterval = null;
+
+    async function pollLiveTraffic() {
+      try {
+        const res = await fetch('/api/live-traffic');
+        if (!res.ok) return;
+        const data = await res.json();
+        const calls = data.calls || [];
+        const inFlight = data.in_flight_count || 0;
+
+        const bannerCountEl = document.getElementById('bannerTrafficCountPill');
+        if (bannerCountEl) {
+          bannerCountEl.textContent = inFlight > 0 ? `(${inFlight} active / ${calls.length} total)` : `(${calls.length})`;
+        }
+        const judgeCountEl = document.getElementById('judgeTrafficCountSpan');
+        if (judgeCountEl) {
+          judgeCountEl.textContent = inFlight > 0 ? `(${inFlight} in-flight / ${calls.length} calls)` : `(${calls.length} calls)`;
+        }
+
+        // Update mini ticker inside #liveActivityBanner
+        const tickerEl = document.getElementById('liveBannerCallTicker');
+        if (tickerEl && calls.length > 0) {
+          tickerEl.innerHTML = calls.slice(0, 6).map(c => {
+            const isFlight = c.status === 'IN_FLIGHT';
+            const badge = isFlight
+              ? `<span class="px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-300 font-bold">⏳ IN_FLIGHT ${c.elapsed_seconds}s</span>`
+              : c.status === 'ERROR'
+              ? `<span class="px-1.5 py-0.5 rounded bg-rose-100 text-rose-800 border border-rose-300 font-bold">✕ ERROR</span>`
+              : `<span class="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold">✓ ${c.elapsed_seconds}s</span>`;
+            const idPart = c.interaction_id ? `• id: <span class="text-indigo-700 font-semibold">${escapeHtml(c.interaction_id)}</span>` : '';
+            const tokPart = c.total_tokens ? `• <span class="text-emerald-700 font-semibold">${c.total_tokens.toLocaleString()} tok</span>` : '';
+            return `<div class="flex flex-wrap items-center justify-between gap-2 py-0.5 border-b border-slate-100 last:border-0">
+              <div class="truncate max-w-[75%]">${badge} <span class="font-bold text-slate-900">${escapeHtml(c.model)}</span> <span class="text-slate-500">(${escapeHtml(c.sdk_call)})</span></div>
+              <div class="text-[10px] shrink-0">${idPart} ${tokPart}</div>
+            </div>`;
+          }).join('');
+        }
+
+        // Update full #liveTrafficList drawer
+        const listEl = document.getElementById('liveTrafficList');
+        if (listEl) {
+          if (calls.length === 0) {
+            listEl.innerHTML = `<div class="text-slate-400 text-[11px] mono py-2">No Gemini 4 Argon API calls recorded in this server process yet — click Step 1 or Step 3 to watch live API calls stream in real time.</div>`;
+          } else {
+            listEl.innerHTML = calls.map(c => {
+              const isFlight = c.status === 'IN_FLIGHT';
+              const statusBadge = isFlight
+                ? `<span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold animate-pulse">⏳ IN_FLIGHT (${c.elapsed_seconds}s)</span>`
+                : c.status === 'ERROR'
+                ? `<span class="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40 font-bold">✕ ERROR (${c.elapsed_seconds}s)</span>`
+                : `<span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold">✓ COMPLETED (${c.elapsed_seconds}s)</span>`;
+              const modelBadge = c.model === 'gemini-4-argon'
+                ? `<span class="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 font-bold">gemini-4-argon</span>`
+                : `<span class="px-2 py-0.5 rounded bg-sky-500/20 text-sky-300 border border-sky-500/40 font-bold">${escapeHtml(c.model)}</span>`;
+              return `
+                <div class="p-3 rounded-lg bg-slate-950/90 border border-slate-800 space-y-1.5 text-[11px] mono">
+                  <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex items-center gap-2 flex-wrap">
+                      <span class="text-slate-500">#${c.seq} (${escapeHtml(c.timestamp_iso || '')})</span>
+                      ${statusBadge}
+                      ${modelBadge}
+                      <span class="text-slate-400">thinking="${escapeHtml(c.thinking_level)}"</span>
+                    </div>
+                    <div class="text-emerald-300 font-semibold">
+                      ${c.total_tokens ? `in: ${c.input_tokens.toLocaleString()} • out: ${c.output_tokens.toLocaleString()} • total: ${c.total_tokens.toLocaleString()} tok` : 'awaiting response...'}
+                    </div>
+                  </div>
+                  <div class="text-indigo-200 bg-slate-900 px-2.5 py-1 rounded border border-slate-800 overflow-x-auto">
+                    ${escapeHtml(c.sdk_call)}
+                  </div>
+                  <div class="flex flex-wrap items-center justify-between gap-2 text-[10px] text-slate-300 pt-0.5">
+                    <div>
+                      <span class="text-slate-500">Returned interaction.id:</span>
+                      <span class="text-amber-300 font-semibold break-all">${escapeHtml(c.interaction_id || '(in flight...)')}</span>
+                    </div>
+                    ${c.previous_interaction_id ? `<div><span class="text-slate-500">Chained previous_interaction_id:</span> <span class="text-sky-300">${escapeHtml(c.previous_interaction_id)}</span></div>` : ''}
+                  </div>
+                  <details class="pt-1">
+                    <summary class="cursor-pointer text-[10px] text-indigo-400 hover:text-indigo-300 select-none">
+                      Inspect Prompt Preview (${(c.prompt_chars || 0).toLocaleString()} chars) &amp; JSON Output Preview ▾
+                    </summary>
+                    <div class="mt-1.5 space-y-1 text-[10px] bg-slate-900 p-2 rounded border border-slate-800">
+                      <div><span class="text-slate-400 font-bold">Prompt:</span> <span class="text-slate-300">${escapeHtml(c.prompt_preview || '')}...</span></div>
+                      ${c.output_preview ? `<div><span class="text-emerald-400 font-bold">Output JSON:</span> <span class="text-emerald-200">${escapeHtml(c.output_preview)}...</span></div>` : ''}
+                    </div>
+                  </details>
+                </div>
+              `;
+            }).join('');
+          }
+        }
+      } catch (e) {
+        // Ignore transient poll errors
+      }
+    }
+
+    function toggleLiveTrafficDrawer() {
+      const drawer = document.getElementById('liveTrafficDrawer');
+      if (!drawer) return;
+      const isHidden = drawer.classList.contains('hidden');
+      if (isHidden) {
+        drawer.classList.remove('hidden');
+        pollLiveTraffic();
+      } else {
+        drawer.classList.add('hidden');
+      }
+    }
+
+    let isStepRunning = false;
+    let activeStepBannerTitle = '';
+
     function showLiveActivity(title, sub) {
+      isStepRunning = true;
+      activeStepBannerTitle = title;
       const banner = document.getElementById('liveActivityBanner');
       document.getElementById('liveActivityTitle').textContent = title;
       document.getElementById('liveActivitySub').textContent = sub;
@@ -898,14 +1148,26 @@
         const sec = ((performance.now() - start) / 1000).toFixed(1);
         timerEl.textContent = `${sec}s`;
       }, 100);
+      if (currentSession) renderSessionState();
+      pollLiveTraffic();
+      if (liveTrafficPollInterval) clearInterval(liveTrafficPollInterval);
+      liveTrafficPollInterval = setInterval(pollLiveTraffic, 1000);
     }
 
     function hideLiveActivity() {
+      isStepRunning = false;
+      activeStepBannerTitle = '';
       if (liveTimerInterval) {
         clearInterval(liveTimerInterval);
         liveTimerInterval = null;
       }
+      if (liveTrafficPollInterval) {
+        clearInterval(liveTrafficPollInterval);
+        liveTrafficPollInterval = null;
+      }
+      pollLiveTraffic();
       document.getElementById('liveActivityBanner').classList.add('hidden');
+      if (currentSession) renderSessionState();
     }
 
     async function startAndAuditSession() {
@@ -1099,15 +1361,21 @@
       const tokPillEl = document.getElementById('judgeArgonTokPill');
       if (ledgerIdEl) {
         if (currentSession.ledger_interaction_id) {
-          const shortId = currentSession.ledger_interaction_id.length > 26
-            ? currentSession.ledger_interaction_id.slice(0, 26) + '…'
-            : currentSession.ledger_interaction_id;
-          ledgerIdEl.textContent = `Ledger interaction.id: ${shortId}`;
-          ledgerIdEl.className = 'text-[11px] mono px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200 font-semibold';
-          ledgerIdEl.title = currentSession.ledger_interaction_id;
+          const fullId = currentSession.ledger_interaction_id;
+          ledgerIdEl.textContent = `Ledger interaction.id: ${fullId}`;
+          ledgerIdEl.className = 'text-[11px] mono px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200 font-semibold break-all cursor-pointer';
+          ledgerIdEl.title = 'Click to copy full Gemini 4 Argon server-side interaction.id';
+          ledgerIdEl.onclick = () => {
+            navigator.clipboard.writeText(fullId);
+            ledgerIdEl.textContent = `✓ Copied: ${fullId}`;
+            setTimeout(() => {
+              ledgerIdEl.textContent = `Ledger interaction.id: ${fullId}`;
+            }, 1500);
+          };
         } else {
           ledgerIdEl.textContent = 'Ledger interaction.id: awaiting Step 1';
           ledgerIdEl.className = 'text-[11px] mono px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200';
+          ledgerIdEl.onclick = null;
         }
       }
       if (tokPillEl) {
@@ -1134,47 +1402,99 @@
       const secBaseBtn = document.getElementById('secondaryBaselineBtn');
 
       if (!hasLedger) {
-        pill.textContent = 'Step 1 of 3 • Ready to Analyze Repository';
-        pill.className = 'text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-800 border border-indigo-200';
+        if (isStepRunning) {
+          pill.textContent = '⏳ Step 1 of 3 Running • Lead Architect + 4 Flash Subagents Analyzing Repo...';
+          pill.className = 'text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-800 border border-indigo-300 animate-pulse';
 
-        step1.className = 'rounded-xl p-3.5 border transition-all bg-indigo-50/80 border-indigo-400 shadow-sm';
-        document.getElementById('stepStatus1').textContent = 'NEXT ACTION';
-        document.getElementById('stepStatus1').className = 'text-[10px] mono text-indigo-700 font-bold';
+          step1.className = 'rounded-xl p-3.5 border transition-all bg-indigo-50 border-indigo-400 shadow-sm';
+          document.getElementById('stepStatus1').textContent = '⏳ RUNNING...';
+          document.getElementById('stepStatus1').className = 'text-[10px] mono text-indigo-700 font-bold';
 
-        step2.className = 'rounded-xl p-3.5 border transition-all bg-slate-50 border-slate-200 opacity-75';
-        document.getElementById('stepStatus2').textContent = 'WAITING';
-        step3.className = 'rounded-xl p-3.5 border transition-all bg-slate-50 border-slate-200 opacity-75';
-        document.getElementById('stepStatus3').textContent = 'WAITING';
+          step2.className = 'rounded-xl p-3.5 border transition-all bg-slate-50 border-slate-200 opacity-75';
+          document.getElementById('stepStatus2').textContent = 'WAITING';
+          step3.className = 'rounded-xl p-3.5 border transition-all bg-slate-50 border-slate-200 opacity-75';
+          document.getElementById('stepStatus3').textContent = 'WAITING';
 
-        headline.textContent = 'Next Action: Extract Cross-File Interface Ledger';
-        desc.innerHTML = 'Initial repo audit is complete. Click below to have <span class="mono text-indigo-700 font-semibold">gemini-4-argon</span> + parallel <span class="mono text-sky-700 font-semibold">gemini-3.8-flash</span> subagents analyze all files (~15s).';
-        btn.className = 'w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md shadow-indigo-500/15 transition flex items-center justify-center gap-2 cta-pulse';
-        btnIcon.textContent = '▶';
-        btnText.textContent = 'Step 1: Analyze Repo & Extract Interface Ledger';
-        commitBtn.classList.add('hidden');
-        secBaseBtn.classList.remove('hidden');
+          headline.textContent = 'Step 1 In Progress: Extracting Cross-File Interface Ledger...';
+          desc.innerHTML = 'Running <span class="mono text-indigo-700 font-semibold">gemini-4-argon</span> Lead Architect + 4 parallel <span class="mono text-sky-700 font-semibold">gemini-3.8-flash</span> leaf subagents (see live API stream below)...';
+          btn.disabled = true;
+          btn.className = 'w-full py-2.5 px-4 rounded-xl bg-slate-200 text-slate-500 border border-slate-300 font-bold text-xs cursor-not-allowed flex items-center justify-center gap-2';
+          btnIcon.textContent = '⏳';
+          btnText.textContent = 'Step 1 Running: Extracting Interface Ledger...';
+          commitBtn.classList.add('hidden');
+          secBaseBtn.classList.add('hidden');
+        } else {
+          pill.textContent = 'Step 1 of 3 • Ready to Analyze Repository';
+          pill.className = 'text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-800 border border-indigo-200';
+
+          step1.className = 'rounded-xl p-3.5 border transition-all bg-indigo-50/80 border-indigo-400 shadow-sm';
+          document.getElementById('stepStatus1').textContent = 'NEXT ACTION';
+          document.getElementById('stepStatus1').className = 'text-[10px] mono text-indigo-700 font-bold';
+
+          step2.className = 'rounded-xl p-3.5 border transition-all bg-slate-50 border-slate-200 opacity-75';
+          document.getElementById('stepStatus2').textContent = 'WAITING';
+          step3.className = 'rounded-xl p-3.5 border transition-all bg-slate-50 border-slate-200 opacity-75';
+          document.getElementById('stepStatus3').textContent = 'WAITING';
+
+          headline.textContent = 'Next Action: Extract Cross-File Interface Ledger';
+          desc.innerHTML = 'Initial repo audit is complete. Click below to have <span class="mono text-indigo-700 font-semibold">gemini-4-argon</span> + parallel <span class="mono text-sky-700 font-semibold">gemini-3.8-flash</span> subagents analyze all files (~15s).';
+          btn.disabled = false;
+          btn.className = 'w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md shadow-indigo-500/15 transition flex items-center justify-center gap-2 cta-pulse';
+          btnIcon.textContent = '▶';
+          btnText.textContent = 'Step 1: Analyze Repo & Extract Interface Ledger';
+          commitBtn.classList.add('hidden');
+          secBaseBtn.classList.remove('hidden');
+        }
       } else if (!hasArgon) {
-        pill.textContent = '✋ Step 2 of 3 • Human Maintainer Gate (Review & Approve Contracts)';
-        pill.className = 'text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300';
+        if (isStepRunning || currentSession.ledger_approved) {
+          pill.textContent = '⚡ Step 3 of 3 Running • Executing Whole-Repo Synthesis & Compiler Loop...';
+          pill.className = 'text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-800 border border-indigo-300 animate-pulse';
 
-        step1.className = 'rounded-xl p-3.5 border transition-all bg-emerald-50/70 border-emerald-300';
-        document.getElementById('stepStatus1').textContent = '✓ DONE';
-        document.getElementById('stepStatus1').className = 'text-[10px] mono text-emerald-700 font-bold';
+          step1.className = 'rounded-xl p-3.5 border transition-all bg-emerald-50/70 border-emerald-300';
+          document.getElementById('stepStatus1').textContent = '✓ DONE';
+          document.getElementById('stepStatus1').className = 'text-[10px] mono text-emerald-700 font-bold';
 
-        step2.className = 'rounded-xl p-3.5 border transition-all bg-amber-50/90 border-amber-400 shadow-sm';
-        document.getElementById('stepStatus2').textContent = 'REVIEW NOW';
-        document.getElementById('stepStatus2').className = 'text-[10px] mono text-amber-800 font-bold';
+          step2.className = 'rounded-xl p-3.5 border transition-all bg-emerald-50/70 border-emerald-300';
+          document.getElementById('stepStatus2').textContent = '✓ LOCKED';
+          document.getElementById('stepStatus2').className = 'text-[10px] mono text-emerald-700 font-bold';
 
-        step3.className = 'rounded-xl p-3.5 border transition-all bg-slate-50 border-slate-200 opacity-85';
-        document.getElementById('stepStatus3').textContent = 'READY';
+          step3.className = 'rounded-xl p-3.5 border transition-all bg-indigo-50 border-indigo-400 shadow-sm';
+          document.getElementById('stepStatus3').textContent = '⏳ RUNNING...';
+          document.getElementById('stepStatus3').className = 'text-[10px] mono text-indigo-700 font-bold';
 
-        headline.textContent = 'Next Action: Approve Ledger & Run Whole-Repo Migration';
-        desc.textContent = 'Review the extracted contracts & Flash subagent findings below, then click to lock the ledger, run the File-by-File Baseline comparison, and execute Argon Whole-Repo Synthesis.';
-        btn.className = 'w-full py-2.5 px-4 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-md shadow-amber-500/15 transition flex items-center justify-center gap-2 cta-pulse';
-        btnIcon.textContent = '✓';
-        btnText.textContent = 'Step 2 & 3: Approve Contracts & Run Migration + Baseline';
-        commitBtn.classList.add('hidden');
-        secBaseBtn.classList.remove('hidden');
+          headline.textContent = 'Step 3 In Progress: Whole-Repo Synthesis & Compiler Verification';
+          desc.textContent = 'Contracts are locked (✓ Step 2). Gemini 4 Argon is synthesizing all files and running the real compiler/test suite (see live API stream below)...';
+          btn.disabled = true;
+          btn.className = 'w-full py-2.5 px-4 rounded-xl bg-slate-200 text-slate-500 border border-slate-300 font-bold text-xs cursor-not-allowed flex items-center justify-center gap-2';
+          btnIcon.textContent = '⏳';
+          btnText.textContent = 'Step 3 Running: Whole-Repo Synthesis & Compiler Verification...';
+          commitBtn.classList.add('hidden');
+          secBaseBtn.classList.add('hidden');
+        } else {
+          pill.textContent = '✋ Step 2 of 3 • Human Maintainer Gate (Review & Approve Contracts)';
+          pill.className = 'text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300';
+
+          step1.className = 'rounded-xl p-3.5 border transition-all bg-emerald-50/70 border-emerald-300';
+          document.getElementById('stepStatus1').textContent = '✓ DONE';
+          document.getElementById('stepStatus1').className = 'text-[10px] mono text-emerald-700 font-bold';
+
+          step2.className = 'rounded-xl p-3.5 border transition-all bg-amber-50/90 border-amber-400 shadow-sm';
+          document.getElementById('stepStatus2').textContent = 'REVIEW NOW';
+          document.getElementById('stepStatus2').className = 'text-[10px] mono text-amber-800 font-bold';
+
+          step3.className = 'rounded-xl p-3.5 border transition-all bg-slate-50 border-slate-200 opacity-85';
+          document.getElementById('stepStatus3').textContent = 'READY';
+          document.getElementById('stepStatus3').className = 'text-[10px] mono text-slate-500';
+
+          headline.textContent = 'Next Action: Approve Ledger & Run Whole-Repo Migration';
+          desc.textContent = 'Review the extracted contracts & Flash subagent findings below, then click to lock the ledger, run the File-by-File Baseline comparison, and execute Argon Whole-Repo Synthesis.';
+          btn.disabled = false;
+          btn.className = 'w-full py-2.5 px-4 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-md shadow-amber-500/15 transition flex items-center justify-center gap-2 cta-pulse';
+          btnIcon.textContent = '✓';
+          btnText.textContent = 'Step 2 & 3: Approve Contracts & Run Migration + Baseline';
+          commitBtn.classList.add('hidden');
+          secBaseBtn.classList.remove('hidden');
+        }
       } else {
         const passed = currentSession.argon_report.passed;
         pill.textContent = passed
@@ -1198,6 +1518,7 @@
 
         headline.textContent = 'Migration Verified! Inspect Diffs or Export to Disk';
         desc.textContent = 'Exports verified files to `verified_outputs/` on local disk (does NOT run `git commit` or overwrite the original benchmark repo).';
+        btn.disabled = false;
         btn.className = 'w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition flex items-center justify-center gap-2';
         btnIcon.textContent = '💾';
         btnText.textContent = 'Export Verified Code to `verified_outputs/` (Local Disk)';
@@ -1290,7 +1611,7 @@
 
       empty.classList.add('hidden');
       content.classList.remove('hidden');
-      if (currentSession.argon_report) {
+      if (currentSession.argon_report || currentSession.ledger_approved || isStepRunning) {
         hitlBanner.classList.add('hidden');
       } else {
         hitlBanner.classList.remove('hidden');
@@ -1465,15 +1786,42 @@
 
     function renderOsPresets() {
       const container = document.getElementById('osPresetsList');
-      container.innerHTML = openSourcePresets.map((p, idx) => `
-        <button onclick="applyOsPreset(${idx})" class="text-left p-3.5 rounded-xl bg-slate-50 hover:bg-indigo-50/70 border border-slate-200 hover:border-indigo-300 transition">
-          <div class="flex items-center justify-between mb-1">
-            <span class="text-xs font-bold text-slate-900">${escapeHtml(p.ecosystem || p.name || 'Open-Source Preset')}</span>
-            <span class="text-[10px] mono text-indigo-700 font-semibold">${escapeHtml(p.scale || p.language || '')}</span>
+      container.innerHTML = openSourcePresets.map((p, idx) => {
+        const cardMapping = p.frontpage_card_label || `Frontpage Repo: ${p.built_in_benchmark || 'custom'}`;
+        return `
+        <div id="osPresetCard-${idx}" class="text-left p-3.5 rounded-xl bg-slate-50 hover:bg-indigo-50/50 border border-slate-200 hover:border-indigo-300 transition flex flex-col justify-between gap-2.5">
+          <div>
+            <div class="flex items-start justify-between gap-2 mb-1">
+              <span class="text-xs font-bold text-slate-900">${escapeHtml(p.ecosystem || p.name || 'Open-Source Preset')}</span>
+              <span class="text-[10px] mono text-indigo-700 bg-indigo-50 border border-indigo-200 px-1.5 py-0.5 rounded font-semibold shrink-0">${escapeHtml(p.scale || p.language || '')}</span>
+            </div>
+            <div class="mb-1.5">
+              <span class="text-[10px] mono px-1.5 py-0.5 rounded bg-slate-200/70 text-slate-700 font-semibold">
+                🔗 Underlying Repo: ${escapeHtml(cardMapping)}
+              </span>
+            </div>
+            <p class="text-[11px] text-slate-600 leading-relaxed">${escapeHtml(p.challenge || p.pain_point || '')}</p>
           </div>
-          <p class="text-[11px] text-slate-600 line-clamp-2">${escapeHtml(p.challenge || p.pain_point || '')}</p>
-        </button>
-      `).join('');
+          <div class="flex items-center justify-between gap-2 pt-2 border-t border-slate-200/80">
+            <button onclick="launchOsPresetDirectly(${idx})" type="button" class="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold shadow-sm transition">
+              ⚡ Open Frontpage Card Directly
+            </button>
+            <button onclick="applyOsPreset(${idx})" type="button" class="px-2.5 py-1 rounded-lg bg-white hover:bg-indigo-50 text-indigo-700 border border-indigo-200 text-[11px] font-semibold transition">
+              ✏️ Customize as New Card (#5) ↓
+            </button>
+          </div>
+        </div>
+      `}).join('');
+    }
+
+    async function launchOsPresetDirectly(idx) {
+      const p = openSourcePresets[idx];
+      if (!p) return;
+      const targetId = p.built_in_benchmark || (benchmarks[0] && benchmarks[0].id);
+      closeCustomRepoModal();
+      if (targetId) {
+        await selectBenchmark(targetId);
+      }
     }
 
     function applyOsPreset(idx) {
@@ -1481,7 +1829,7 @@
       if (!p) return;
       const refBench = benchmarks.find(b => b.id === p.built_in_benchmark) || benchmarks[0];
       const baseSlug = (p.built_in_benchmark || p.preset_id || 'custom_repo');
-      document.getElementById('custId').value = `${baseSlug}_custom`;
+      document.getElementById('custId').value = p.custom_slug || `${baseSlug}_custom`;
       document.getElementById('custTitle').value = p.ecosystem || p.name || (refBench ? refBench.title : '');
       document.getElementById('custLang').value = refBench ? refBench.language : (p.language || 'c');
       document.getElementById('custPersona').value = refBench ? refBench.persona : (p.persona || 'Open-Source Subsystem Maintainer');
@@ -1490,9 +1838,43 @@
         : `/Users/user/gemini-4-argon-hackathon/benchmarks/${baseSlug}/initial`;
       document.getElementById('custMutable').value = refBench ? (refBench.mutable_files || []).join(', ') : '';
       document.getElementById('custReadonly').value = refBench ? (refBench.readonly_context_files || []).join(', ') : '';
-      document.getElementById('custVerifyCmd').value = baseSlug === 'c_to_rust_framecodec' ? 'cargo test' : (baseSlug === 'superset_ts6' ? 'npx tsc --noEmit' : 'make test');
-      document.getElementById('custForbidden').value = baseSlug === 'c_to_rust_framecodec' ? '\\bunsafe\\b' : '\\bget_cycles\\s*\\(, \\bstrcpy\\s*\\(';
+
+      const defaultVerifyCmd = {
+        c_to_rust_framecodec: 'cargo test --manifest-path rust_port/Cargo.toml',
+        superset_ts6: 'npx tsc --noEmit',
+        py_v1_to_v2: './venv/bin/pytest -W error tests/test_settlement_flow.py',
+        linux_git_c_hardening: 'clang -std=c11 -Wall -Wextra -Werror -Iinclude src/timekeep.c src/oid_hash.c src/usercopy_ioctl.c src/pack_alloc.c tests/test_kernel_git_contracts.c -o /tmp/kobj_test_runner && /tmp/kobj_test_runner'
+      }[baseSlug] || 'make test';
+
+      const defaultForbidden = {
+        c_to_rust_framecodec: '\\bunsafe\\b',
+        superset_ts6: '\\bany\\b, @ts-ignore',
+        py_v1_to_v2: '@validator\\b, @root_validator\\b, # type: ignore',
+        linux_git_c_hardening: '\\bget_cycles\\s*\\(, \\bstrcpy\\s*\\(, \\bsprintf\\s*\\('
+      }[baseSlug] || '';
+
+      document.getElementById('custVerifyCmd').value = defaultVerifyCmd;
+      document.getElementById('custForbidden').value = defaultForbidden;
       document.getElementById('custInstructions').value = (refBench && refBench.task_instructions) || p.challenge || '';
+
+      // Highlight selected card & show confirmation badge
+      openSourcePresets.forEach((_, i) => {
+        const card = document.getElementById(`osPresetCard-${i}`);
+        if (card) {
+          card.className = i === idx
+            ? 'text-left p-3.5 rounded-xl bg-indigo-50/80 border-2 border-indigo-500 transition flex flex-col justify-between gap-2.5 shadow-sm'
+            : 'text-left p-3.5 rounded-xl bg-slate-50 hover:bg-indigo-50/50 border border-slate-200 hover:border-indigo-300 transition flex flex-col justify-between gap-2.5';
+        }
+      });
+      const banner = document.getElementById('presetAppliedBanner');
+      if (banner) {
+        banner.textContent = `✓ Loaded "${p.ecosystem || 'Preset'}" into form below — customize or click Register & Audit!`;
+        banner.classList.remove('hidden');
+      }
+      const formSec = document.getElementById('customRepoFormSection');
+      if (formSec) {
+        formSec.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
     }
 
     async function submitCustomBenchmark() {

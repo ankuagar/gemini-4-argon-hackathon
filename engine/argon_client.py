@@ -11,6 +11,7 @@ Supports:
 """
 from __future__ import annotations
 
+import threading
 import time
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List, Optional
@@ -45,6 +46,21 @@ class InteractionResult:
 class ArgonClient:
     def __init__(self, api_key: Optional[str] = None) -> None:
         self.client = genai.Client(api_key=api_key) if api_key else genai.Client()
+        self._traffic_lock = threading.Lock()
+        self.live_traffic: List[Dict[str, Any]] = []
+        self._call_seq = 0
+
+    def get_live_traffic(self, limit: int = 30) -> List[Dict[str, Any]]:
+        now = time.time()
+        with self._traffic_lock:
+            items = list(self.live_traffic[-limit:])
+        out: List[Dict[str, Any]] = []
+        for item in reversed(items):
+            snap = dict(item)
+            if snap.get("status") == "IN_FLIGHT":
+                snap["elapsed_seconds"] = round(max(0.1, now - snap.get("started_at", now)), 1)
+            out.append(snap)
+        return out
 
     def interact(
         self,
@@ -65,6 +81,7 @@ class ArgonClient:
         or `force_background=True`, polling until completion and joining all `model_output` steps.
         """
         start_time = time.monotonic()
+        wall_start = time.time()
         use_background = force_background or (max_output_tokens > 65536)
 
         gen_config: Dict[str, Any] = {
@@ -91,15 +108,60 @@ class ArgonClient:
                 "schema": json_schema,
             }
 
-        interaction = self.client.interactions.create(**kwargs)
+        prev_arg = f', previous_interaction_id="{previous_interaction_id}"' if previous_interaction_id else ""
+        bg_arg = ", background=True" if use_background else ""
+        sdk_call_str = (
+            f'client.interactions.create(model="{model}", '
+            f'generation_config={{"thinking_level": "{thinking_level}", "max_output_tokens": {max_output_tokens}}}'
+            f'{prev_arg}{bg_arg})'
+        )
+        clean_prompt_preview = " ".join(prompt.strip().split())[:220]
 
-        if use_background:
-            while interaction.status in ("in_progress", "queued"):
-                elapsed = time.monotonic() - start_time
-                if on_poll:
-                    on_poll(interaction.status, elapsed)
-                time.sleep(3)
-                interaction = self.client.interactions.get(id=interaction.id)
+        with self._traffic_lock:
+            self._call_seq += 1
+            call_record: Dict[str, Any] = {
+                "call_id": f"api-{self._call_seq}",
+                "seq": self._call_seq,
+                "status": "IN_FLIGHT",
+                "started_at": wall_start,
+                "timestamp_iso": time.strftime("%H:%M:%S", time.localtime(wall_start)),
+                "model": model,
+                "thinking_level": thinking_level,
+                "max_output_tokens": max_output_tokens,
+                "previous_interaction_id": previous_interaction_id,
+                "background": use_background,
+                "prompt_chars": len(prompt),
+                "prompt_preview": clean_prompt_preview,
+                "sdk_call": sdk_call_str,
+                "interaction_id": None,
+                "input_tokens": 0,
+                "output_tokens": 0,
+                "total_tokens": 0,
+                "thought_steps": 0,
+                "elapsed_seconds": 0.0,
+                "output_preview": "",
+            }
+            self.live_traffic.append(call_record)
+
+        try:
+            interaction = self.client.interactions.create(**kwargs)
+
+            if use_background:
+                while interaction.status in ("in_progress", "queued"):
+                    elapsed = time.monotonic() - start_time
+                    with self._traffic_lock:
+                        call_record["interaction_id"] = getattr(interaction, "id", None)
+                        call_record["elapsed_seconds"] = round(elapsed, 1)
+                    if on_poll:
+                        on_poll(interaction.status, elapsed)
+                    time.sleep(3)
+                    interaction = self.client.interactions.get(id=interaction.id)
+        except Exception as exc:
+            with self._traffic_lock:
+                call_record["status"] = "ERROR"
+                call_record["elapsed_seconds"] = round(time.monotonic() - start_time, 2)
+                call_record["output_preview"] = f"API Error: {exc}"
+            raise
 
         elapsed_total = round(time.monotonic() - start_time, 2)
 
@@ -139,6 +201,16 @@ class ArgonClient:
         input_tokens = getattr(usage, "input_tokens", 0) or 0
         output_tokens = getattr(usage, "output_tokens", 0) or 0
         total_tokens = getattr(usage, "total_tokens", 0) or (input_tokens + output_tokens)
+
+        with self._traffic_lock:
+            call_record["status"] = "COMPLETED"
+            call_record["interaction_id"] = interaction.id
+            call_record["input_tokens"] = input_tokens
+            call_record["output_tokens"] = output_tokens
+            call_record["total_tokens"] = total_tokens
+            call_record["thought_steps"] = len(thoughts)
+            call_record["elapsed_seconds"] = elapsed_total
+            call_record["output_preview"] = " ".join(output_text.strip().split())[:260]
 
         return InteractionResult(
             interaction_id=interaction.id,
