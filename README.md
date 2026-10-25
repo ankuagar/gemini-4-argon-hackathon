@@ -2,9 +2,35 @@
 
 **Powered by Google Gemini 4 Argon (`gemini-4-argon`) & Gemini 3.8 Flash (`gemini-3.8-flash`) via the Interactions API**
 
-**ArgonLedger** is a unified dual-track engineering platform built on `gemini-4-argon`:
-- **Track 1 — Million-Token Codebase Migration & Verification Engine**: Executes whole-repository migrations, memory-safe C-to-Rust ports, C kernel/VCS subsystem hardenings, and strict framework upgrades in a unified 1M-token context window—verified against live compilers (`clang`, `cargo`/`rustc`, `tsc`, `mypy --strict`), test suites, static supply-chain audits, and differential fuzzers.
-- **Track 2 — Closed-Loop 3D Virtual Worlds, Video Understanding & Real-to-Sim Robotics Artifact Studio (`Render → Watch → Critique → Fix`)**: Ingests real-world field videos (bears, waterfalls, New Zealand sheep flocks, forest deer, calving glaciers) or text prompts, generates an initial 3D Three.js simulation draft, records the live WebGL canvas into an H.264 `.mp4` video via `ffmpeg`, watches & critiques the result with `gemini-4-argon` (`video/mp4`), and iteratively upgrades the 3D world while exporting ready-to-use **MuJoCo XML arenas**, **Gymnasium RL reward functions**, **Scene Perception specs**, and **Game Engine Blueprints**.
+---
+
+## 💡 What ArgonLedger Does
+
+**ArgonLedger** is a full-stack AI engineering workbench built on `gemini-4-argon` that solves two closed-loop verification challenges where a single-pass LLM output is never enough:
+
+### 1. Track 1 — Million-Token Codebase Migration & Verification Engine
+Open-source maintainers cannot merge AI-generated pull requests that only edit one file at a time or break cross-module contracts, type systems, or memory-safety invariants. **ArgonLedger Track 1** ingests an entire multi-file repository into `gemini-4-argon`'s unified **1M-token context window** and executes a **4-step human-gated verification pipeline**:
+- **Step 1 — Global Interface Contract Ledger (`gemini-4-argon` Lead Architect + Parallel `gemini-3.8-flash` Recon Subagents)**:
+  Scans every mutable and read-only file in parallel using `gemini-3.8-flash` subagents while `gemini-4-argon` builds a single **Cross-File Interface Contract Ledger** (exact function signatures, struct layouts, error types, and safety invariants across all modules).
+- **Step 2 — Maintainer Gate 1 (Inspect, Edit & Lock Contract)**:
+  The human maintainer reviews the cross-file contract, adds custom migration rules if desired, and explicitly **Approves & Locks** the ledger before any code can be rewritten.
+- **Step 3 — Coordinated Whole-Repo Synthesis & Autonomous Compiler/Fuzzer Loop**:
+  Chains onto `previous_interaction_id` (reusing the cached 1M-token context for a **2.8x speedup**) to rewrite all coupled files simultaneously, then compiles and tests them inside an isolated sandbox (`clang`, `cargo test`, `tsc --strict`, `mypy --strict`, plus an **80-vector C-vs-Rust Differential Fuzzer**). If a compiler or test check fails, `gemini-4-argon` autonomously inspects the diagnostics and repairs the broken file in a loop. You can also run a **File-by-File Baseline** side-by-side to see why isolated single-file prompting fails on cross-file contracts.
+- **Step 4 — Maintainer Gate 2 (Static Supply-Chain Audit & Commit)**:
+  Verifies zero unauthorized process/network/backdoor calls and zero safety escapes (`unsafe`, `any`, `# type: ignore`) before writing the verified files and a cryptographic `verification_manifest.json` receipt to `verified_outputs/<benchmark_id>/`.
+
+### 2. Track 2 — Closed-Loop 3D Virtual Worlds, Video Understanding & Real-to-Sim Robotics Studio (`Render → Watch → Critique → Fix`)
+Generating a 3D game or robotics simulation in a single pass produces a rough first draft (flat unlit shaders, missing terrain obstacles, rigid sliding motion). **ArgonLedger Track 2** turns **real-world field videos** (black bears on a forest trail, cascading waterfalls, New Zealand sheep flocks, forest deer, Kenai Fjords calving glaciers) or **text prompts** into verified **60FPS Three.js 3D Digital Twins** and **exportable robotics/game training artifacts**:
+- **Real-to-Sim Video Ingestion**:
+  Watches real field footage (`.mp4` / `.mov`) inline via `gemini-4-argon` (`video/mp4`) to extract physical biome parameters: ground surface friction ($\mu$), slope grade, dynamic wildlife/flock kinematics, and LiDAR/camera occlusion hazards.
+- **Closed-Loop Visual Self-Improvement (`Render → Watch → Critique → Fix`)**:
+  1. **Render**: Renders the 3D Three.js WebGL scene live in the browser viewport.
+  2. **Watch**: Captures live WebGL frames + scene telemetry (`mesh_count`, `light_count`, `vertex_count`) and encodes an H.264 `.mp4` flythrough clip via `ffmpeg`.
+  3. **Critique**: Sends the `.mp4` video inline to `gemini-4-argon` (`video/mp4`), which emits a **Visual Fidelity Score (`0–100`)** and **timestamped (`MM:SS`) defects** across lighting/shaders, biome geometry, and motion kinematics.
+  4. **Fix**: Chains onto the critique turn via `previous_interaction_id` to synthesize an upgraded 60FPS 3D scene (`Iteration #1: 24/100` $\rightarrow$ `Iteration #2: 94/100` $\rightarrow$ `Iteration #3+`), with a **📈 Closed-Loop Evolution timeline** and **⚖️ Side-by-Side Before/After 3D Split View**.
+- **Interactive 3D Robotics Overlays & Exportable Artifact Pack**:
+  - Toggle **🤖 3D BBoxes & Costmap** (wireframe 3D Oriented Bounding Boxes, 24m × 24m Ground Traversability Costmap Grid, and 15m wildlife safety standoff rings) and **🌦️ Weather / Sensor Domain Randomization** (`☀️ Daylight`, `🌫️ LiDAR Fog`, `🌙 Dusk / Night`, `🔥 Thermal IR`) directly inside the live 3D viewport.
+  - Export ready-to-run **MuJoCo MJCF Physics Arenas (`scene_mujoco.xml`)**, **Gymnasium RL Reward Scripts (`reward_env.py`)**, **Scene Perception Specs (`scene_perception.json`)**, and **Game Engine Blueprints (`game_world_blueprint.json`)** individually or as a single `.zip` bundle.
 
 ---
 
