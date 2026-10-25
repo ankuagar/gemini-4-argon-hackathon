@@ -1,0 +1,33 @@
+# Python virtual environments & caches
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+
+# Node dependencies
+node_modules/
+
+# Rust local toolchains & build artifacts
+.cargo/
+.rustup/
+**/target/
+
+# Compiled C binaries & shared libraries
+*.dylib
+*.so
+*.o
+*.out
+**/kobj_test_runner
+**/c_harness
+
+# Runtime session workspaces (ephemeral per-session sandboxes)
+runs/
+
+# Editor / tool history & OS metadata
+.aider*
+.DS_Store
+.env
+.env.*

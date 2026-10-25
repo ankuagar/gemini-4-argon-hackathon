@@ -1,0 +1,25 @@
+{
+  "name": "gemini-4-argon-hackathon",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ankuagar/gemini-4-argon-hackathon.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/ankuagar/gemini-4-argon-hackathon/issues"
+  },
+  "homepage": "https://github.com/ankuagar/gemini-4-argon-hackathon#readme",
+  "dependencies": {
+    "@types/node": "^26.6.5",
+    "typescript": "^7.0.2"
+  }
+}

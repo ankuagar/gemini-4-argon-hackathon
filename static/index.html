@@ -1,0 +1,1542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ArgonLedger — Million-Token Codebase Migration & Verification Engine</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-canvas: #F8FAFC;
+      --bg-surface: #FFFFFF;
+      --bg-subtle: #F1F5F9;
+      --text-primary: #0F172A;
+      --text-secondary: #334155;
+      --text-muted: #64748B;
+      --border-hairline: #E2E8F0;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-canvas);
+      background-image:
+        radial-gradient(at 10% 0%, rgba(79, 70, 229, 0.06) 0px, transparent 45%),
+        radial-gradient(at 90% 5%, rgba(14, 165, 233, 0.06) 0px, transparent 45%),
+        radial-gradient(at 50% 100%, rgba(16, 185, 129, 0.05) 0px, transparent 50%);
+      color: var(--text-primary);
+    }
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+      font-variant-numeric: tabular-nums;
+    }
+    .tabular {
+      font-variant-numeric: tabular-nums;
+    }
+    .card-surface {
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      box-shadow: 0 2px 10px -2px rgba(15, 23, 42, 0.04), 0 1px 3px 0 rgba(15, 23, 42, 0.02);
+    }
+    .card-surface-hover:hover {
+      border-color: #CBD5E1;
+      box-shadow: 0 8px 24px -4px rgba(15, 23, 42, 0.07), 0 2px 6px -1px rgba(15, 23, 42, 0.04);
+    }
+    .diff-add {
+      background-color: #ECFDF5;
+      color: #065F46;
+      border-left: 3px solid #10B981;
+    }
+    .diff-del {
+      background-color: #FFF1F2;
+      color: #9F1239;
+      border-left: 3px solid #F43F5E;
+    }
+    .diff-hunk {
+      background-color: #EEF2FF;
+      color: #4338CA;
+      font-weight: 600;
+    }
+    ::-webkit-scrollbar { width: 7px; height: 7px; }
+    ::-webkit-scrollbar-track { background: #F1F5F9; }
+    ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+    @keyframes pulse-ring {
+      0% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.35); }
+      70% { box-shadow: 0 0 0 8px rgba(79, 70, 229, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0); }
+    }
+    .cta-pulse {
+      animation: pulse-ring 2s infinite;
+    }
+    .arch-node-active {
+      border-color: #4F46E5 !important;
+      background-color: #EEF2FF !important;
+      box-shadow: 0 4px 14px rgba(79, 70, 229, 0.14);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-indigo-100 selection:text-indigo-900">
+
+  <!-- TOP NAVIGATION BAR (Light Frosted Glass) -->
+  <header class="border-b border-slate-200 bg-white/90 backdrop-blur-md sticky top-0 z-30">
+    <div class="max-w-[1440px] mx-auto px-6 py-3 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 via-violet-600 to-sky-500 flex items-center justify-center shadow-sm shadow-indigo-500/20 font-bold text-lg tracking-tight text-white">
+          AL
+        </div>
+        <div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <h1 class="text-base font-extrabold tracking-tight text-slate-900">ArgonLedger</h1>
+            <span class="text-[11px] mono uppercase px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 font-semibold">
+              Lead: gemini-4-argon
+            </span>
+            <span class="text-[11px] mono uppercase px-2 py-0.5 rounded-full bg-sky-50 text-sky-700 border border-sky-200 font-semibold">
+              Subagents: gemini-3.8-flash
+            </span>
+            <span class="text-[11px] mono px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-medium hidden sm:inline">
+              1M Shared Context • Interactions API
+            </span>
+          </div>
+          <p class="text-xs text-slate-600">
+            Guided 3-Step Multi-File Codebase Migration, Parallel Flash Subagent Pre-Audit &amp; Real Compiler/Fuzzer Verification
+          </p>
+        </div>
+      </div>
+
+      <!-- Right Controls -->
+      <div class="flex items-center gap-2.5 flex-wrap">
+        <button onclick="switchMainTab('arch')" class="px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-semibold transition flex items-center gap-1.5 shadow-sm">
+          <span>🗺️</span>
+          <span>Architecture, 5 Patterns &amp; AGENTS.md</span>
+        </button>
+
+        <button onclick="openCustomRepoModal()" class="px-3 py-1.5 rounded-lg bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 text-xs font-semibold transition flex items-center gap-1.5 shadow-sm">
+          <span>🌐</span>
+          <span>Open-Source Crisis Catalog</span>
+        </button>
+
+        <div class="flex items-center gap-1.5 bg-slate-100 border border-slate-200 rounded-lg px-2.5 py-1">
+          <label class="text-[11px] text-slate-600 font-medium">Reasoning:</label>
+          <select id="thinkingLevelSelect" class="bg-transparent text-xs mono text-indigo-700 font-bold focus:outline-none cursor-pointer">
+            <option value="low">low (Fastest)</option>
+            <option value="medium" selected>medium (Balanced)</option>
+            <option value="high">high (Deepest)</option>
+          </select>
+        </div>
+
+        <label class="flex items-center gap-1.5 bg-slate-100 border border-slate-200 rounded-lg px-2.5 py-1 cursor-pointer" title="Enable background=True with >64K output token budget on the Interactions API">
+          <input type="checkbox" id="longDecodeToggle" class="accent-indigo-600 rounded cursor-pointer" />
+          <span class="text-[11px] text-slate-600 mono font-medium">Long Decode (&gt;64K)</span>
+        </label>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-[1440px] w-full mx-auto px-6 py-5 flex-1 flex flex-col gap-5">
+
+    <!-- STEP 0: CHOOSE A PROVING GROUND -->
+    <section>
+      <div class="flex items-center justify-between mb-2.5">
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-bold uppercase tracking-wider text-indigo-700 bg-indigo-50 border border-indigo-200 px-2.5 py-0.5 rounded-md">
+            1. Select Open-Source Proving Ground
+          </span>
+          <span class="text-xs text-slate-500">
+            Clicking any project automatically runs its initial compiler, test suite &amp; security audit (~1 second)
+          </span>
+        </div>
+        <span id="activeSessionBadge" class="text-[11px] mono text-slate-500 bg-white border border-slate-200 px-2.5 py-0.5 rounded-md">Initializing...</span>
+      </div>
+      <div id="benchmarkCards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5">
+        <!-- Populated by JS -->
+      </div>
+    </section>
+
+    <!-- GUIDED 3-STEP WORKFLOW WIZARD (Always shows the user's current step & ONE primary next action) -->
+    <section id="guidedWizardSection" class="card-surface rounded-2xl p-5 transition-all">
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+
+        <!-- Left: Visual 3-Step Progress Stepper -->
+        <div class="flex-1">
+          <div class="flex items-center gap-2 mb-3 flex-wrap">
+            <span id="wizardPhasePill" class="text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-800 border border-indigo-200">
+              Step 1 of 3 • Align on Intent &amp; Extract Ledger
+            </span>
+            <span id="wizardProblemSubtitle" class="text-xs text-slate-600 font-medium"></span>
+          </div>
+
+          <!-- 3 Connected Steps -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <!-- Step 1 Card -->
+            <div id="stepCard1" class="rounded-xl p-3.5 border transition-all bg-indigo-50/70 border-indigo-300">
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                  <span id="stepBadge1" class="w-5 h-5 rounded-full bg-indigo-600 text-white text-[11px] flex items-center justify-center font-bold">1</span>
+                  Align Intent &amp; Ledger
+                </span>
+                <span id="stepStatus1" class="text-[10px] mono text-indigo-700 font-semibold">NEXT ACTION</span>
+              </div>
+              <p class="text-[11px] text-slate-600 leading-relaxed">
+                <span class="mono font-semibold text-indigo-700">gemini-4-argon</span> extracts cross-file contracts while <span class="mono font-semibold text-sky-700">gemini-3.8-flash</span> subagents scan leaf modules in parallel.
+              </p>
+            </div>
+
+            <!-- Step 2 Card -->
+            <div id="stepCard2" class="rounded-xl p-3.5 border transition-all bg-slate-50 border-slate-200 opacity-75">
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                  <span id="stepBadge2" class="w-5 h-5 rounded-full bg-slate-300 text-slate-700 text-[11px] flex items-center justify-center font-bold">2</span>
+                  Maintainer Gate Approval
+                </span>
+                <span id="stepStatus2" class="text-[10px] mono text-slate-500">WAITING</span>
+              </div>
+              <p class="text-[11px] text-slate-600 leading-relaxed">
+                You review &amp; lock the cross-file interface contracts and subagent edge-case warnings before code is written.
+              </p>
+            </div>
+
+            <!-- Step 3 Card -->
+            <div id="stepCard3" class="rounded-xl p-3.5 border transition-all bg-slate-50 border-slate-200 opacity-75">
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                  <span id="stepBadge3" class="w-5 h-5 rounded-full bg-slate-300 text-slate-700 text-[11px] flex items-center justify-center font-bold">3</span>
+                  Synthesize &amp; Verify Loop
+                </span>
+                <span id="stepStatus3" class="text-[10px] mono text-slate-500">WAITING</span>
+              </div>
+              <p class="text-[11px] text-slate-600 leading-relaxed">
+                Runs File-by-File Baseline vs. Argon Whole-Repo Synthesis + real compiler, test &amp; fuzzer verification.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Single Clear Call-to-Action Box -->
+        <div class="lg:w-[390px] flex flex-col justify-center bg-slate-50 border border-slate-200/90 rounded-xl p-4">
+          <div class="text-xs font-bold text-slate-800 mb-1" id="ctaHeadline">
+            Ready to start Step 1
+          </div>
+          <p class="text-[11px] text-slate-600 mb-3 leading-relaxed" id="ctaDescription">
+            Initial repository audit found errors in this codebase. Click below to run <span class="mono text-indigo-700 font-semibold">gemini-4-argon</span> + parallel <span class="mono text-sky-700 font-semibold">gemini-3.8-flash</span> subagents (~15s).
+          </p>
+
+          <!-- Dynamic Primary Button -->
+          <div class="flex flex-col gap-2">
+            <button id="primaryWizardBtn" onclick="handlePrimaryWizardAction()" class="w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-md shadow-indigo-500/15 transition flex items-center justify-center gap-2 cta-pulse">
+              <span id="primaryWizardBtnIcon">▶</span>
+              <span id="primaryWizardBtnText">Step 1: Analyze Repo &amp; Extract Interface Ledger</span>
+            </button>
+
+            <!-- Secondary optional controls -->
+            <div class="flex items-center justify-between gap-2 pt-1">
+              <button id="secondaryBaselineBtn" onclick="runBaselineOnly()" class="text-[11px] text-slate-600 hover:text-slate-900 underline decoration-slate-300 transition hidden">
+                Run Baseline Only
+              </button>
+              <button id="commitDiskBtn" onclick="commitVerifiedOutput()" class="w-full py-1.5 px-3 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs font-semibold transition hidden">
+                💾 Commit Verified Code to Disk (`verified_outputs/`)
+              </button>
+              <button onclick="selectBenchmark(activeBenchmarkId)" class="text-[11px] text-slate-500 hover:text-slate-800 ml-auto transition font-medium">
+                ↻ Reset Session
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- LIVE PROGRESS / SPINNER BANNER (Only visible while an API call is actively running) -->
+      <div id="liveActivityBanner" class="hidden mt-4 pt-4 border-t border-slate-200 flex items-center justify-between gap-4 bg-indigo-50/80 -mx-5 px-5 py-3.5">
+        <div class="flex items-center gap-3">
+          <div class="w-5 h-5 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin shrink-0"></div>
+          <div>
+            <div id="liveActivityTitle" class="text-xs font-bold text-indigo-950">
+              Calling Gemini 4 Argon (`gemini-4-argon`) + Flash Subagents (`gemini-3.8-flash`)
+            </div>
+            <div id="liveActivitySub" class="text-[11px] text-indigo-700">
+              Analyzing cross-file dependencies and constructing structured interface contracts...
+            </div>
+          </div>
+        </div>
+        <div class="text-right shrink-0">
+          <div id="liveTimerDisplay" class="text-sm font-bold mono text-indigo-700 tabular">0.0s</div>
+          <div class="text-[10px] text-indigo-600 font-medium">Elapsed Live</div>
+        </div>
+      </div>
+
+      <!-- JUDGE TRANSPARENCY BAR: LIVE API TELEMETRY & EXECUTION EXPLAINER -->
+      <div class="mt-4 pt-3 border-t border-slate-200/90 flex flex-col gap-3">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="text-[11px] font-bold text-slate-700 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              <span>🔬 Live Judge Proof:</span>
+            </span>
+            <span id="judgeLedgerIdPill" class="text-[11px] mono px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200">
+              Ledger interaction.id: awaiting Step 1
+            </span>
+            <span id="judgeArgonTokPill" class="text-[11px] mono px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200">
+              Live API Tokens: 0
+            </span>
+          </div>
+          <button onclick="toggleJudgeExplainer()" id="judgeExplainerBtn" class="text-xs font-semibold text-indigo-700 hover:text-indigo-900 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 px-3 py-1 rounded-lg transition">
+            ℹ️ How Live `gemini-4-argon` API &amp; Local Compilers Connect ▾
+          </button>
+        </div>
+
+        <!-- Expandable Judge Explainer Drawer -->
+        <div id="judgeExplainerDrawer" class="hidden grid grid-cols-1 md:grid-cols-2 gap-3.5 p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+          <div class="p-3.5 rounded-lg bg-white border border-indigo-200 shadow-sm space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="font-extrabold text-indigo-900">1. What Runs 100% Live Over `gemini-4-argon` (`engine/argon_client.py`)</span>
+              <span class="text-[10px] mono px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200 font-semibold">Interactions API</span>
+            </div>
+            <p class="text-[11px] text-slate-600">
+              Every step makes real, unmocked calls to <span class="mono font-semibold text-slate-800">client.interactions.create(...)</span>:
+            </p>
+            <ul class="text-[11px] text-slate-700 space-y-1.5 list-disc list-inside leading-relaxed">
+              <li><strong>Step 1 (`POST /ledger`):</strong> Sends the full repository + compiler diagnostics live to <span class="mono font-semibold text-indigo-700">model="gemini-4-argon"</span> (plus 4 concurrent <span class="mono font-semibold text-sky-700">model="gemini-3.8-flash"</span> leaf subagents). Returns a live server-side <span class="mono">interaction.id</span> and structured <span class="mono">InterfaceLedgerSchema</span> JSON.</li>
+              <li><strong>Step 3a (`POST /baseline`):</strong> Makes <strong>6 live parallel calls</strong> to <span class="mono font-semibold text-indigo-700">model="gemini-4-argon"</span> (1 isolated file per call with no shared cross-file context) and writes the generated code to <span class="mono">runs/&lt;session_id&gt;/baseline_ws/</span>.</li>
+              <li><strong>Step 3b (`POST /argon`):</strong> Calls <span class="mono font-semibold text-indigo-700">model="gemini-4-argon"</span> live with <span class="mono">previous_interaction_id=session.ledger_interaction_id</span> (reusing the server-side cached repo state from Step 1) to synthesize all mutable files in <span class="mono">runs/&lt;session_id&gt;/argon_ws/</span>.</li>
+              <li><strong>Autonomous Repair Loop (Turn 2+):</strong> If the compiler or fuzzer catches any error, the exact compiler traceback is sent <strong>live back to `gemini-4-argon`</strong> via <span class="mono">previous_interaction_id</span> until all checks pass.</li>
+            </ul>
+          </div>
+
+          <div class="p-3.5 rounded-lg bg-white border border-emerald-200 shadow-sm space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="font-extrabold text-emerald-900">2. How Local Compilers &amp; Fuzzers Connect (`engine/verifiers.py`)</span>
+              <span class="text-[10px] mono px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold">Real Host Toolchain</span>
+            </div>
+            <p class="text-[11px] text-slate-600">
+              Our Python orchestrator executes real local compiler, test, and fuzzer binaries via <span class="mono font-semibold text-slate-800">subprocess.run(...)</span> immediately after each <span class="mono">gemini-4-argon</span> turn and feeds the real stdout/stderr back into the next <span class="mono">previous_interaction_id</span> turn:
+            </p>
+            <ul class="text-[11px] text-slate-700 space-y-1.5 list-disc list-inside leading-relaxed">
+              <li><strong>Linux &amp; Git C (`linux_git_c_hardening`):</strong> Compiles with <span class="mono">clang -Wall -Wextra -Werror</span> and runs the 5-test C suite + <span class="mono">0xAA</span> stack-poisoning padding leak detector.</li>
+              <li><strong>C-to-Safe-Rust (`c_to_rust_framecodec`):</strong> Runs <span class="mono">cargo test</span> + the <strong>107-check C-vs-Rust Differential Fuzzer</strong> (<span class="mono">fuzz_harness.py</span> against <span class="mono">libframecodec.dylib</span>).</li>
+              <li><strong>Apache Superset TS 6.0 (`superset_ts6`):</strong> Runs real <span class="mono">npx tsc --noEmit</span> with strict TS 6.0 flags + behavioral runtime suite.</li>
+              <li><strong>Ray / Pydantic v2 (`py_v1_to_v2`):</strong> Runs real <span class="mono">mypy --strict</span> + <span class="mono">pytest -W error</span> (failing on any v1 deprecation warning).</li>
+            </ul>
+            <div class="p-2 rounded bg-emerald-50/70 border border-emerald-200 text-[11px] text-emerald-900">
+              <strong>Why this hybrid design?</strong> Using structured JSON output (<span class="mono">response_format</span>) + deterministic host verification between <span class="mono">previous_interaction_id</span> turns guarantees every run executes the exact compiler/fuzzer check in ~1 second without extra round-trip tool-call latency.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXECUTIVE SCOREBOARD: 3-CARD SIDE-BY-SIDE COMPARISON -->
+    <section id="verdictComparisonGrid" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <!-- Card 1: Initial Legacy / Unmigrated State -->
+      <div class="card-surface rounded-xl p-4 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500">1. Initial Broken Repo</span>
+            <span id="initBadge" class="text-[11px] mono px-2 py-0.5 rounded-md bg-rose-50 text-rose-700 border border-rose-200 font-semibold">Unmigrated</span>
+          </div>
+          <p class="text-xs text-slate-600 mb-3" id="initSummaryText">
+            Real toolchain audit on the unmigrated open-source repository.
+          </p>
+        </div>
+        <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100 text-xs mono tabular">
+          <div class="bg-slate-50 border border-slate-200/80 rounded-lg p-2.5">
+            <div class="text-[10px] text-slate-500 font-sans font-medium">Compile / Type Errors</div>
+            <div id="initCompileVal" class="text-base font-bold text-rose-600 mt-0.5">-</div>
+          </div>
+          <div class="bg-slate-50 border border-slate-200/80 rounded-lg p-2.5">
+            <div class="text-[10px] text-slate-500 font-sans font-medium">Tests Passing</div>
+            <div id="initTestsVal" class="text-base font-bold text-amber-600 mt-0.5">-</div>
+          </div>
+          <div class="bg-slate-50 border border-slate-200/80 rounded-lg p-2.5">
+            <div class="text-[10px] text-slate-500 font-sans font-medium">Safety / Escape Issues</div>
+            <div id="initEscapesVal" class="text-base font-bold text-rose-600 mt-0.5">-</div>
+          </div>
+          <div class="bg-slate-50 border border-slate-200/80 rounded-lg p-2.5">
+            <div class="text-[10px] text-slate-500 font-sans font-medium">C-vs-Rust Fuzz Checks</div>
+            <div id="initFuzzVal" class="text-base font-bold text-slate-700 mt-0.5">N/A</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: File-by-File Baseline (Why Naive LLMs Fail) -->
+      <div class="card-surface rounded-xl p-4 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-amber-700">2. File-by-File Baseline</span>
+            <span id="baseBadge" class="text-[11px] mono px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 border border-slate-200 font-semibold">Not Run Yet</span>
+          </div>
+          <p class="text-xs text-slate-600 mb-3" id="baseSummaryText">
+            Translates each file in isolation without shared cross-file context. Fails when signatures drift across modules.
+          </p>
+        </div>
+        <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100 text-xs mono tabular">
+          <div class="bg-slate-50 border border-slate-200/80 rounded-lg p-2.5">
+            <div class="text-[10px] text-slate-500 font-sans font-medium">Compile / Type Errors</div>
+            <div id="baseCompileVal" class="text-base font-bold text-slate-400 mt-0.5">-</div>
+          </div>
+          <div class="bg-slate-50 border border-slate-200/80 rounded-lg p-2.5">
+            <div class="text-[10px] text-slate-500 font-sans font-medium">Tests Passing</div>
+            <div id="baseTestsVal" class="text-base font-bold text-slate-400 mt-0.5">-</div>
+          </div>
+          <div class="bg-slate-50 border border-slate-200/80 rounded-lg p-2.5">
+            <div class="text-[10px] text-slate-500 font-sans font-medium">Safety / Escape Issues</div>
+            <div id="baseEscapesVal" class="text-base font-bold text-slate-400 mt-0.5">-</div>
+          </div>
+          <div class="bg-slate-50 border border-slate-200/80 rounded-lg p-2.5">
+            <div class="text-[10px] text-slate-500 font-sans font-medium">Tokens / Latency</div>
+            <div id="baseTokensVal" class="text-xs font-bold text-slate-500 mt-1">-</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3: Gemini 4 Argon Whole-Repo Synthesis -->
+      <div class="card-surface rounded-xl p-4 flex flex-col justify-between ring-1 ring-indigo-500/20">
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-indigo-700">3. ArgonLedger (Whole-Repo)</span>
+            <span id="argonBadge" class="text-[11px] mono px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 border border-slate-200 font-semibold">Not Run Yet</span>
+          </div>
+          <p class="text-xs text-slate-600 mb-3" id="argonSummaryText">
+            Locks the Cross-File Interface Ledger &amp; synthesizes all files coherently with compiler/fuzzer verification.
+          </p>
+        </div>
+        <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100 text-xs mono tabular">
+          <div class="bg-slate-50 border border-slate-200/80 rounded-lg p-2.5">
+            <div class="text-[10px] text-slate-500 font-sans font-medium">Compile / Type Errors</div>
+            <div id="argonCompileVal" class="text-base font-bold text-slate-400 mt-0.5">-</div>
+          </div>
+          <div class="bg-slate-50 border border-slate-200/80 rounded-lg p-2.5">
+            <div class="text-[10px] text-slate-500 font-sans font-medium">Tests Passing</div>
+            <div id="argonTestsVal" class="text-base font-bold text-slate-400 mt-0.5">-</div>
+          </div>
+          <div class="bg-slate-50 border border-slate-200/80 rounded-lg p-2.5">
+            <div class="text-[10px] text-slate-500 font-sans font-medium">Safety / Fuzz Checks</div>
+            <div id="argonEscapesVal" class="text-base font-bold text-slate-400 mt-0.5">-</div>
+          </div>
+          <div class="bg-slate-50 border border-slate-200/80 rounded-lg p-2.5">
+            <div class="text-[10px] text-slate-500 font-sans font-medium">Turns / Latency</div>
+            <div id="argonTokensVal" class="text-xs font-bold text-slate-500 mt-1">-</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DEEP INSPECTION WORKSPACE: 4 CLEAR TABS -->
+    <section class="card-surface rounded-2xl overflow-hidden flex flex-col flex-1 min-h-[470px]">
+      <!-- Tab Bar -->
+      <div class="flex flex-wrap items-center justify-between border-b border-slate-200 px-4 bg-slate-50/80">
+        <div class="flex items-center gap-1 overflow-x-auto">
+          <button onclick="switchMainTab('ledger')" id="tabBtn-ledger" class="px-4 py-3 text-xs font-bold border-b-2 border-indigo-600 text-indigo-700 bg-white flex items-center gap-2">
+            <span>① Cross-File Ledger &amp; Subagents</span>
+            <span id="ledgerCountPill" class="text-[10px] mono px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200">0</span>
+          </button>
+          <button onclick="switchMainTab('diffs')" id="tabBtn-diffs" class="px-4 py-3 text-xs font-bold border-b-2 border-transparent text-slate-600 hover:text-slate-900 flex items-center gap-2">
+            <span>② Side-by-Side Code Diffs</span>
+            <span id="diffCountPill" class="text-[10px] mono px-1.5 py-0.5 rounded bg-slate-200/70 text-slate-700">0 files</span>
+          </button>
+          <button onclick="switchMainTab('logs')" id="tabBtn-logs" class="px-4 py-3 text-xs font-bold border-b-2 border-transparent text-slate-600 hover:text-slate-900 flex items-center gap-2">
+            <span>③ Real Compiler, Test &amp; Fuzzer Logs</span>
+          </button>
+          <button onclick="switchMainTab('arch')" id="tabBtn-arch" class="px-4 py-3 text-xs font-bold border-b-2 border-transparent text-slate-600 hover:text-slate-900 flex items-center gap-2">
+            <span>④ Interactive Architecture &amp; Playbook (`AGENTS.md`)</span>
+          </button>
+        </div>
+
+        <!-- Problem Context Pill -->
+        <div class="py-2 hidden xl:flex items-center gap-2">
+          <span id="personaText" class="text-[11px] text-slate-500 truncate max-w-md"></span>
+          <a id="referenceLinkAnchor" href="#" target="_blank" rel="noopener" class="text-[11px] mono px-2.5 py-1 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100 transition font-medium">
+            Issue Reference ↗
+          </a>
+        </div>
+      </div>
+
+      <!-- TAB 1: INTERFACE CONTRACT LEDGER + FLASH SUBAGENTS -->
+      <div id="tabPane-ledger" class="p-5 flex-1 overflow-y-auto space-y-4 bg-white">
+        <div id="ledgerEmptyState" class="py-12 text-center max-w-lg mx-auto">
+          <div class="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-200 flex items-center justify-center mx-auto mb-3 text-xl">
+            📐
+          </div>
+          <h3 class="text-sm font-bold text-slate-900 mb-1">Step 1: Extract the Cross-File Interface Contract Ledger</h3>
+          <p class="text-xs text-slate-600 leading-relaxed mb-4">
+            Before modifying any files, <span class="mono text-indigo-700 font-semibold">gemini-4-argon</span> acts as the Lead Architect to build a repository-wide dependency graph while delegating parallel leaf-module scans to <span class="mono text-sky-700 font-semibold">gemini-3.8-flash</span> subagents.
+          </p>
+          <button onclick="generateLedger()" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm transition">
+            ▶ Run Step 1: Extract Interface Ledger Now
+          </button>
+        </div>
+
+        <div id="ledgerContent" class="hidden space-y-4">
+          <!-- Maintainer Gate Callout Banner -->
+          <div id="hitlCalloutBanner" class="p-4 rounded-xl bg-amber-50 border border-amber-300 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div>
+              <div class="text-xs font-bold text-amber-900 flex items-center gap-2">
+                <span>✋ Human Maintainer Gate (Hackathon Pattern #1: Align on Intent Before Long Runs)</span>
+              </div>
+              <p class="text-xs text-amber-800 mt-0.5">
+                Inspect or customize any module signature below, or click <strong>Approve Contracts &amp; Run Migration</strong> to lock the ledger and execute the multi-file synthesis to completion.
+              </p>
+            </div>
+            <button onclick="approveAndRunAll()" class="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold shrink-0 shadow-sm transition">
+              ✓ Approve &amp; Run Migration + Baseline
+            </button>
+          </div>
+
+          <div class="p-4 rounded-xl bg-slate-50 border border-slate-200">
+            <div class="flex items-center justify-between mb-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-indigo-700">Lead Architect (`gemini-4-argon`) Root-Cause Diagnosis</div>
+              <span class="text-[10px] mono px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200 font-semibold">Server-Side Cached (`previous_interaction_id`)</span>
+            </div>
+            <p id="ledgerArchSummary" class="text-xs text-slate-700 leading-relaxed"></p>
+          </div>
+
+          <!-- Parallel Flash Subagent Pre-Audit Reports (Hackathon Pattern #4) -->
+          <div id="flashSubagentsContainer" class="p-4 rounded-xl bg-sky-50/70 border border-sky-200">
+            <div class="flex items-center justify-between mb-2.5">
+              <div class="flex items-center gap-2">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-sky-800">⚡ Parallel Leaf-Module Subagent Scans (`gemini-3.8-flash`)</span>
+                <span class="text-[10px] mono px-2 py-0.5 rounded bg-white text-sky-700 border border-sky-200 font-medium">Hackathon Pattern #4</span>
+              </div>
+              <span class="text-[11px] text-sky-700">Executed concurrently with Lead Architect (0.0s added latency)</span>
+            </div>
+            <div id="flashSubagentsList" class="grid grid-cols-1 md:grid-cols-2 gap-2.5"></div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-emerald-700 mb-2">Topological Migration Order (Leaf Modules First)</div>
+              <ol id="ledgerOrderList" class="text-xs mono text-slate-700 space-y-1 list-decimal list-inside"></ol>
+            </div>
+            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-amber-700 mb-2">Enforced Safety &amp; Strictness Invariants</div>
+              <ul id="ledgerPolicyList" class="text-xs text-slate-700 space-y-1 list-disc list-inside"></ul>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold text-slate-800">Per-Module Interface Contracts (Editable JSON before Locking)</span>
+              <button onclick="toggleRawLedgerEditor()" class="text-xs text-indigo-600 hover:text-indigo-800 font-semibold underline">
+                Toggle Raw JSON Editor
+              </button>
+            </div>
+            <div id="ledgerCardsList" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+            <textarea id="rawLedgerTextarea" class="hidden w-full h-72 mt-2 bg-slate-50 border border-slate-300 rounded-xl p-3 text-xs mono text-slate-800 focus:outline-none focus:border-indigo-500"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: SIDE-BY-SIDE CODE DIFFS -->
+      <div id="tabPane-diffs" class="p-5 flex-1 overflow-y-auto hidden space-y-3 bg-white">
+        <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-200">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="text-xs text-slate-500 font-medium">Select File:</span>
+            <div id="diffFileSelector" class="flex flex-wrap gap-1.5"></div>
+          </div>
+          <div class="flex items-center gap-1.5 bg-slate-100 p-1 rounded-lg border border-slate-200">
+            <button onclick="setDiffSource('argon')" id="diffSrcArgonBtn" class="px-3 py-1 rounded-md text-xs font-bold bg-indigo-600 text-white shadow-sm">
+              Argon Verified Diff
+            </button>
+            <button onclick="setDiffSource('baseline')" id="diffSrcBaseBtn" class="px-3 py-1 rounded-md text-xs font-semibold text-slate-600 hover:text-slate-900">
+              Baseline Broken Diff (Why Baseline Failed)
+            </button>
+          </div>
+        </div>
+        <pre id="diffViewerPre" class="text-xs mono leading-relaxed overflow-x-auto p-4 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 min-h-[340px]">Run Step 2 &amp; 3 to inspect unified cross-file code diffs.</pre>
+      </div>
+
+      <!-- TAB 3: REAL COMPILER, TEST & FUZZER LOGS -->
+      <div id="tabPane-logs" class="p-5 flex-1 overflow-y-auto hidden space-y-3 bg-white">
+        <div class="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-slate-200">
+          <div class="flex items-center gap-2">
+            <button onclick="setDiagSource('initial')" id="diagBtn-initial" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-white">
+              1. Initial Repo Diagnostics
+            </button>
+            <button onclick="setDiagSource('baseline')" id="diagBtn-baseline" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:text-slate-900 border border-slate-200">
+              2. Baseline Failure Output
+            </button>
+            <button onclick="setDiagSource('argon')" id="diagBtn-argon" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:text-slate-900 border border-slate-200">
+              3. Argon Verified Output
+            </button>
+          </div>
+          <span class="text-[11px] text-slate-500 mono">Real execution output from gcc / cargo / tsc / mypy / pytest</span>
+        </div>
+        <pre id="diagViewerPre" class="text-xs mono leading-relaxed overflow-x-auto p-4 rounded-xl bg-slate-900 text-slate-100 border border-slate-800 min-h-[300px]">Select a project to view real compiler &amp; test suite output.</pre>
+
+        <!-- Argon Reasoning & Event Stream -->
+        <div class="pt-3 border-t border-slate-200">
+          <div class="text-xs font-bold text-slate-700 mb-2">Argon Reasoning &amp; Verification Telemetry Stream</div>
+          <div id="reasoningTimeline" class="space-y-2 max-h-48 overflow-y-auto"></div>
+        </div>
+      </div>
+
+      <!-- TAB 4: INTERACTIVE ARCHITECTURE DIAGRAM, 5 HACKATHON PATTERNS & AGENTS.MD -->
+      <div id="tabPane-arch" class="p-5 flex-1 overflow-y-auto hidden space-y-5 bg-white">
+        <!-- Top Interactive Pipeline Walkthrough -->
+        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <div>
+              <span class="text-[11px] font-bold uppercase tracking-wider text-indigo-700">Interactive Architecture &amp; Pipeline Walkthrough (Hackathon Pattern #5)</span>
+              <h3 class="text-sm font-extrabold text-slate-900 mt-0.5">Click any stage in the pipeline below to inspect its live model config, API parameters &amp; verification role</h3>
+            </div>
+            <span class="text-xs mono px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 font-semibold">
+              Shared 1M Context Window • Server-Side State
+            </span>
+          </div>
+
+          <!-- 5 Interactive Pipeline Nodes -->
+          <div class="grid grid-cols-1 md:grid-cols-5 gap-2.5 mb-4">
+            <button onclick="selectArchNode(0)" id="archNode-0" class="arch-node-active text-left p-3 rounded-xl border border-slate-200 bg-white transition hover:border-indigo-300">
+              <div class="text-[10px] mono font-bold text-indigo-700">STAGE 1</div>
+              <div class="text-xs font-bold text-slate-900 mt-0.5">Initial Sandbox &amp; Audit</div>
+              <div class="text-[11px] text-slate-500 mt-1">gcc / cargo / tsc / mypy + 0xAA stack check</div>
+            </button>
+            <button onclick="selectArchNode(1)" id="archNode-1" class="text-left p-3 rounded-xl border border-slate-200 bg-white transition hover:border-indigo-300">
+              <div class="text-[10px] mono font-bold text-sky-700">STAGE 2 (PARALLEL)</div>
+              <div class="text-xs font-bold text-slate-900 mt-0.5">Argon Lead + Flash Subagents</div>
+              <div class="text-[11px] text-slate-500 mt-1">gemini-4-argon + 4x gemini-3.8-flash</div>
+            </button>
+            <button onclick="selectArchNode(2)" id="archNode-2" class="text-left p-3 rounded-xl border border-slate-200 bg-white transition hover:border-indigo-300">
+              <div class="text-[10px] mono font-bold text-amber-700">STAGE 3 (HITL GATE)</div>
+              <div class="text-xs font-bold text-slate-900 mt-0.5">Human Maintainer Gate</div>
+              <div class="text-[11px] text-slate-500 mt-1">Review &amp; lock JSON contracts before codegen</div>
+            </button>
+            <button onclick="selectArchNode(3)" id="archNode-3" class="text-left p-3 rounded-xl border border-slate-200 bg-white transition hover:border-indigo-300">
+              <div class="text-[10px] mono font-bold text-indigo-700">STAGE 4 (CACHED)</div>
+              <div class="text-xs font-bold text-slate-900 mt-0.5">Whole-Repo Synthesis</div>
+              <div class="text-[11px] text-slate-500 mt-1">previous_interaction_id + background=True</div>
+            </button>
+            <button onclick="selectArchNode(4)" id="archNode-4" class="text-left p-3 rounded-xl border border-slate-200 bg-white transition hover:border-indigo-300">
+              <div class="text-[10px] mono font-bold text-emerald-700">STAGE 5 (CLOSED LOOP)</div>
+              <div class="text-xs font-bold text-slate-900 mt-0.5">Autonomous Verification Loop</div>
+              <div class="text-[11px] text-slate-500 mt-1">Compiler + 107-check C-vs-Rust Fuzzer</div>
+            </button>
+          </div>
+
+          <!-- Selected Node Inspector Box -->
+          <div id="archNodeDetailBox" class="p-4 rounded-xl bg-white border border-indigo-200 shadow-sm">
+            <!-- Populated by selectArchNode() -->
+          </div>
+        </div>
+
+        <!-- 5 Official Hackathon Patterns Alignment Grid -->
+        <div>
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2.5">How ArgonLedger Implements the 5 Hackathon Patterns</h4>
+          <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
+            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+              <div class="text-xs font-bold text-indigo-700 mb-1">1. Align on Intent First</div>
+              <p class="text-[11px] text-slate-600 leading-relaxed">
+                Extracts the <strong>Global Interface Contract Ledger</strong> and pauses at the <strong>Maintainer Gate</strong> before writing code.
+              </p>
+            </div>
+            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+              <div class="text-xs font-bold text-emerald-700 mb-1">2. Concrete Verification Loop</div>
+              <p class="text-[11px] text-slate-600 leading-relaxed">
+                Feeds real <span class="mono">gcc</span>, <span class="mono">cargo test</span>, <span class="mono">tsc</span>, <span class="mono">mypy</span> &amp; 107-check differential fuzzer signals back via <span class="mono">previous_interaction_id</span>.
+              </p>
+            </div>
+            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+              <div class="text-xs font-bold text-violet-700 mb-1">3. Light-Mode `DESIGN.md`</div>
+              <p class="text-[11px] text-slate-600 leading-relaxed">
+                Formalizes daylight alabaster surfaces, typography hierarchy, and semantic status tokens in <span class="mono">DESIGN.md</span>.
+              </p>
+            </div>
+            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+              <div class="text-xs font-bold text-sky-700 mb-1">4. Argon + Flash Subagents</div>
+              <p class="text-[11px] text-slate-600 leading-relaxed">
+                <span class="mono">gemini-4-argon</span> leads whole-repo synthesis while parallel <span class="mono">gemini-3.8-flash</span> subagents scan leaf modules concurrently.
+              </p>
+            </div>
+            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+              <div class="text-xs font-bold text-amber-700 mb-1">5. `AGENTS.md` &amp; Visual Walkthrough</div>
+              <p class="text-[11px] text-slate-600 leading-relaxed">
+                Captures <span class="mono">previous_interaction_id</span> caching &amp; ABI padding quirks in <span class="mono">AGENTS.md</span> + this interactive diagram.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Viewer for AGENTS.md and DESIGN.md -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div class="rounded-xl border border-slate-200 overflow-hidden">
+            <div class="bg-slate-100 px-4 py-2.5 border-b border-slate-200 flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-800 mono">📘 AGENTS.md — Captured Codebase &amp; API Quirks</span>
+              <span class="text-[10px] mono px-2 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-200 font-semibold">Pattern #5</span>
+            </div>
+            <pre id="agentsMdPre" class="p-4 text-xs mono text-slate-700 bg-slate-50/60 max-h-80 overflow-y-auto whitespace-pre-wrap leading-relaxed">Loading AGENTS.md...</pre>
+          </div>
+          <div class="rounded-xl border border-slate-200 overflow-hidden">
+            <div class="bg-slate-100 px-4 py-2.5 border-b border-slate-200 flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-800 mono">🎨 DESIGN.md — Daylight Visual System &amp; Layout Rules</span>
+              <span class="text-[10px] mono px-2 py-0.5 rounded bg-indigo-50 text-indigo-800 border border-indigo-200 font-semibold">Pattern #3</span>
+            </div>
+            <pre id="designMdPre" class="p-4 text-xs mono text-slate-700 bg-slate-50/60 max-h-80 overflow-y-auto whitespace-pre-wrap leading-relaxed">Loading DESIGN.md...</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL: OPEN-SOURCE REFACTORING CRISIS CATALOG & CUSTOM REPO IMPORTER -->
+  <div id="customRepoModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto p-6 shadow-2xl space-y-5">
+      <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+        <div>
+          <span class="text-[10px] mono uppercase px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200 font-semibold">
+            Open-Source Crisis Catalog &amp; Custom Repository Importer
+          </span>
+          <h2 class="text-base font-extrabold text-slate-900 mt-1">
+            Load an Open-Source Crisis Template or Register Any Local Git Repository
+          </h2>
+        </div>
+        <button onclick="closeCustomRepoModal()" class="text-slate-400 hover:text-slate-700 text-lg font-bold px-2">✕</button>
+      </div>
+
+      <div>
+        <div class="text-xs font-bold text-slate-700 mb-2">
+          1-Click Open-Source Refactoring Crisis Presets (Pre-fills form below):
+        </div>
+        <div id="osPresetsList" class="grid grid-cols-1 md:grid-cols-2 gap-2.5"></div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2 border-t border-slate-200 text-xs">
+        <div>
+          <label class="block text-slate-600 font-medium mb-1">Benchmark ID (slug)</label>
+          <input id="custId" type="text" placeholder="e.g. linux_subsys_port" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900 mono" />
+        </div>
+        <div>
+          <label class="block text-slate-600 font-medium mb-1">Title</label>
+          <input id="custTitle" type="text" placeholder="e.g. Linux Kernel C Subsystem Hardening" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900" />
+        </div>
+        <div>
+          <label class="block text-slate-600 font-medium mb-1">Language / Toolchain</label>
+          <input id="custLang" type="text" placeholder="C / Rust / TypeScript / Python" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900" />
+        </div>
+        <div>
+          <label class="block text-slate-600 font-medium mb-1">Persona / Maintainer Role</label>
+          <input id="custPersona" type="text" placeholder="e.g. Subsystem Maintainer" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900" />
+        </div>
+        <div class="md:col-span-2">
+          <label class="block text-slate-600 font-medium mb-1">Local Source Directory Path (Absolute or relative to project root)</label>
+          <input id="custSourceDir" type="text" placeholder="/Users/user/gemini-4-argon-hackathon/benchmarks/linux_git_c_hardening/initial" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900 mono" />
+        </div>
+        <div>
+          <label class="block text-slate-600 font-medium mb-1">Mutable Files (comma-separated relative paths)</label>
+          <input id="custMutable" type="text" placeholder="src/mod_a.c, src/mod_b.c" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900 mono" />
+        </div>
+        <div>
+          <label class="block text-slate-600 font-medium mb-1">Read-Only Context / Test Files (comma-separated)</label>
+          <input id="custReadonly" type="text" placeholder="tests/test_suite.c, Makefile" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900 mono" />
+        </div>
+        <div>
+          <label class="block text-slate-600 font-medium mb-1">Verification Shell Command (0 exit code = pass)</label>
+          <input id="custVerifyCmd" type="text" placeholder="make test" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900 mono" />
+        </div>
+        <div>
+          <label class="block text-slate-600 font-medium mb-1">Forbidden Escape / Legacy Regex Patterns (comma-separated)</label>
+          <input id="custForbidden" type="text" placeholder="\bget_cycles\s*\(, \bstrcpy\s*\(" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900 mono" />
+        </div>
+        <div class="md:col-span-2">
+          <label class="block text-slate-600 font-medium mb-1">Migration &amp; Verification Instructions for Gemini 4 Argon</label>
+          <textarea id="custInstructions" rows="3" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-slate-900 mono text-xs"></textarea>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-200">
+        <button onclick="closeCustomRepoModal()" class="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-semibold text-slate-700">Cancel</button>
+        <button onclick="submitCustomBenchmark()" class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-xs font-bold text-white shadow-sm">
+          Register &amp; Audit Proving Ground
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let benchmarks = [];
+    let openSourcePresets = [];
+    let activeBenchmarkId = null;
+    let currentSession = null;
+    let activeDiffSource = 'argon';
+    let activeDiffFile = null;
+    let activeDiagSource = 'initial';
+    let liveTimerInterval = null;
+
+    const ARCH_NODE_DETAILS = [
+      {
+        title: "Stage 1: Sandboxed Repository Ingestion & Real Toolchain Audit",
+        badge: "Deterministic Baseline Signal",
+        body: "Copies the target open-source repository into an isolated workspace (`runs/<session_id>/initial_ws`) and executes the real native compiler and test suite (`clang -Wall -Wextra`, `cargo test`, `tsc --noEmit`, or `mypy --strict` + `pytest`) plus regex static escape-hatch scanners. Records the exact starting defect count in ~1 second."
+      },
+      {
+        title: "Stage 2: `gemini-4-argon` Lead Architect + Parallel `gemini-3.8-flash` Leaf Subagents (Patterns #1 & #4)",
+        badge: "Multi-Agent Orchestration",
+        body: "Simultaneously invokes `gemini-4-argon` across the full repository to synthesize the dependency-ordered Global Interface Contract Ledger (`response_format=InterfaceLedgerSchema`) while dispatching concurrent `gemini-3.8-flash` subagents via `ThreadPoolExecutor` to scan individual leaf files for memory/type hazards and codebase quirks with 0.0s extra wall-clock latency."
+      },
+      {
+        title: "Stage 3: Human Maintainer Gate (Pattern #1: Align on Intent Before Long Runs)",
+        badge: "Human-in-the-Loop Control",
+        body: "Pauses before any code is modified so the maintainer can inspect the extracted cross-file function signatures, struct layouts, and `gemini-3.8-flash` edge-case warnings. The maintainer can edit the JSON contracts directly or approve and lock them with 1 click."
+      },
+      {
+        title: "Stage 4: Server-Side Cached Whole-Repo Synthesis (`previous_interaction_id`)",
+        badge: "1M Shared Context Window",
+        body: "Passes `previous_interaction_id=session.ledger_interaction_id` to `client.interactions.create(model='gemini-4-argon')`. Because the full repository context is already cached in server-side state from Stage 2, Argon synthesizes all mutable files in a single coherent turn without re-uploading the repository bundle (2.8x faster) and supports `background=True` for >64K output tokens."
+      },
+      {
+        title: "Stage 5: Autonomous Compiler, Test & Differential Fuzzer Repair Loop (Pattern #2)",
+        badge: "Zero-Regression Guarantee",
+        body: "Writes the synthesized files to `argon_ws/` and runs the real compiler, unit tests, and 107-check C-vs-Rust differential fuzzer (`fuzz_harness.py`). If any check fails, Argon feeds the exact compiler/test traceback back into `previous_interaction_id` with `thinking_level='low'` to patch only the failing file(s) until 100% of checks pass."
+      }
+    ];
+
+    function selectArchNode(idx) {
+      for (let i = 0; i < 5; i++) {
+        const btn = document.getElementById(`archNode-${i}`);
+        if (btn) {
+          if (i === idx) btn.classList.add('arch-node-active');
+          else btn.classList.remove('arch-node-active');
+        }
+      }
+      const d = ARCH_NODE_DETAILS[idx];
+      const box = document.getElementById('archNodeDetailBox');
+      if (box && d) {
+        box.innerHTML = `
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-1.5">
+            <span class="text-xs font-extrabold text-indigo-950">${escapeHtml(d.title)}</span>
+            <span class="text-[11px] mono px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200 font-semibold">${escapeHtml(d.badge)}</span>
+          </div>
+          <p class="text-xs text-slate-700 leading-relaxed">${escapeHtml(d.body)}</p>
+        `;
+      }
+    }
+
+    async function loadProjectDocs() {
+      try {
+        const res = await fetch('/api/docs');
+        const data = await res.json();
+        document.getElementById('agentsMdPre').textContent = data.agents_md || 'AGENTS.md not found';
+        document.getElementById('designMdPre').textContent = data.design_md || 'DESIGN.md not found';
+      } catch (e) {
+        console.warn('Could not load docs:', e);
+      }
+    }
+
+    async function initApp() {
+      selectArchNode(0);
+      loadProjectDocs();
+      const [benchRes, presetRes] = await Promise.all([
+        fetch('/api/benchmarks'),
+        fetch('/api/open-source-presets')
+      ]);
+      const benchData = await benchRes.json();
+      const presetData = await presetRes.json();
+      benchmarks = Array.isArray(benchData) ? benchData : (benchData.benchmarks || []);
+      openSourcePresets = Array.isArray(presetData) ? presetData : (presetData.presets || []);
+      renderBenchmarkCards();
+      renderOsPresets();
+      if (benchmarks.length > 0) {
+        await selectBenchmark(benchmarks[0].id);
+      }
+    }
+
+    function renderBenchmarkCards() {
+      const container = document.getElementById('benchmarkCards');
+      container.innerHTML = benchmarks.map((b, i) => {
+        const active = b.id === activeBenchmarkId;
+        const fileCount = b.mutable_file_count || (b.mutable_files ? b.mutable_files.length : 0);
+        const borderCls = active
+          ? 'border-indigo-600 bg-indigo-50/50 ring-2 ring-indigo-500/20 shadow-sm'
+          : 'border-slate-200 bg-white hover:border-slate-300 card-surface-hover';
+        return `
+          <button onclick="selectBenchmark('${b.id}')" class="text-left p-4 rounded-xl border transition-all flex flex-col justify-between ${borderCls}">
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-1.5">
+                <span class="text-[10px] mono uppercase px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 border border-slate-200 font-semibold">
+                  #${i + 1} • ${b.language}
+                </span>
+                <span class="text-[11px] mono text-slate-500 font-medium">${fileCount} files</span>
+              </div>
+              <div class="text-xs font-bold text-slate-900 leading-snug mb-1">${b.title}</div>
+              <div class="text-[11px] text-slate-600 line-clamp-2">${b.subtitle}</div>
+            </div>
+            <div class="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
+              <span class="font-semibold ${active ? 'text-indigo-700' : 'text-slate-500'}">
+                ${active ? '● Active Project' : 'Click to Load & Audit'}
+              </span>
+              <span class="mono text-[10px] text-slate-400">${b.id}</span>
+            </div>
+          </button>
+        `;
+      }).join('');
+    }
+
+    async function selectBenchmark(id) {
+      activeBenchmarkId = id || (benchmarks[0] && benchmarks[0].id) || 'linux_git_c_hardening';
+      renderBenchmarkCards();
+      const b = benchmarks.find(x => x.id === activeBenchmarkId);
+      if (b) {
+        const fileCount = b.mutable_file_count || (b.mutable_files ? b.mutable_files.length : 0);
+        document.getElementById('wizardProblemSubtitle').textContent = `${b.title} — ${fileCount} mutable files`;
+        document.getElementById('personaText').textContent = b.persona;
+        const refLink = document.getElementById('referenceLinkAnchor');
+        refLink.href = b.reference_link || '#';
+      }
+      await startAndAuditSession();
+    }
+
+    function showLiveActivity(title, sub) {
+      const banner = document.getElementById('liveActivityBanner');
+      document.getElementById('liveActivityTitle').textContent = title;
+      document.getElementById('liveActivitySub').textContent = sub;
+      banner.classList.remove('hidden');
+      const start = performance.now();
+      const timerEl = document.getElementById('liveTimerDisplay');
+      timerEl.textContent = '0.0s';
+      if (liveTimerInterval) clearInterval(liveTimerInterval);
+      liveTimerInterval = setInterval(() => {
+        const sec = ((performance.now() - start) / 1000).toFixed(1);
+        timerEl.textContent = `${sec}s`;
+      }, 100);
+    }
+
+    function hideLiveActivity() {
+      if (liveTimerInterval) {
+        clearInterval(liveTimerInterval);
+        liveTimerInterval = null;
+      }
+      document.getElementById('liveActivityBanner').classList.add('hidden');
+    }
+
+    async function startAndAuditSession() {
+      if (!activeBenchmarkId) {
+        activeBenchmarkId = (benchmarks[0] && benchmarks[0].id) || 'linux_git_c_hardening';
+      }
+      const thinkingLevel = document.getElementById('thinkingLevelSelect').value;
+      const longDecode = document.getElementById('longDecodeToggle').checked;
+      showLiveActivity(
+        'Auditing Initial Repository State...',
+        'Running real compiler, test suite, and static safety checks on the unmigrated codebase...'
+      );
+      try {
+        const res = await fetch('/api/sessions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            benchmark_id: activeBenchmarkId,
+            thinking_level: thinkingLevel,
+            use_long_decode_background: longDecode
+          })
+        });
+        const data = await res.json();
+        if (!res.ok || !data.session_id) {
+          console.error('Failed to create session:', data);
+          currentSession = null;
+          return;
+        }
+        currentSession = data;
+        activeDiffFile = null;
+        renderSessionState();
+      } finally {
+        hideLiveActivity();
+      }
+    }
+
+    async function handlePrimaryWizardAction() {
+      if (!currentSession || !currentSession.session_id) {
+        await startAndAuditSession();
+      }
+      if (!currentSession || !currentSession.session_id) return;
+      if (!currentSession.ledger) {
+        await generateLedger();
+      } else if (!currentSession.argon_report) {
+        await approveAndRunAll();
+      } else {
+        await commitVerifiedOutput();
+      }
+    }
+
+    async function generateLedger() {
+      if (!currentSession || !currentSession.session_id) {
+        await startAndAuditSession();
+      }
+      if (!currentSession || !currentSession.session_id) return;
+      const btn = document.getElementById('primaryWizardBtn');
+      btn.disabled = true;
+      showLiveActivity(
+        'Step 1 Running — 1 Lead Architect (`gemini-4-argon`) + 4 Parallel Leaf Subagents (`gemini-3.8-flash`)',
+        'Lead Architect extracts cross-file interface contracts while 4 Flash subagents concurrently scan individual leaf files (~15–20s)'
+      );
+      try {
+        let res = await fetch(`/api/sessions/${currentSession.session_id}/ledger`, { method: 'POST' });
+        if (res.status === 404) {
+          // Transparently recover if server was restarted
+          await startAndAuditSession();
+          res = await fetch(`/api/sessions/${currentSession.session_id}/ledger`, { method: 'POST' });
+        }
+        if (!res.ok) {
+          const err = await res.json();
+          alert('Ledger extraction error: ' + (err.detail || res.statusText));
+          return;
+        }
+        currentSession = await res.json();
+        switchMainTab('ledger');
+        renderSessionState();
+      } finally {
+        btn.disabled = false;
+        hideLiveActivity();
+      }
+    }
+
+    async function approveAndRunAll() {
+      if (!currentSession || !currentSession.ledger) return;
+      const btn = document.getElementById('primaryWizardBtn');
+      btn.disabled = true;
+
+      try {
+        let updatedLedger = currentSession.ledger;
+        const rawArea = document.getElementById('rawLedgerTextarea');
+        if (!rawArea.classList.contains('hidden')) {
+          try {
+            updatedLedger = JSON.parse(rawArea.value);
+          } catch (e) {
+            alert('Invalid JSON in Ledger editor: ' + e.message);
+            return;
+          }
+        }
+
+        showLiveActivity(
+          'Step 2: Locking Approved Interface Contract Ledger...',
+          'Recording Human Maintainer approval gate before code generation...'
+        );
+        const appRes = await fetch(`/api/sessions/${currentSession.session_id}/approve`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ledger: updatedLedger })
+        });
+        currentSession = await appRes.json();
+        renderSessionState();
+
+        if (!currentSession.baseline_report) {
+          showLiveActivity(
+            'Step 3a: Running Myopic File-by-File Baseline (Isolated Parallel Translations)...',
+            'Translating each file without shared cross-file contracts to measure baseline interface drift (~10s)...'
+          );
+          const baseRes = await fetch(`/api/sessions/${currentSession.session_id}/baseline`, { method: 'POST' });
+          if (baseRes.ok) {
+            currentSession = await baseRes.json();
+            renderSessionState();
+          }
+        }
+
+        showLiveActivity(
+          'Step 3b: Running Gemini 4 Argon Whole-Repo Synthesis + Autonomous Verification Loop...',
+          'Reusing server-side cached context (`previous_interaction_id`) to synthesize all files and verify with real compiler/tests (~30–45s)...'
+        );
+        const argonRes = await fetch(`/api/sessions/${currentSession.session_id}/argon`, { method: 'POST' });
+        if (!argonRes.ok) {
+          const err = await argonRes.json();
+          alert('Argon synthesis error: ' + (err.detail || argonRes.statusText));
+          return;
+        }
+        currentSession = await argonRes.json();
+        activeDiffSource = 'argon';
+        switchMainTab('diffs');
+        renderSessionState();
+      } finally {
+        btn.disabled = false;
+        hideLiveActivity();
+      }
+    }
+
+    async function runBaselineOnly() {
+      if (!currentSession) return;
+      showLiveActivity(
+        'Running File-by-File Baseline in Isolation...',
+        'Translating each file without cross-file contracts...'
+      );
+      try {
+        const res = await fetch(`/api/sessions/${currentSession.session_id}/baseline`, { method: 'POST' });
+        if (res.ok) {
+          currentSession = await res.json();
+          renderSessionState();
+        }
+      } finally {
+        hideLiveActivity();
+      }
+    }
+
+    async function commitVerifiedOutput() {
+      if (!currentSession) return;
+      const res = await fetch(`/api/sessions/${currentSession.session_id}/commit`, { method: 'POST' });
+      const data = await res.json();
+      if (res.ok) {
+        alert(`Committed ${data.files.length} verified files to:\n${data.committed_to}`);
+      } else {
+        alert('Commit error: ' + (data.detail || res.statusText));
+      }
+    }
+
+    function toggleJudgeExplainer() {
+      const drawer = document.getElementById('judgeExplainerDrawer');
+      const btn = document.getElementById('judgeExplainerBtn');
+      if (!drawer) return;
+      const isHidden = drawer.classList.contains('hidden');
+      if (isHidden) {
+        drawer.classList.remove('hidden');
+        btn.innerHTML = 'ℹ️ Hide Live `gemini-4-argon` API &amp; Compiler Breakdown ▴';
+      } else {
+        drawer.classList.add('hidden');
+        btn.innerHTML = 'ℹ️ How Live `gemini-4-argon` API &amp; Local Compilers Connect ▾';
+      }
+    }
+
+    function renderSessionState() {
+      if (!currentSession) return;
+      document.getElementById('activeSessionBadge').textContent = `Session: ${currentSession.session_id}`;
+
+      const ledgerIdEl = document.getElementById('judgeLedgerIdPill');
+      const tokPillEl = document.getElementById('judgeArgonTokPill');
+      if (ledgerIdEl) {
+        if (currentSession.ledger_interaction_id) {
+          const shortId = currentSession.ledger_interaction_id.length > 26
+            ? currentSession.ledger_interaction_id.slice(0, 26) + '…'
+            : currentSession.ledger_interaction_id;
+          ledgerIdEl.textContent = `Ledger interaction.id: ${shortId}`;
+          ledgerIdEl.className = 'text-[11px] mono px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200 font-semibold';
+          ledgerIdEl.title = currentSession.ledger_interaction_id;
+        } else {
+          ledgerIdEl.textContent = 'Ledger interaction.id: awaiting Step 1';
+          ledgerIdEl.className = 'text-[11px] mono px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200';
+        }
+      }
+      if (tokPillEl) {
+        const totalTok = (currentSession.argon_tokens || 0) + (currentSession.baseline_tokens || 0);
+        tokPillEl.textContent = `Live API Tokens: ${totalTok.toLocaleString()}`;
+        tokPillEl.className = totalTok > 0
+          ? 'text-[11px] mono px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold'
+          : 'text-[11px] mono px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200';
+      }
+
+      const hasLedger = Boolean(currentSession.ledger);
+      const hasArgon = Boolean(currentSession.argon_report);
+
+      const step1 = document.getElementById('stepCard1');
+      const step2 = document.getElementById('stepCard2');
+      const step3 = document.getElementById('stepCard3');
+      const pill = document.getElementById('wizardPhasePill');
+      const headline = document.getElementById('ctaHeadline');
+      const desc = document.getElementById('ctaDescription');
+      const btn = document.getElementById('primaryWizardBtn');
+      const btnText = document.getElementById('primaryWizardBtnText');
+      const btnIcon = document.getElementById('primaryWizardBtnIcon');
+      const commitBtn = document.getElementById('commitDiskBtn');
+      const secBaseBtn = document.getElementById('secondaryBaselineBtn');
+
+      if (!hasLedger) {
+        pill.textContent = 'Step 1 of 3 • Ready to Analyze Repository';
+        pill.className = 'text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-800 border border-indigo-200';
+
+        step1.className = 'rounded-xl p-3.5 border transition-all bg-indigo-50/80 border-indigo-400 shadow-sm';
+        document.getElementById('stepStatus1').textContent = 'NEXT ACTION';
+        document.getElementById('stepStatus1').className = 'text-[10px] mono text-indigo-700 font-bold';
+
+        step2.className = 'rounded-xl p-3.5 border transition-all bg-slate-50 border-slate-200 opacity-75';
+        document.getElementById('stepStatus2').textContent = 'WAITING';
+        step3.className = 'rounded-xl p-3.5 border transition-all bg-slate-50 border-slate-200 opacity-75';
+        document.getElementById('stepStatus3').textContent = 'WAITING';
+
+        headline.textContent = 'Next Action: Extract Cross-File Interface Ledger';
+        desc.innerHTML = 'Initial repo audit is complete. Click below to have <span class="mono text-indigo-700 font-semibold">gemini-4-argon</span> + parallel <span class="mono text-sky-700 font-semibold">gemini-3.8-flash</span> subagents analyze all files (~15s).';
+        btn.className = 'w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md shadow-indigo-500/15 transition flex items-center justify-center gap-2 cta-pulse';
+        btnIcon.textContent = '▶';
+        btnText.textContent = 'Step 1: Analyze Repo & Extract Interface Ledger';
+        commitBtn.classList.add('hidden');
+        secBaseBtn.classList.remove('hidden');
+      } else if (!hasArgon) {
+        pill.textContent = '✋ Step 2 of 3 • Human Maintainer Gate (Review & Approve Contracts)';
+        pill.className = 'text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300';
+
+        step1.className = 'rounded-xl p-3.5 border transition-all bg-emerald-50/70 border-emerald-300';
+        document.getElementById('stepStatus1').textContent = '✓ DONE';
+        document.getElementById('stepStatus1').className = 'text-[10px] mono text-emerald-700 font-bold';
+
+        step2.className = 'rounded-xl p-3.5 border transition-all bg-amber-50/90 border-amber-400 shadow-sm';
+        document.getElementById('stepStatus2').textContent = 'REVIEW NOW';
+        document.getElementById('stepStatus2').className = 'text-[10px] mono text-amber-800 font-bold';
+
+        step3.className = 'rounded-xl p-3.5 border transition-all bg-slate-50 border-slate-200 opacity-85';
+        document.getElementById('stepStatus3').textContent = 'READY';
+
+        headline.textContent = 'Next Action: Approve Ledger & Run Whole-Repo Migration';
+        desc.textContent = 'Review the extracted contracts & Flash subagent findings below, then click to lock the ledger, run the File-by-File Baseline comparison, and execute Argon Whole-Repo Synthesis.';
+        btn.className = 'w-full py-2.5 px-4 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-md shadow-amber-500/15 transition flex items-center justify-center gap-2 cta-pulse';
+        btnIcon.textContent = '✓';
+        btnText.textContent = 'Step 2 & 3: Approve Contracts & Run Migration + Baseline';
+        commitBtn.classList.add('hidden');
+        secBaseBtn.classList.remove('hidden');
+      } else {
+        const passed = currentSession.argon_report.passed;
+        pill.textContent = passed
+          ? '✅ All 3 Steps Complete • 100% Compiler, Test & Fuzzer Verified!'
+          : '⚠️ Migration Cycle Finished • Inspect Diagnostics Below';
+        pill.className = passed
+          ? 'text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300'
+          : 'text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300';
+
+        step1.className = 'rounded-xl p-3.5 border transition-all bg-emerald-50/70 border-emerald-300';
+        document.getElementById('stepStatus1').textContent = '✓ DONE';
+        document.getElementById('stepStatus1').className = 'text-[10px] mono text-emerald-700 font-bold';
+
+        step2.className = 'rounded-xl p-3.5 border transition-all bg-emerald-50/70 border-emerald-300';
+        document.getElementById('stepStatus2').textContent = '✓ LOCKED';
+        document.getElementById('stepStatus2').className = 'text-[10px] mono text-emerald-700 font-bold';
+
+        step3.className = 'rounded-xl p-3.5 border transition-all bg-emerald-50 border-emerald-400 shadow-sm';
+        document.getElementById('stepStatus3').textContent = passed ? '✓ VERIFIED' : 'COMPLETED';
+        document.getElementById('stepStatus3').className = 'text-[10px] mono text-emerald-700 font-bold';
+
+        headline.textContent = 'Migration Verified! Inspect Diffs or Export to Disk';
+        desc.textContent = 'Exports verified files to `verified_outputs/` on local disk (does NOT run `git commit` or overwrite the original benchmark repo).';
+        btn.className = 'w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition flex items-center justify-center gap-2';
+        btnIcon.textContent = '💾';
+        btnText.textContent = 'Export Verified Code to `verified_outputs/` (Local Disk)';
+        commitBtn.classList.add('hidden');
+        secBaseBtn.classList.add('hidden');
+      }
+
+      // 1. Initial Report Card
+      const initRep = currentSession.initial_report;
+      if (initRep) {
+        document.getElementById('initCompileVal').textContent = initRep.compile_errors;
+        document.getElementById('initTestsVal').textContent = `${initRep.tests_passed}/${initRep.tests_total}`;
+        document.getElementById('initEscapesVal').textContent = initRep.escape_hatches;
+        document.getElementById('initFuzzVal').textContent = initRep.fuzz_total > 0
+          ? `${initRep.fuzz_passed}/${initRep.fuzz_total}`
+          : 'N/A';
+        document.getElementById('initSummaryText').textContent = initRep.summary;
+      }
+
+      // 2. Baseline Report Card
+      const baseRep = currentSession.baseline_report;
+      if (baseRep) {
+        const badge = document.getElementById('baseBadge');
+        badge.textContent = baseRep.passed ? 'PASSED' : '✗ FAILED (INTERFACE DRIFT)';
+        badge.className = baseRep.passed
+          ? 'text-[11px] mono px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold'
+          : 'text-[11px] mono px-2 py-0.5 rounded-md bg-rose-50 text-rose-700 border border-rose-200 font-bold';
+        document.getElementById('baseSummaryText').textContent = baseRep.summary;
+        document.getElementById('baseCompileVal').textContent = baseRep.compile_errors;
+        document.getElementById('baseCompileVal').className = `text-base font-bold mt-0.5 ${baseRep.compile_errors > 0 ? 'text-rose-600' : 'text-emerald-600'}`;
+        document.getElementById('baseTestsVal').textContent = `${baseRep.tests_passed}/${baseRep.tests_total}`;
+        document.getElementById('baseTestsVal').className = `text-base font-bold mt-0.5 ${baseRep.tests_passed < baseRep.tests_total ? 'text-amber-600' : 'text-emerald-600'}`;
+        document.getElementById('baseEscapesVal').textContent = baseRep.escape_hatches;
+        document.getElementById('baseEscapesVal').className = `text-base font-bold mt-0.5 ${baseRep.escape_hatches > 0 ? 'text-rose-600' : 'text-emerald-600'}`;
+        document.getElementById('baseTokensVal').textContent = `${currentSession.baseline_tokens.toLocaleString()} tok • ${currentSession.baseline_elapsed_s}s`;
+      } else {
+        document.getElementById('baseBadge').textContent = 'Not Run Yet';
+        document.getElementById('baseBadge').className = 'text-[11px] mono px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 border border-slate-200 font-semibold';
+        document.getElementById('baseCompileVal').textContent = '-';
+        document.getElementById('baseTestsVal').textContent = '-';
+        document.getElementById('baseEscapesVal').textContent = '-';
+        document.getElementById('baseTokensVal').textContent = '-';
+      }
+
+      // 3. Argon Report Card
+      const argonRep = currentSession.argon_report;
+      if (argonRep) {
+        const badge = document.getElementById('argonBadge');
+        badge.textContent = argonRep.passed ? '✓ PASSED 100%' : 'PARTIAL';
+        badge.className = argonRep.passed
+          ? 'text-[11px] mono px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-300 font-bold'
+          : 'text-[11px] mono px-2 py-0.5 rounded-md bg-amber-50 text-amber-800 border border-amber-300 font-bold';
+        document.getElementById('argonSummaryText').textContent = argonRep.summary;
+        document.getElementById('argonCompileVal').textContent = argonRep.compile_errors;
+        document.getElementById('argonCompileVal').className = `text-base font-bold mt-0.5 ${argonRep.compile_errors === 0 ? 'text-emerald-600' : 'text-rose-600'}`;
+        document.getElementById('argonTestsVal').textContent = `${argonRep.tests_passed}/${argonRep.tests_total}`;
+        document.getElementById('argonTestsVal').className = `text-base font-bold mt-0.5 ${argonRep.tests_passed === argonRep.tests_total && argonRep.tests_total > 0 ? 'text-emerald-600' : 'text-amber-600'}`;
+        const safetyStr = argonRep.fuzz_total > 0
+          ? `0 escapes • ${argonRep.fuzz_passed}/${argonRep.fuzz_total} fuzz`
+          : `${argonRep.escape_hatches} escapes`;
+        document.getElementById('argonEscapesVal').textContent = safetyStr;
+        document.getElementById('argonEscapesVal').className = `text-xs font-bold mt-1 ${argonRep.escape_hatches === 0 ? 'text-emerald-600' : 'text-rose-600'}`;
+        document.getElementById('argonTokensVal').textContent = `${currentSession.argon_turns} turn(s) • ${currentSession.argon_elapsed_s}s`;
+      } else {
+        document.getElementById('argonBadge').textContent = 'Not Run Yet';
+        document.getElementById('argonBadge').className = 'text-[11px] mono px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 border border-slate-200 font-semibold';
+        document.getElementById('argonCompileVal').textContent = '-';
+        document.getElementById('argonTestsVal').textContent = '-';
+        document.getElementById('argonEscapesVal').textContent = '-';
+        document.getElementById('argonTokensVal').textContent = '-';
+      }
+
+      renderLedgerTab();
+      renderDiffTab();
+      renderLogsTab();
+    }
+
+    function renderLedgerTab() {
+      const empty = document.getElementById('ledgerEmptyState');
+      const content = document.getElementById('ledgerContent');
+      const pill = document.getElementById('ledgerCountPill');
+      const hitlBanner = document.getElementById('hitlCalloutBanner');
+
+      if (!currentSession || !currentSession.ledger) {
+        empty.classList.remove('hidden');
+        content.classList.add('hidden');
+        pill.textContent = '0';
+        return;
+      }
+
+      empty.classList.add('hidden');
+      content.classList.remove('hidden');
+      if (currentSession.argon_report) {
+        hitlBanner.classList.add('hidden');
+      } else {
+        hitlBanner.classList.remove('hidden');
+      }
+
+      const ledger = currentSession.ledger;
+      const contracts = ledger.contracts || [];
+      pill.textContent = `${contracts.length} modules`;
+
+      document.getElementById('ledgerArchSummary').textContent = ledger.architectural_summary || '';
+      document.getElementById('ledgerOrderList').innerHTML = (ledger.migration_order || [])
+        .map(f => `<li class="py-0.5 font-medium">${escapeHtml(f)}</li>`).join('');
+      document.getElementById('ledgerPolicyList').innerHTML = (ledger.safety_policies || [])
+        .map(p => `<li class="py-0.5">${escapeHtml(p)}</li>`).join('');
+
+      // Render Flash Subagent Pre-Audit Reports
+      const flashList = document.getElementById('flashSubagentsList');
+      const flashReports = ledger.flash_subagents || [];
+      if (flashReports.length > 0) {
+        flashList.innerHTML = flashReports.map(r => `
+          <div class="p-3 rounded-lg bg-white border border-sky-200 shadow-sm space-y-1">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold mono text-sky-900">${escapeHtml(r.file_path)}</span>
+              <span class="text-[10px] mono px-1.5 py-0.5 rounded bg-sky-50 text-sky-700 border border-sky-200">${escapeHtml(r.model || 'gemini-3.8-flash')} • ${r.elapsed_s || 0}s</span>
+            </div>
+            <div class="text-[11px] text-rose-700"><strong class="font-semibold">Hazard Spotted:</strong> ${escapeHtml(r.hazard_spotted || '')}</div>
+            <div class="text-[11px] text-slate-600"><strong class="font-semibold">Edge-Case Quirk:</strong> ${escapeHtml(r.edge_case_quirk || '')}</div>
+          </div>
+        `).join('');
+      } else {
+        flashList.innerHTML = '<div class="text-xs text-slate-500">No leaf subagent reports attached.</div>';
+      }
+
+      document.getElementById('ledgerCardsList').innerHTML = contracts.map(c => `
+        <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold mono text-indigo-700">${escapeHtml(c.file_path)}</span>
+            <span class="text-[10px] mono px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold">
+              Tier ${c.dependency_tier} • Locked
+            </span>
+          </div>
+          <p class="text-[11px] text-slate-600">${escapeHtml(c.role)}</p>
+          <div class="space-y-1">
+            <div class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Exported Signatures</div>
+            ${(c.public_signatures || []).map(s => `<div class="text-[11px] mono bg-white px-2.5 py-1 rounded border border-slate-200 text-slate-800 overflow-x-auto">${escapeHtml(s)}</div>`).join('')}
+          </div>
+        </div>
+      `).join('');
+
+      document.getElementById('rawLedgerTextarea').value = JSON.stringify(ledger, null, 2);
+    }
+
+    function toggleRawLedgerEditor() {
+      const el = document.getElementById('rawLedgerTextarea');
+      el.classList.toggle('hidden');
+    }
+
+    function setDiffSource(src) {
+      activeDiffSource = src;
+      document.getElementById('diffSrcArgonBtn').className = src === 'argon'
+        ? 'px-3 py-1 rounded-md text-xs font-bold bg-indigo-600 text-white shadow-sm'
+        : 'px-3 py-1 rounded-md text-xs font-semibold text-slate-600 hover:text-slate-900';
+      document.getElementById('diffSrcBaseBtn').className = src === 'baseline'
+        ? 'px-3 py-1 rounded-md text-xs font-bold bg-amber-600 text-white shadow-sm'
+        : 'px-3 py-1 rounded-md text-xs font-semibold text-slate-600 hover:text-slate-900';
+      renderDiffTab();
+    }
+
+    function renderDiffTab() {
+      if (!currentSession) return;
+      const diffs = activeDiffSource === 'argon'
+        ? (currentSession.argon_diffs || {})
+        : (currentSession.baseline_diffs || {});
+      const files = Object.keys(diffs);
+      document.getElementById('diffCountPill').textContent = `${files.length} files`;
+
+      const selector = document.getElementById('diffFileSelector');
+      const pre = document.getElementById('diffViewerPre');
+
+      if (files.length === 0) {
+        selector.innerHTML = '';
+        pre.textContent = activeDiffSource === 'argon'
+          ? 'Run Step 2 & 3 to view Gemini 4 Argon verified multi-file diffs.'
+          : 'Run Step 2 & 3 (or Baseline) to inspect the broken File-by-File Baseline diffs.';
+        return;
+      }
+
+      if (!activeDiffFile || !diffs[activeDiffFile]) {
+        activeDiffFile = files[0];
+      }
+
+      selector.innerHTML = files.map(f => {
+        const active = f === activeDiffFile;
+        return `<button onclick="activeDiffFile='${f}'; renderDiffTab();" class="px-2.5 py-1 rounded-lg text-xs mono transition font-medium ${active ? 'bg-indigo-600 text-white shadow-sm' : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'}">${escapeHtml(f)}</button>`;
+      }).join('');
+
+      const rawDiff = diffs[activeDiffFile] || '';
+      pre.innerHTML = rawDiff.split('\n').map(line => {
+        const esc = escapeHtml(line);
+        if (line.startsWith('+++') || line.startsWith('---')) return `<div class="text-slate-500 font-bold">${esc}</div>`;
+        if (line.startsWith('@@')) return `<div class="diff-hunk px-2 py-0.5 my-1 rounded">${esc}</div>`;
+        if (line.startsWith('+')) return `<div class="diff-add px-2">${esc}</div>`;
+        if (line.startsWith('-')) return `<div class="diff-del px-2">${esc}</div>`;
+        return `<div class="px-2 text-slate-700">${esc}</div>`;
+      }).join('');
+    }
+
+    function setDiagSource(src) {
+      activeDiagSource = src;
+      ['initial', 'baseline', 'argon'].forEach(k => {
+        const btn = document.getElementById(`diagBtn-${k}`);
+        btn.className = k === src
+          ? 'px-3 py-1.5 rounded-lg text-xs font-bold bg-indigo-600 text-white shadow-sm'
+          : 'px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:text-slate-900 border border-slate-200';
+      });
+      renderLogsTab();
+    }
+
+    function renderLogsTab() {
+      if (!currentSession) return;
+      const repMap = {
+        initial: currentSession.initial_report,
+        baseline: currentSession.baseline_report,
+        argon: currentSession.argon_report
+      };
+      const rep = repMap[activeDiagSource];
+      const pre = document.getElementById('diagViewerPre');
+      pre.textContent = rep ? (rep.raw_diagnostics || rep.summary) : `No ${activeDiagSource} diagnostics recorded yet.`;
+
+      const timeline = document.getElementById('reasoningTimeline');
+      const events = currentSession.events || [];
+      timeline.innerHTML = events.slice().reverse().map(ev => {
+        const badgeColor = ev.level === 'success'
+          ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+          : ev.level === 'warn' || ev.level === 'error'
+          ? 'bg-rose-50 text-rose-700 border-rose-200'
+          : 'bg-indigo-50 text-indigo-700 border-indigo-200';
+        return `
+          <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-200 flex items-start gap-2.5 text-xs">
+            <span class="text-[10px] mono uppercase px-1.5 py-0.5 rounded border font-semibold ${badgeColor} shrink-0">${escapeHtml(ev.phase)}</span>
+            <span class="text-slate-700">${escapeHtml(ev.message)}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function switchMainTab(tab) {
+      ['ledger', 'diffs', 'logs', 'arch'].forEach(t => {
+        const pane = document.getElementById(`tabPane-${t}`);
+        const btn = document.getElementById(`tabBtn-${t}`);
+        if (t === tab) {
+          pane.classList.remove('hidden');
+          btn.className = 'px-4 py-3 text-xs font-bold border-b-2 border-indigo-600 text-indigo-700 bg-white flex items-center gap-2';
+        } else {
+          pane.classList.add('hidden');
+          btn.className = 'px-4 py-3 text-xs font-bold border-b-2 border-transparent text-slate-600 hover:text-slate-900 flex items-center gap-2';
+        }
+      });
+    }
+
+    function openCustomRepoModal() {
+      const m = document.getElementById('customRepoModal');
+      m.classList.remove('hidden');
+      m.classList.add('flex');
+    }
+
+    function closeCustomRepoModal() {
+      const m = document.getElementById('customRepoModal');
+      m.classList.add('hidden');
+      m.classList.remove('flex');
+    }
+
+    function renderOsPresets() {
+      const container = document.getElementById('osPresetsList');
+      container.innerHTML = openSourcePresets.map((p, idx) => `
+        <button onclick="applyOsPreset(${idx})" class="text-left p-3.5 rounded-xl bg-slate-50 hover:bg-indigo-50/70 border border-slate-200 hover:border-indigo-300 transition">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-xs font-bold text-slate-900">${escapeHtml(p.ecosystem || p.name || 'Open-Source Preset')}</span>
+            <span class="text-[10px] mono text-indigo-700 font-semibold">${escapeHtml(p.scale || p.language || '')}</span>
+          </div>
+          <p class="text-[11px] text-slate-600 line-clamp-2">${escapeHtml(p.challenge || p.pain_point || '')}</p>
+        </button>
+      `).join('');
+    }
+
+    function applyOsPreset(idx) {
+      const p = openSourcePresets[idx];
+      if (!p) return;
+      const refBench = benchmarks.find(b => b.id === p.built_in_benchmark) || benchmarks[0];
+      const baseSlug = (p.built_in_benchmark || p.preset_id || 'custom_repo');
+      document.getElementById('custId').value = `${baseSlug}_custom`;
+      document.getElementById('custTitle').value = p.ecosystem || p.name || (refBench ? refBench.title : '');
+      document.getElementById('custLang').value = refBench ? refBench.language : (p.language || 'c');
+      document.getElementById('custPersona').value = refBench ? refBench.persona : (p.persona || 'Open-Source Subsystem Maintainer');
+      document.getElementById('custSourceDir').value = refBench && refBench.initial_dir
+        ? refBench.initial_dir
+        : `/Users/user/gemini-4-argon-hackathon/benchmarks/${baseSlug}/initial`;
+      document.getElementById('custMutable').value = refBench ? (refBench.mutable_files || []).join(', ') : '';
+      document.getElementById('custReadonly').value = refBench ? (refBench.readonly_context_files || []).join(', ') : '';
+      document.getElementById('custVerifyCmd').value = baseSlug === 'c_to_rust_framecodec' ? 'cargo test' : (baseSlug === 'superset_ts6' ? 'npx tsc --noEmit' : 'make test');
+      document.getElementById('custForbidden').value = baseSlug === 'c_to_rust_framecodec' ? '\\bunsafe\\b' : '\\bget_cycles\\s*\\(, \\bstrcpy\\s*\\(';
+      document.getElementById('custInstructions').value = (refBench && refBench.task_instructions) || p.challenge || '';
+    }
+
+    async function submitCustomBenchmark() {
+      const payload = {
+        benchmark_id: document.getElementById('custId').value.trim(),
+        title: document.getElementById('custTitle').value.trim(),
+        subtitle: 'Custom Registered Open-Source Proving Ground',
+        persona: document.getElementById('custPersona').value.trim() || 'Open-Source Maintainer',
+        pain_point: 'Custom multi-file codebase refactoring and verification',
+        reference_link: 'https://github.com',
+        source_dir: document.getElementById('custSourceDir').value.trim(),
+        mutable_files: document.getElementById('custMutable').value.split(',').map(s => s.trim()).filter(Boolean),
+        readonly_context_files: document.getElementById('custReadonly').value.split(',').map(s => s.trim()).filter(Boolean),
+        language: document.getElementById('custLang').value.trim() || 'Custom',
+        task_instructions: document.getElementById('custInstructions').value.trim(),
+        verify_cmd: document.getElementById('custVerifyCmd').value.trim(),
+        forbidden_patterns: document.getElementById('custForbidden').value.split(',').map(s => s.trim()).filter(Boolean)
+      };
+      const res = await fetch('/api/benchmarks/custom', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        alert('Error registering custom benchmark: ' + (data.detail || res.statusText));
+        return;
+      }
+      closeCustomRepoModal();
+      const benchRes = await fetch('/api/benchmarks');
+      const benchData = await benchRes.json();
+      benchmarks = Array.isArray(benchData) ? benchData : (benchData.benchmarks || []);
+      await selectBenchmark(data.benchmark_id);
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    window.addEventListener('DOMContentLoaded', initApp);
+  </script>
+</body>
+</html>
