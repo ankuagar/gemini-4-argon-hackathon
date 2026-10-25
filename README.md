@@ -1,12 +1,78 @@
-# ArgonLedger — Million-Token Codebase Migration & Verification Engine
+# ArgonLedger — Million-Token Codebase Migration & Real-to-Sim 3D World Engine
 
-**Powered by Google Gemini 4 Argon (`gemini-4-argon`) via the Interactions API**
+**Powered by Google Gemini 4 Argon (`gemini-4-argon`) & Gemini 3.8 Flash (`gemini-3.8-flash`) via the Interactions API**
 
-**ArgonLedger** solves **Problem Statement One: Million Token Engineering** and the **Open-Source Maintainer Trust Gap** by executing whole-repository migrations, memory-safe language ports, C kernel/VCS subsystem hardenings, and strict framework upgrades in a single unified 1M-token context window—verified against live compilers (`clang`, `cargo`/`rustc`, `tsc`, `mypy --strict`), test suites, static security/supply-chain audits, and differential fuzzers.
+**ArgonLedger** is a unified dual-track engineering platform built on `gemini-4-argon`:
+- **Track 1 — Million-Token Codebase Migration & Verification Engine**: Executes whole-repository migrations, memory-safe C-to-Rust ports, C kernel/VCS subsystem hardenings, and strict framework upgrades in a unified 1M-token context window—verified against live compilers (`clang`, `cargo`/`rustc`, `tsc`, `mypy --strict`), test suites, static supply-chain audits, and differential fuzzers.
+- **Track 2 — Closed-Loop 3D Virtual Worlds, Video Understanding & Real-to-Sim Robotics Artifact Studio (`Render → Watch → Critique → Fix`)**: Ingests real-world field videos (bears, waterfalls, New Zealand sheep flocks, forest deer, calving glaciers) or text prompts, generates an initial 3D Three.js simulation draft, records the live WebGL canvas into an H.264 `.mp4` video via `ffmpeg`, watches & critiques the result with `gemini-4-argon` (`video/mp4`), and iteratively upgrades the 3D world while exporting ready-to-use **MuJoCo XML arenas**, **Gymnasium RL reward functions**, **Scene Perception specs**, and **Game Engine Blueprints**.
 
 ---
 
-## 🎯 Why ArgonLedger Passes All 4 Hackathon Judging Criteria
+## 🚀 How to Run the Application
+
+### 1. Prerequisites & Environment Setup
+1. **Python 3.10+** and **`ffmpeg`** (used by Track 2 to encode captured WebGL frames into H.264 `.mp4` videos and normalize uploaded smartphone videos):
+   ```bash
+   # Verify ffmpeg is installed on macOS:
+   ffmpeg -version
+   ```
+2. **Virtual Environment & Dependencies**:
+   ```bash
+   python3 -m venv venv
+   ./venv/bin/pip install -r requirements.txt
+   ```
+3. **Configure API Key**:
+   Create a `.env` file in the repository root `/Users/user/gemini-4-argon-hackathon/.env`:
+   ```env
+   GEMINI_API_KEY=your_gemini_api_key_here
+   ```
+
+### 2. Start the Live Web Server (Track 1 + Track 2 Studio)
+```bash
+./venv/bin/uvicorn app:app --host 127.0.0.1 --port 8000
+```
+Then open **[http://127.0.0.1:8000](http://127.0.0.1:8000)** in your browser:
+- **Track 1 Tab (`Track 1: 1M-Token Codebase Migration`)**: Run the 4 built-in open-source proving grounds or import any local repository via **➕ Custom Open-Source Repo**.
+- **Track 2 Tab (`Track 2: 3D World & Video Critique Loop`)**: Select any of the 6 Real-to-Sim field video scenarios (or upload your own `.mp4`/`.mov` video) or the synthetic 3D game scenario (`🏎️ Synthwave Canyon Racer`), inspect the **📈 Closed-Loop Evolution (`Render → Watch → Critique → Fix`)** cards, toggle **⚖️ Compare Before vs. After (Split 3D View)**, and click **▶ Run Full Loop: Render → Watch → Critique → Fix**.
+- **Interactive Architecture Walkthrough**: Click **🗺️ Architecture & Pipeline** in the top navigation bar or visit **[http://127.0.0.1:8000/architecture](http://127.0.0.1:8000/architecture)**.
+
+### 3. Run the Track 1 CLI Benchmark Suite (Optional)
+```bash
+./venv/bin/python -u cli_benchmark.py linux_git_c_hardening
+./venv/bin/python -u cli_benchmark.py c_to_rust_framecodec
+./venv/bin/python -u cli_benchmark.py superset_ts6
+./venv/bin/python -u cli_benchmark.py py_v1_to_v2
+```
+
+---
+
+## 📂 Where Media, Simulation Videos & Generated Artifacts Are Stored
+
+All input media, recorded simulation videos, exported robotics/game artifacts, and verified codebase outputs are organized into dedicated directories inside the repository:
+
+| Directory / Path | Purpose & Contents |
+| :--- | :--- |
+| **`assets/real_videos/`** | **Normalized Real-World Field Videos (`.mp4`) for Track 2**<br/>Stores browser- & API-ready H.264 `yuv420p` `.mp4` field videos (`bear_hike.mp4`, `bear_take1.mp4`, `waterfall_cascade.mp4`, `nz_sheep.mp4`, `forest_deer.mp4`, `kenai_glacier_calving.mp4`, `hillside_waterfall.mp4`, etc.).<br/>• When you upload a custom `.mov` or `.mp4` video via **⬆️ Upload Custom Field Video** in the UI (`POST /api/track2/upload_video`), ArgonLedger automatically transcodes it with `ffmpeg` and stores it in `assets/real_videos/custom_<id>_<name>.mp4`. |
+| **`runs/track2_worlds/<session_id>/`** | **Track 2 Closed-Loop 3D World & Robotics Artifacts (Per Session)**<br/>Every Track 2 session writes its generated 3D scenes, recorded WebGL flythrough videos, and Real-to-Sim artifacts here:<br/>• `iter_1.html`, `iter_2.html`, `iter_N.html` — Self-contained 60FPS Three.js `r128` 3D scenes for each loop iteration.<br/>• `iter_1.mp4`, `iter_2.mp4`, `iter_N.mp4` — Recorded H.264 `.mp4` WebGL flythrough videos captured from the live 3D canvas and sent inline to `gemini-4-argon` (`video/mp4`).<br/>• `scene_perception.json` — Structured biome physics spec (surface friction $\mu$, slope angle, dynamic entity kinematics, LiDAR/camera occlusion notes).<br/>• `scene_mujoco.xml` — Ready-to-run **MuJoCo MJCF** physics arena with calibrated ground geoms, obstacles, dynamic biological actors, and quadruped ego-robot.<br/>• `reward_env.py` — Executable **Gymnasium RL** reward function & curriculum training script.<br/>• `game_world_blueprint.json` — Procedural Unreal / Unity / Three.js world blueprint (heightmap recipe, foliage scatter layers, NPC AI / Boids rules).<br/>*(You can also download all of these as a single archive via the **⬇️ Download All (`.zip`)** button in the UI or `GET /api/track2/sessions/<session_id>/artifacts.zip`.)* |
+| **`verified_outputs/<benchmark_id>/`** | **Track 1 Maintainer-Approved & Compiler-Verified Codebase Outputs**<br/>When a maintainer clicks **Step 4: Commit Verified Build** after passing all compiler, test, differential fuzzer, and static supply-chain checks, the verified files are persisted to `verified_outputs/<benchmark_id>/` (alongside a `verification_manifest.json` audit receipt). |
+| **`runs/<session_id>/`** | **Track 1 Isolated Verification Sandboxes**<br/>Temporary isolated workspaces (`runs/<session_id>/argon_repo/` and `runs/<session_id>/baseline_repo/`) where live compiler (`clang`, `cargo test`, `tsc`, `mypy --strict`) and differential fuzzer checks execute safely before human approval. |
+| **` benchmarks/`** | **Track 1 Proving Ground Source Repositories**<br/>Contains the 4 built-in multi-file benchmark repositories (`linux_git_c_hardening`, `c_to_rust_framecodec`, `superset_ts6`, `py_v1_to_v2`). |
+| **`AGENTS.md` & `static/architecture.html`** | **Engineering Playbook & Visual Architecture Explainer**<br/>`AGENTS.md` documents all Gemini 4 Argon Interactions API optimizations (`previous_interaction_id` caching, `background=True` long decode, multimodal `video/mp4` loops, and `ffmpeg` smartphone HEVC normalization). `static/architecture.html` provides the interactive visual system walkthrough. |
+
+---
+
+## 🎮 Track 2: Closed-Loop 3D Worlds & Real-to-Sim Video Studio
+
+1. **Multi-Iteration Progression (`Render → Watch → Critique → Fix`)**:
+   - Every scenario tracks its full visual evolution in the **📈 Closed-Loop Evolution** panel (`Iteration #1 Initial Single-Pass Draft (24/100)` $\xrightarrow{\text{Watched & Critiqued}}$ `Iteration #2 Upgraded 3D World (94/100, +70 pts)` $\xrightarrow{}$ `Live Iteration #3+`).
+   - Click **⚖️ Compare Before vs. After (Split 3D View)** to run **Iteration #1 (Before)** and **Iteration #2+ (After)** side-by-side in two synchronized live 60FPS Three.js WebGL viewports.
+2. **Interactive 3D Viewport Overlays**:
+   - **🤖 3D BBoxes & Costmap (`OFF` / `ON`)**: Toggles wireframe 3D Oriented Bounding Boxes (OBBs), a 24m × 24m Ground Traversability Costmap Grid, and 15m wildlife safety standoff rings directly inside the live 3D scene.
+   - **🌦️ Weather / Sensor (`☀️ Daylight` → `🌫️ LiDAR Fog` → `🌙 Dusk / Night` → `🔥 Thermal IR`)**: Cycles Sim-to-Real domain randomization lighting and FLIR thermal false-color shader modes across the 3D scene.
+
+---
+
+## 🎯 Track 1: Why ArgonLedger Passes All 4 Hackathon Judging Criteria
 
 1. **Solves Specific Open-Source Problems for Named Engineering Personas**:
    - **Proving Ground 1 (`linux_git_c_hardening`) — Linux Kernel & Git Core C Subsystem Hardening**:
@@ -21,40 +87,16 @@
    - **Proving Ground 4 (`py_v1_to_v2`) — Ray & Python Ecosystem Pydantic v1 $\rightarrow$ v2 + Strict Mypy Upgrade**:
      - *Persona*: Lead Platform Engineer ([ray-project/ray#58876](https://github.com/ray-project/ray/issues/58876)).
      - *Open Problem*: Eliminating deprecated Pydantic v1 validators (`@validator`, `@root_validator`, `class Config`, `.dict()`, `.parse_obj()`) across coupled service modules while passing `mypy --strict` and `pytest -W error`.
-   - **Option 2 (`Custom Open-Source Repo Importer`)**:
+   - **Custom Open-Source Repo Importer**:
      - Point ArgonLedger at **any local open-source directory** + mutable files + custom toolchain verification command (`clang`, `cargo test`, `pytest`, `tsc`) right from the web dashboard.
 
 2. **Work That Uniquely Requires `gemini-4-argon`**:
    - **Unified 1M-Token Context Window**: Holds all mutable source files, read-only C/Rust/TS/Python headers & test contracts, compiler diagnostics, and the **Global Interface Ledger** simultaneously.
-   - **Multi-Tier `thinking_level` (`low` | `medium` | `high`) & Observable Thought Signatures**:
-     - `"low"` for fast targeted extraction of the Global Interface Ledger (Phase 1) and parallel File-by-File Baseline runs.
-     - `"medium"` (default) for fast, high-accuracy Whole-Repository Coordinated Synthesis (Phase 3) in under 60 seconds.
-     - `"high"` for deep multi-file debugging and autonomous compiler/fuzzer repair turns (Phase 4) or upfront security architecture design.
-   - **Server-Side State (`previous_interaction_id`) & Implicit Caching**: Chains Phase 1 $\rightarrow$ Phase 3 $\rightarrow$ Phase 4 via `previous_interaction_id`, retaining thought signatures and workspace context with a 95% implicit cache discount.
+   - **Lead Architect (`gemini-4-argon`) + Parallel Subagents (`gemini-3.8-flash`)**: Runs parallel `gemini-3.8-flash` module reconnaissance subagents while `gemini-4-argon` synthesizes the Global Interface Contract Ledger.
+   - **Server-Side State (`previous_interaction_id`) & Implicit Caching**: Chains Phase 1 $\rightarrow$ Phase 3 $\rightarrow$ Phase 4 (and Track 2 Video Critique $\rightarrow$ 3D Scene Synthesis) via `previous_interaction_id`, retaining thought signatures and workspace context with a 2.8x speedup.
    - **Long Decode (`background=True`)**: Supports generating $>65,536$ output tokens asynchronously via background polling on the Interactions API.
 
 3. **Keeps Humans (Maintainers) in Control (2 Explicit Safety Gates + Supply-Chain Audit)**:
    - **Gate 1 — Global Interface Ledger Lock**: Maintainers inspect, customize, and explicitly **Approve & Lock** cross-file signatures, lifetime invariants, and safety policies before synthesis is unlocked.
    - **Gate 2 — Supply-Chain Audit & Verified Sandbox Commit Gate**: Static scanners verify zero unauthorized process/network/backdoor primitives (`system`, `popen`, `execve`, `dlopen`) and zero safety escapes (`unsafe`, `any`, `# type: ignore`) before the human commits verified outputs to `verified_outputs/<benchmark_id>/`.
 
-4. **Runs Live During Judging in Under 3 Minutes**:
-   - Every proving ground executes live with real `gemini-4-argon` calls and real compiler/fuzzer verification in **~45–75 seconds**, including a live side-by-side comparison against a **File-by-File Baseline**.
-
----
-
-## 🚀 Quickstart
-
-### 1. Start the Live Web Benchmark Dashboard
-```bash
-./venv/bin/uvicorn app:app --host 127.0.0.1 --port 8000
-```
-Open **[http://127.0.0.1:8000](http://127.0.0.1:8000)** in your browser.
-
-### 2. Run the Live CLI Benchmark Suite
-```bash
-# Run any individual proving ground end-to-end:
-./venv/bin/python -u cli_benchmark.py linux_git_c_hardening
-./venv/bin/python -u cli_benchmark.py c_to_rust_framecodec
-./venv/bin/python -u cli_benchmark.py superset_ts6
-./venv/bin/python -u cli_benchmark.py py_v1_to_v2
-```
