@@ -100,7 +100,7 @@
             </span>
           </div>
           <p class="text-xs text-slate-600">
-            Guided 3-Step Multi-File Codebase Migration, Parallel Flash Subagent Pre-Audit &amp; Real Compiler/Fuzzer Verification
+            <strong>Million Token Engineering</strong> (Whole-Repo Codebase Migration) &amp; <strong>More Dimensions</strong> (Create 3D Virtual Worlds from Real Videos)
           </p>
         </div>
       </div>
@@ -108,8 +108,8 @@
       <!-- Right Controls -->
       <div class="flex items-center gap-2.5 flex-wrap">
         <button onclick="openTrack2Studio()" class="px-3 py-1.5 rounded-lg bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
-          <span>🎮</span>
-          <span>Track 2: 3D World Render → Video Critique Loop</span>
+          <span>🌍</span>
+          <span>More Dimensions: Create Virtual Worlds from Real Videos</span>
         </button>
 
         <button onclick="switchMainTab('arch')" class="px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-semibold transition flex items-center gap-1.5 shadow-sm">
@@ -481,7 +481,7 @@
             <span>④ Interactive Architecture &amp; Playbook (`AGENTS.md`)</span>
           </button>
           <button onclick="switchMainTab('track2')" id="tabBtn-track2" class="px-4 py-3 text-xs font-bold border-b-2 border-transparent text-slate-600 hover:text-slate-900 flex items-center gap-2">
-            <span>⑤ 🎮 Track 2: 3D World Render → Video Critique → Fix Loop</span>
+            <span>⑤ 🌍 More Dimensions: Create Virtual Worlds from Real Videos</span>
             <span class="text-[10px] mono px-1.5 py-0.5 rounded bg-violet-100 text-violet-800 border border-violet-300 font-bold">NEW</span>
           </button>
         </div>
@@ -742,14 +742,14 @@
             <div>
               <div class="flex items-center gap-2 flex-wrap">
                 <span class="text-[10px] mono uppercase px-2 py-0.5 rounded bg-indigo-600 text-white font-bold">
-                  Track 2 • Real-to-Sim Video-to-World &amp; Robotics Artifact Studio
+                  🌍 More Dimensions • Create Virtual Worlds &amp; Robotics Twins from Real Videos
                 </span>
                 <span class="text-[10px] mono px-2 py-0.5 rounded bg-white text-indigo-700 border border-indigo-200 font-semibold">
-                  Real Field Videos (`bear_better.mp4` • `waterfall.mp4` • `sheep.mp4`) → 3D Digital Twin + MuJoCo XML + RL Reward
+                  Real Field Videos (`bear_hike.mp4` • `waterfall_cascade.mp4` • `nz_sheep.mp4`) → 3D Digital Twin + MuJoCo XML + RL Reward
                 </span>
               </div>
               <h3 class="text-sm font-extrabold text-slate-900 mt-1">
-                Feed Real-World Videos → Extract Game &amp; Robotics Training Artifacts → Render, Critique &amp; Upgrade 3D Virtual Worlds in a Loop
+                More Dimensions: Feed Real-World Videos → Extract Game &amp; Robotics Training Artifacts → Render, Critique &amp; Upgrade 3D Virtual Worlds in a Loop
               </h3>
               <p class="text-xs text-slate-600 mt-0.5">
                 Built for <strong>Game Developers</strong> and <strong>Embodied AI / Robot Trainers</strong>: <span class="mono font-semibold text-indigo-700">gemini-4-argon</span> watches your real-world hiking, waterfall, and New Zealand sheep videos, extracts <strong>Biome &amp; Kinematics JSON</strong>, <strong>MuJoCo Physics XML</strong>, <strong>Gymnasium RL Reward Python</strong>, and <strong>Game Engine Blueprints</strong>, and iteratively upgrades a live <strong>Three.js 3D Digital Twin</strong> with a toggleable <strong>Robotics Sensor &amp; Traversability Costmap Overlay</strong>.
@@ -764,7 +764,7 @@
                 <span>⬇️ Download All Artifacts (`.zip`)</span>
               </button>
               <div id="track2SessionBadge" class="text-[11px] mono px-2.5 py-1 rounded-lg bg-white border border-indigo-200 text-indigo-900 font-semibold">
-                Track 2 Session Ready
+                Virtual World Session Ready
               </div>
             </div>
           </div>
@@ -2812,7 +2812,7 @@
             1,
             4,
             'Step 1/4: Recording WebGL .mp4',
-            `Track 2 (Step 1 of 4): Recording Iteration #${curIt.iteration} WebGL Flythrough Video...`,
+            `More Dimensions (Step 1 of 4): Recording Iteration #${curIt.iteration} WebGL Flythrough Video...`,
             'Capturing 12 live Three.js WebGL frames and encoding H.264 `.mp4` via `ffmpeg` (~2s)...',
             18
           );
@@ -2824,8 +2824,8 @@
             4,
             'Step 2/4: Argon Watching Video',
             isRealRef
-              ? `Track 2 (Step 2 of 4): Gemini 4 Argon Watching Real Field Video & Critiquing Draft 1 Twin...`
-              : `Track 2 (Step 2 of 4): Gemini 4 Argon Watching iter_${curIt.iteration}.mp4 & Critiquing vs. Goal...`,
+              ? `More Dimensions (Step 2 of 4): Gemini 4 Argon Watching Real Field Video & Critiquing Draft 1 Twin...`
+              : `More Dimensions (Step 2 of 4): Gemini 4 Argon Watching iter_${curIt.iteration}.mp4 & Critiquing vs. Goal...`,
             'Multimodal `client.interactions.create(model="gemini-4-argon", input=[{"type": "video", "mime_type": "video/mp4"}, ...])` (~12s)...',
             42
           );
@@ -2840,7 +2840,7 @@
           });
           if (!critRes.ok) {
             const err = await critRes.json();
-            alert('Track 2 video critique error: ' + (err.detail || critRes.statusText));
+            alert('Video critique error: ' + (err.detail || critRes.statusText));
             return;
           }
           track2Session = await critRes.json();
@@ -2855,7 +2855,7 @@
           3,
           4,
           `Step 3/4: Building 3D Twin #${nextNum}`,
-          `Track 2 (Step 3 of 4): Gemini 4 Argon Synthesizing Upgraded 3D Sim Twin (Iteration #${nextNum})...`,
+          `More Dimensions (Step 3 of 4): Gemini 4 Argon Synthesizing Upgraded 3D Sim Twin (Iteration #${nextNum})...`,
           'Chaining onto video critique `previous_interaction_id` to build full 3D Three.js scene + updated MuJoCo XML (~22s)...',
           74
         );
@@ -2868,7 +2868,7 @@
         });
         if (!fixRes.ok) {
           const err = await fixRes.json();
-          alert('Track 2 3D synthesis error: ' + (err.detail || fixRes.statusText));
+          alert('3D synthesis error: ' + (err.detail || fixRes.statusText));
           return;
         }
         track2Session = await fixRes.json();
@@ -2881,7 +2881,7 @@
           4,
           4,
           `Step 4/4: Verifying Upgraded 3D`,
-          `Track 2 (Step 4 of 4): Recording Upgraded Iteration #${nextNum} Video & Running Argon Visual Verification...`,
+          `More Dimensions (Step 4 of 4): Recording Upgraded Iteration #${nextNum} Video & Running Argon Visual Verification...`,
           `Capturing upgraded 3D WebGL scene into iter_${nextNum}.mp4 and verifying visual score improvement with gemini-4-argon (thinking_level="low", ~8s)...`,
           92
         );

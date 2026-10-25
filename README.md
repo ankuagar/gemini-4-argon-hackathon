@@ -1,4 +1,4 @@
-# ArgonLedger — Million-Token Codebase Migration & Real-to-Sim 3D World Engine
+# ArgonLedger — Million Token Engineering & More Dimensions (3D Virtual Worlds from Real Videos)
 
 **Powered by Google Gemini 4 Argon (`gemini-4-argon`) & Gemini 3.8 Flash (`gemini-3.8-flash`) via the Interactions API**
 
@@ -8,8 +8,8 @@
 
 **ArgonLedger** is a full-stack AI engineering workbench built on `gemini-4-argon` that solves two closed-loop verification challenges where a single-pass LLM output is never enough:
 
-### 1. Track 1 — Million-Token Codebase Migration & Verification Engine
-Open-source maintainers cannot merge AI-generated pull requests that only edit one file at a time or break cross-module contracts, type systems, or memory-safety invariants. **ArgonLedger Track 1** ingests an entire multi-file repository into `gemini-4-argon`'s unified **1M-token context window** and executes a **4-step human-gated verification pipeline**:
+### 1. Million Token Engineering — Whole-Repo Codebase Migration & Verification Engine
+Open-source maintainers cannot merge AI-generated pull requests that only edit one file at a time or break cross-module contracts, type systems, or memory-safety invariants. **Million Token Engineering** ingests an entire multi-file repository into `gemini-4-argon`'s unified **1M-token context window** and executes a **4-step human-gated verification pipeline**:
 - **Step 1 — Global Interface Contract Ledger (`gemini-4-argon` Lead Architect + Parallel `gemini-3.8-flash` Recon Subagents)**:
   Scans every mutable and read-only file in parallel using `gemini-3.8-flash` subagents while `gemini-4-argon` builds a single **Cross-File Interface Contract Ledger** (exact function signatures, struct layouts, error types, and safety invariants across all modules).
 - **Step 2 — Maintainer Gate 1 (Inspect, Edit & Lock Contract)**:
@@ -19,8 +19,8 @@ Open-source maintainers cannot merge AI-generated pull requests that only edit o
 - **Step 4 — Maintainer Gate 2 (Static Supply-Chain Audit & Commit)**:
   Verifies zero unauthorized process/network/backdoor calls and zero safety escapes (`unsafe`, `any`, `# type: ignore`) before writing the verified files and a cryptographic `verification_manifest.json` receipt to `verified_outputs/<benchmark_id>/`.
 
-### 2. Track 2 — Closed-Loop 3D Virtual Worlds, Video Understanding & Real-to-Sim Robotics Studio (`Render → Watch → Critique → Fix`)
-Generating a 3D game or robotics simulation in a single pass produces a rough first draft (flat unlit shaders, missing terrain obstacles, rigid sliding motion). **ArgonLedger Track 2** turns **real-world field videos** (black bears on a forest trail, cascading waterfalls, New Zealand sheep flocks, forest deer, Kenai Fjords calving glaciers) or **text prompts** into verified **60FPS Three.js 3D Digital Twins** and **exportable robotics/game training artifacts**:
+### 2. More Dimensions — Create Virtual Worlds & Robotics Twins from Real Videos (`Render → Watch → Critique → Fix`)
+Generating a 3D game or robotics simulation in a single pass produces a rough first draft (flat unlit shaders, missing terrain obstacles, rigid sliding motion). **More Dimensions** turns **real-world field videos** (black bears on a forest trail, cascading waterfalls, New Zealand sheep flocks, forest deer, Kenai Fjords calving glaciers) or **text prompts** into verified **60FPS Three.js 3D Digital Twins** and **exportable robotics/game training artifacts**:
 - **Real-to-Sim Video Ingestion**:
   Watches real field footage (`.mp4` / `.mov`) inline via `gemini-4-argon` (`video/mp4`) to extract physical biome parameters: ground surface friction ($\mu$), slope grade, dynamic wildlife/flock kinematics, and LiDAR/camera occlusion hazards.
 - **Closed-Loop Visual Self-Improvement (`Render → Watch → Critique → Fix`)**:
@@ -37,7 +37,7 @@ Generating a 3D game or robotics simulation in a single pass produces a rough fi
 ## 🚀 How to Run the Application
 
 ### 1. Prerequisites & Environment Setup
-1. **Python 3.10+** and **`ffmpeg`** (used by Track 2 to encode captured WebGL frames into H.264 `.mp4` videos and normalize uploaded smartphone videos):
+1. **Python 3.10+** and **`ffmpeg`** (used by **More Dimensions** to encode captured WebGL frames into H.264 `.mp4` videos and normalize uploaded smartphone videos):
    ```bash
    # Verify ffmpeg is installed on macOS:
    ffmpeg -version
@@ -53,16 +53,16 @@ Generating a 3D game or robotics simulation in a single pass produces a rough fi
    GEMINI_API_KEY=your_gemini_api_key_here
    ```
 
-### 2. Start the Live Web Server (Track 1 + Track 2 Studio)
+### 2. Start the Live Web Server
 ```bash
 ./venv/bin/uvicorn app:app --host 127.0.0.1 --port 8000
 ```
 Then open **[http://127.0.0.1:8000](http://127.0.0.1:8000)** in your browser:
-- **Track 1 Tab (`Track 1: 1M-Token Codebase Migration`)**: Run the 4 built-in open-source proving grounds or import any local repository via **➕ Custom Open-Source Repo**.
-- **Track 2 Tab (`Track 2: 3D World & Video Critique Loop`)**: Select any of the 6 Real-to-Sim field video scenarios (or upload your own `.mp4`/`.mov` video) or the synthetic 3D game scenario (`🏎️ Synthwave Canyon Racer`), inspect the **📈 Closed-Loop Evolution (`Render → Watch → Critique → Fix`)** cards, toggle **⚖️ Compare Before vs. After (Split 3D View)**, and click **▶ Run Full Loop: Render → Watch → Critique → Fix**.
-- **Interactive Architecture Walkthrough**: Click **🗺️ Architecture & Pipeline** in the top navigation bar or visit **[http://127.0.0.1:8000/architecture](http://127.0.0.1:8000/architecture)**.
+- **Million Token Engineering**: Run the 4 built-in open-source proving grounds from the left sidebar or import any local repository via **➕ Custom Open-Source Repo**.
+- **🌍 More Dimensions — Create Virtual Worlds from Real Videos**: Click the **🌍 More Dimensions: Create Virtual Worlds from Real Videos** button in the top navigation bar (or tab `⑤`) to select any of the 6 Real-to-Sim field video scenarios (or upload your own `.mp4`/`.mov` video) or the synthetic 3D game scenario (`🏎️ Synthwave Canyon Racer`), inspect the **📈 Closed-Loop Evolution (`Render → Watch → Critique → Fix`)** cards, toggle **⚖️ Compare Before vs. After (Split 3D View)**, and click **▶ Run Full Loop: Render → Watch → Critique → Fix**.
+- **Interactive Architecture Walkthrough**: Click **🗺️ Architecture, 5 Patterns & AGENTS.md** in the top navigation bar or visit **[http://127.0.0.1:8000/architecture](http://127.0.0.1:8000/architecture)**.
 
-### 3. Run the Track 1 CLI Benchmark Suite (Optional)
+### 3. Run the Million Token Engineering CLI Benchmark Suite (Optional)
 ```bash
 ./venv/bin/python -u cli_benchmark.py linux_git_c_hardening
 ./venv/bin/python -u cli_benchmark.py c_to_rust_framecodec
@@ -78,16 +78,16 @@ All input media, recorded simulation videos, exported robotics/game artifacts, a
 
 | Directory / Path | Purpose & Contents |
 | :--- | :--- |
-| **`assets/real_videos/`** | **Normalized Real-World Field Videos (`.mp4`) for Track 2**<br/>Stores browser- & API-ready H.264 `yuv420p` `.mp4` field videos (`bear_hike.mp4`, `bear_take1.mp4`, `waterfall_cascade.mp4`, `nz_sheep.mp4`, `forest_deer.mp4`, `kenai_glacier_calving.mp4`, `hillside_waterfall.mp4`, etc.).<br/>• When you upload a custom `.mov` or `.mp4` video via **⬆️ Upload Custom Field Video** in the UI (`POST /api/track2/upload_video`), ArgonLedger automatically transcodes it with `ffmpeg` and stores it in `assets/real_videos/custom_<id>_<name>.mp4`. |
-| **`runs/track2_worlds/<session_id>/`** | **Track 2 Closed-Loop 3D World & Robotics Artifacts (Per Session)**<br/>Every Track 2 session writes its generated 3D scenes, recorded WebGL flythrough videos, and Real-to-Sim artifacts here:<br/>• `iter_1.html`, `iter_2.html`, `iter_N.html` — Self-contained 60FPS Three.js `r128` 3D scenes for each loop iteration.<br/>• `iter_1.mp4`, `iter_2.mp4`, `iter_N.mp4` — Recorded H.264 `.mp4` WebGL flythrough videos captured from the live 3D canvas and sent inline to `gemini-4-argon` (`video/mp4`).<br/>• `scene_perception.json` — Structured biome physics spec (surface friction $\mu$, slope angle, dynamic entity kinematics, LiDAR/camera occlusion notes).<br/>• `scene_mujoco.xml` — Ready-to-run **MuJoCo MJCF** physics arena with calibrated ground geoms, obstacles, dynamic biological actors, and quadruped ego-robot.<br/>• `reward_env.py` — Executable **Gymnasium RL** reward function & curriculum training script.<br/>• `game_world_blueprint.json` — Procedural Unreal / Unity / Three.js world blueprint (heightmap recipe, foliage scatter layers, NPC AI / Boids rules).<br/>*(You can also download all of these as a single archive via the **⬇️ Download All (`.zip`)** button in the UI or `GET /api/track2/sessions/<session_id>/artifacts.zip`.)* |
-| **`verified_outputs/<benchmark_id>/`** | **Track 1 Maintainer-Approved & Compiler-Verified Codebase Outputs**<br/>When a maintainer clicks **Step 4: Commit Verified Build** after passing all compiler, test, differential fuzzer, and static supply-chain checks, the verified files are persisted to `verified_outputs/<benchmark_id>/` (alongside a `verification_manifest.json` audit receipt). |
-| **`runs/<session_id>/`** | **Track 1 Isolated Verification Sandboxes**<br/>Temporary isolated workspaces (`runs/<session_id>/argon_repo/` and `runs/<session_id>/baseline_repo/`) where live compiler (`clang`, `cargo test`, `tsc`, `mypy --strict`) and differential fuzzer checks execute safely before human approval. |
-| **` benchmarks/`** | **Track 1 Proving Ground Source Repositories**<br/>Contains the 4 built-in multi-file benchmark repositories (`linux_git_c_hardening`, `c_to_rust_framecodec`, `superset_ts6`, `py_v1_to_v2`). |
+| **`assets/real_videos/`** | **Normalized Real-World Field Videos (`.mp4`) for More Dimensions**<br/>Stores browser- & API-ready H.264 `yuv420p` `.mp4` field videos (`bear_hike.mp4`, `bear_take1.mp4`, `waterfall_cascade.mp4`, `nz_sheep.mp4`, `forest_deer.mp4`, `kenai_glacier_calving.mp4`, `hillside_waterfall.mp4`, etc.).<br/>• When you upload a custom `.mov` or `.mp4` video via **📤 Upload Your Own Video** in the UI (`POST /api/track2/upload_video`), ArgonLedger automatically transcodes it with `ffmpeg` and stores it in `assets/real_videos/custom_<id>_<name>.mp4`. |
+| **`runs/track2_worlds/<session_id>/`** | **More Dimensions — 3D Virtual Worlds, Recorded Sim Videos & Robotics Artifacts (Per Session)**<br/>Every session writes its generated 3D scenes, recorded WebGL flythrough videos, and Real-to-Sim artifacts here:<br/>• `iter_1.html`, `iter_2.html`, `iter_N.html` — Self-contained 60FPS Three.js `r128` 3D scenes for each loop iteration.<br/>• `iter_1.mp4`, `iter_2.mp4`, `iter_N.mp4` — Recorded H.264 `.mp4` WebGL flythrough videos captured from the live 3D canvas and sent inline to `gemini-4-argon` (`video/mp4`).<br/>• `scene_perception.json` — Structured biome physics spec (surface friction $\mu$, slope angle, dynamic entity kinematics, LiDAR/camera occlusion notes).<br/>• `scene_mujoco.xml` — Ready-to-run **MuJoCo MJCF** physics arena with calibrated ground geoms, obstacles, dynamic biological actors, and quadruped ego-robot.<br/>• `reward_env.py` — Executable **Gymnasium RL** reward function & curriculum training script.<br/>• `game_world_blueprint.json` — Procedural Unreal / Unity / Three.js world blueprint (heightmap recipe, foliage scatter layers, NPC AI / Boids rules).<br/>*(You can also download all of these as a single archive via the **⬇️ Download All Artifacts (`.zip`)** button in the UI or `GET /api/track2/sessions/<session_id>/artifacts.zip`.)* |
+| **`verified_outputs/<benchmark_id>/`** | **Million Token Engineering — Maintainer-Approved & Compiler-Verified Codebase Outputs**<br/>When a maintainer clicks **Step 4: Commit Verified Build** after passing all compiler, test, differential fuzzer, and static supply-chain checks, the verified files are persisted to `verified_outputs/<benchmark_id>/` (alongside a `verification_manifest.json` audit receipt). |
+| **`runs/<session_id>/`** | **Million Token Engineering — Isolated Verification Sandboxes**<br/>Temporary isolated workspaces (`runs/<session_id>/argon_repo/` and `runs/<session_id>/baseline_repo/`) where live compiler (`clang`, `cargo test`, `tsc`, `mypy --strict`) and differential fuzzer checks execute safely before human approval. |
+| **`benchmarks/`** | **Million Token Engineering — Proving Ground Source Repositories**<br/>Contains the 4 built-in multi-file benchmark repositories (`linux_git_c_hardening`, `c_to_rust_framecodec`, `superset_ts6`, `py_v1_to_v2`). |
 | **`AGENTS.md` & `static/architecture.html`** | **Engineering Playbook & Visual Architecture Explainer**<br/>`AGENTS.md` documents all Gemini 4 Argon Interactions API optimizations (`previous_interaction_id` caching, `background=True` long decode, multimodal `video/mp4` loops, and `ffmpeg` smartphone HEVC normalization). `static/architecture.html` provides the interactive visual system walkthrough. |
 
 ---
 
-## 🎮 Track 2: Closed-Loop 3D Worlds & Real-to-Sim Video Studio
+## 🌍 More Dimensions: Create Virtual Worlds from Real Videos
 
 1. **Multi-Iteration Progression (`Render → Watch → Critique → Fix`)**:
    - Every scenario tracks its full visual evolution in the **📈 Closed-Loop Evolution** panel (`Iteration #1 Initial Single-Pass Draft (24/100)` $\xrightarrow{\text{Watched & Critiqued}}$ `Iteration #2 Upgraded 3D World (94/100, +70 pts)` $\xrightarrow{}$ `Live Iteration #3+`).
@@ -98,7 +98,7 @@ All input media, recorded simulation videos, exported robotics/game artifacts, a
 
 ---
 
-## 🎯 Track 1: Why ArgonLedger Passes All 4 Hackathon Judging Criteria
+## 🏗️ Million Token Engineering: Whole-Repository Migration & Verification
 
 1. **Solves Specific Open-Source Problems for Named Engineering Personas**:
    - **Proving Ground 1 (`linux_git_c_hardening`) — Linux Kernel & Git Core C Subsystem Hardening**:
@@ -119,7 +119,7 @@ All input media, recorded simulation videos, exported robotics/game artifacts, a
 2. **Work That Uniquely Requires `gemini-4-argon`**:
    - **Unified 1M-Token Context Window**: Holds all mutable source files, read-only C/Rust/TS/Python headers & test contracts, compiler diagnostics, and the **Global Interface Ledger** simultaneously.
    - **Lead Architect (`gemini-4-argon`) + Parallel Subagents (`gemini-3.8-flash`)**: Runs parallel `gemini-3.8-flash` module reconnaissance subagents while `gemini-4-argon` synthesizes the Global Interface Contract Ledger.
-   - **Server-Side State (`previous_interaction_id`) & Implicit Caching**: Chains Phase 1 $\rightarrow$ Phase 3 $\rightarrow$ Phase 4 (and Track 2 Video Critique $\rightarrow$ 3D Scene Synthesis) via `previous_interaction_id`, retaining thought signatures and workspace context with a 2.8x speedup.
+   - **Server-Side State (`previous_interaction_id`) & Implicit Caching**: Chains Phase 1 $\rightarrow$ Phase 3 $\rightarrow$ Phase 4 (and Video Critique $\rightarrow$ 3D Scene Synthesis) via `previous_interaction_id`, retaining thought signatures and workspace context with a 2.8x speedup.
    - **Long Decode (`background=True`)**: Supports generating $>65,536$ output tokens asynchronously via background polling on the Interactions API.
 
 3. **Keeps Humans (Maintainers) in Control (2 Explicit Safety Gates + Supply-Chain Audit)**:
