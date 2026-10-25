@@ -5,20 +5,22 @@ FastAPI server and REST API for ArgonLedger — Million-Token Codebase Migration
 from __future__ import annotations
 
 import asyncio
+import base64
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.responses import FileResponse, HTMLResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from engine.migrator import BENCHMARK_SPECS, MigrationOrchestrator, ROOT_DIR
+from engine.world_loop import REAL_VIDEOS_DIR, WorldLoopOrchestrator
 
 
 app = FastAPI(
-    title="ArgonLedger — Gemini 4 Argon Whole-Repo Migration & Verification Engine",
-    version="1.0.0",
+    title="ArgonLedger — Gemini 4 Argon Whole-Repo Migration & 3D World Video Verification Engine",
+    version="1.2.0",
 )
 
 app.add_middleware(
@@ -29,6 +31,7 @@ app.add_middleware(
 )
 
 orchestrator = MigrationOrchestrator()
+world_orchestrator = WorldLoopOrchestrator(orchestrator.client)
 STATIC_DIR = ROOT_DIR / "static"
 STATIC_DIR.mkdir(parents=True, exist_ok=True)
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
@@ -289,3 +292,151 @@ async def commit_migration(session_id: str) -> Dict[str, Any]:
         return await asyncio.to_thread(orchestrator.commit_approved_migration, session_id)
     except Exception as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+# ---------------------------------------------------------------------------
+# Track 2: 3D Procedural World & Game Render -> Watch Video -> Critique -> Fix Loop
+# ---------------------------------------------------------------------------
+class CreateTrack2SessionRequest(BaseModel):
+    scenario_id: str = "real_bear_hike"
+    custom_goal: Optional[str] = None
+    thinking_level: str = "medium"
+
+
+class Track2UploadVideoRequest(BaseModel):
+    filename: str
+    video_base64: str
+    custom_goal: Optional[str] = None
+    thinking_level: str = "medium"
+
+
+class Track2CritiqueRequest(BaseModel):
+    frames: List[str] = []
+    telemetry: Dict[str, Any] = {}
+    target_iteration: Optional[int] = None
+
+
+class Track2FixRequest(BaseModel):
+    custom_feedback: Optional[str] = None
+
+
+@app.get("/api/track2/scenarios")
+async def list_track2_scenarios() -> List[Dict[str, Any]]:
+    return world_orchestrator.list_scenarios()
+
+
+@app.get("/api/track2/real_videos/{filename}")
+async def get_track2_real_video(filename: str) -> FileResponse:
+    safe_name = Path(filename).name
+    target = REAL_VIDEOS_DIR / safe_name
+    if not target.exists():
+        raise HTTPException(status_code=404, detail="Real video file not found")
+    return FileResponse(target, media_type="video/mp4")
+
+
+@app.post("/api/track2/upload_video")
+async def upload_track2_real_video(req: Track2UploadVideoRequest) -> Dict[str, Any]:
+    b64_part = req.video_base64.split(",", 1)[1] if "," in req.video_base64 else req.video_base64
+    try:
+        raw_bytes = base64.b64decode(b64_part)
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail=f"Invalid base64 video payload: {exc}") from exc
+
+    sess = await asyncio.to_thread(
+        world_orchestrator.create_session_from_uploaded_video,
+        raw_bytes,
+        req.filename,
+        req.custom_goal,
+        req.thinking_level,
+    )
+    return sess.to_dict()
+
+
+@app.post("/api/track2/sessions")
+async def create_track2_session(req: CreateTrack2SessionRequest) -> Dict[str, Any]:
+    sess = await asyncio.to_thread(
+        world_orchestrator.create_session,
+        req.scenario_id,
+        req.custom_goal,
+        req.thinking_level,
+    )
+    return sess.to_dict()
+
+
+@app.get("/api/track2/sessions/{session_id}")
+async def get_track2_session(session_id: str) -> Dict[str, Any]:
+    sess = world_orchestrator.sessions.get(session_id)
+    if not sess:
+        raise HTTPException(status_code=404, detail="Track 2 session not found")
+    return sess.to_dict()
+
+
+@app.get("/api/track2/sessions/{session_id}/artifacts.zip")
+async def download_track2_artifacts_zip(session_id: str) -> Response:
+    if session_id not in world_orchestrator.sessions:
+        raise HTTPException(status_code=404, detail="Track 2 session not found")
+    zip_bytes = await asyncio.to_thread(world_orchestrator.build_artifacts_zip, session_id)
+    sess = world_orchestrator.sessions[session_id]
+    fname = f"argon_real2sim_{sess.scenario_id}_{session_id}.zip"
+    return Response(
+        content=zip_bytes,
+        media_type="application/zip",
+        headers={"Content-Disposition": f'attachment; filename="{fname}"'},
+    )
+
+
+@app.post("/api/track2/sessions/{session_id}/critique")
+async def critique_track2_video(session_id: str, req: Track2CritiqueRequest) -> Dict[str, Any]:
+    if session_id not in world_orchestrator.sessions:
+        raise HTTPException(status_code=404, detail="Track 2 session not found")
+    try:
+        sess = await asyncio.to_thread(
+            world_orchestrator.critique_iteration_video,
+            session_id,
+            req.frames,
+            req.telemetry,
+            req.target_iteration,
+        )
+        return sess.to_dict()
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
+
+
+@app.post("/api/track2/sessions/{session_id}/fix")
+async def fix_track2_world(session_id: str, req: Track2FixRequest) -> Dict[str, Any]:
+    if session_id not in world_orchestrator.sessions:
+        raise HTTPException(status_code=404, detail="Track 2 session not found")
+    try:
+        sess = await asyncio.to_thread(
+            world_orchestrator.fix_and_upgrade_world,
+            session_id,
+            req.custom_feedback,
+        )
+        return sess.to_dict()
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
+
+
+@app.get("/api/track2/sessions/{session_id}/video/{iteration}")
+async def get_track2_video(session_id: str, iteration: int) -> FileResponse:
+    sess = world_orchestrator.sessions.get(session_id)
+    if not sess:
+        raise HTTPException(status_code=404, detail="Track 2 session not found")
+    for it in sess.iterations:
+        if it.iteration == iteration and it.video_path and Path(it.video_path).exists():
+            return FileResponse(it.video_path, media_type="video/mp4")
+    raise HTTPException(status_code=404, detail="Recorded video not found for this iteration")
+
+
+class Track2SwitchTakeRequest(BaseModel):
+    filename: str
+
+
+@app.post("/api/track2/sessions/{session_id}/switch_take")
+async def switch_track2_video_take(session_id: str, req: Track2SwitchTakeRequest) -> Dict[str, Any]:
+    if session_id not in world_orchestrator.sessions:
+        raise HTTPException(status_code=404, detail="Track 2 session not found")
+    sess = world_orchestrator.switch_video_take(session_id, req.filename)
+    return sess.to_dict()
+
+

@@ -107,6 +107,11 @@
 
       <!-- Right Controls -->
       <div class="flex items-center gap-2.5 flex-wrap">
+        <button onclick="openTrack2Studio()" class="px-3 py-1.5 rounded-lg bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+          <span>🎮</span>
+          <span>Track 2: 3D World Render → Video Critique Loop</span>
+        </button>
+
         <button onclick="switchMainTab('arch')" class="px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-semibold transition flex items-center gap-1.5 shadow-sm">
           <span>🗺️</span>
           <span>Architecture, 5 Patterns &amp; AGENTS.md</span>
@@ -475,6 +480,10 @@
           <button onclick="switchMainTab('arch')" id="tabBtn-arch" class="px-4 py-3 text-xs font-bold border-b-2 border-transparent text-slate-600 hover:text-slate-900 flex items-center gap-2">
             <span>④ Interactive Architecture &amp; Playbook (`AGENTS.md`)</span>
           </button>
+          <button onclick="switchMainTab('track2')" id="tabBtn-track2" class="px-4 py-3 text-xs font-bold border-b-2 border-transparent text-slate-600 hover:text-slate-900 flex items-center gap-2">
+            <span>⑤ 🎮 Track 2: 3D World Render → Video Critique → Fix Loop</span>
+            <span class="text-[10px] mono px-1.5 py-0.5 rounded bg-violet-100 text-violet-800 border border-violet-300 font-bold">NEW</span>
+          </button>
         </div>
 
         <!-- Problem Context Pill -->
@@ -721,6 +730,393 @@
               <span class="text-[10px] mono px-2 py-0.5 rounded bg-indigo-50 text-indigo-800 border border-indigo-200 font-semibold">Pattern #3</span>
             </div>
             <pre id="designMdPre" class="p-4 text-xs mono text-slate-700 bg-slate-50/60 max-h-80 overflow-y-auto whitespace-pre-wrap leading-relaxed">Loading DESIGN.md...</pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 5: TRACK 2 — REAL-TO-SIM VIDEO-TO-WORLD, ROBOTICS ARTIFACTS & 3D RENDER-CRITIQUE-FIX LOOP -->
+      <div id="tabPane-track2" class="p-5 flex-1 overflow-y-auto hidden space-y-5 bg-white">
+        <!-- Top Callout Banner: Real-World Video -> Game & Robotics Artifacts + Closed-Loop 3D World Synthesis -->
+        <div class="p-4 rounded-2xl bg-gradient-to-r from-indigo-50 via-violet-50/70 to-emerald-50/70 border border-indigo-200">
+          <div class="flex flex-wrap items-start justify-between gap-3 mb-3">
+            <div>
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="text-[10px] mono uppercase px-2 py-0.5 rounded bg-indigo-600 text-white font-bold">
+                  Track 2 • Real-to-Sim Video-to-World &amp; Robotics Artifact Studio
+                </span>
+                <span class="text-[10px] mono px-2 py-0.5 rounded bg-white text-indigo-700 border border-indigo-200 font-semibold">
+                  Real Field Videos (`bear_better.mp4` • `waterfall.mp4` • `sheep.mp4`) → 3D Digital Twin + MuJoCo XML + RL Reward
+                </span>
+              </div>
+              <h3 class="text-sm font-extrabold text-slate-900 mt-1">
+                Feed Real-World Videos → Extract Game &amp; Robotics Training Artifacts → Render, Critique &amp; Upgrade 3D Virtual Worlds in a Loop
+              </h3>
+              <p class="text-xs text-slate-600 mt-0.5">
+                Built for <strong>Game Developers</strong> and <strong>Embodied AI / Robot Trainers</strong>: <span class="mono font-semibold text-indigo-700">gemini-4-argon</span> watches your real-world hiking, waterfall, and New Zealand sheep videos, extracts <strong>Biome &amp; Kinematics JSON</strong>, <strong>MuJoCo Physics XML</strong>, <strong>Gymnasium RL Reward Python</strong>, and <strong>Game Engine Blueprints</strong>, and iteratively upgrades a live <strong>Three.js 3D Digital Twin</strong> with a toggleable <strong>Robotics Sensor &amp; Traversability Costmap Overlay</strong>.
+              </p>
+            </div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <label class="cursor-pointer px-3 py-1.5 rounded-xl bg-white hover:bg-indigo-50 text-indigo-700 border border-indigo-300 text-xs font-bold shadow-sm transition flex items-center gap-1.5">
+                <span>📤 Upload Your Own Video (`.mp4`/`.mov`)</span>
+                <input id="track2VideoUploadInput" type="file" accept="video/mp4,video/quicktime,video/webm" class="hidden" onchange="handleTrack2VideoUpload(event)" />
+              </label>
+              <button onclick="downloadTrack2ArtifactsZip()" type="button" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition flex items-center gap-1.5">
+                <span>⬇️ Download All Artifacts (`.zip`)</span>
+              </button>
+              <div id="track2SessionBadge" class="text-[11px] mono px-2.5 py-1 rounded-lg bg-white border border-indigo-200 text-indigo-900 font-semibold">
+                Track 2 Session Ready
+              </div>
+            </div>
+          </div>
+
+          <!-- 4-Step Visual Pipeline for Track 2 Real-to-Sim -->
+          <div class="grid grid-cols-1 sm:grid-cols-4 gap-2.5 text-xs">
+            <div class="p-2.5 rounded-xl bg-white border border-indigo-100">
+              <div class="text-[10px] mono font-bold text-indigo-700">1. INGEST REAL FIELD VIDEO</div>
+              <div class="font-bold text-slate-900 mt-0.5">Watch Real Video (`type="video"`)</div>
+              <div class="text-[11px] text-slate-500">Streams real field footage (Bear hike, Waterfall, NZ Sheep) to <span class="mono">gemini-4-argon</span></div>
+            </div>
+            <div class="p-2.5 rounded-xl bg-white border border-indigo-100">
+              <div class="text-[10px] mono font-bold text-emerald-700">2. EXTRACT SIM ARTIFACTS</div>
+              <div class="font-bold text-slate-900 mt-0.5">MuJoCo XML + RL Reward + Game Spec</div>
+              <div class="text-[11px] text-slate-500">Extracts terrain friction $\mu$, slope, entity kinematics, MuJoCo XML &amp; Gym RL reward</div>
+            </div>
+            <div class="p-2.5 rounded-xl bg-white border border-indigo-100">
+              <div class="text-[10px] mono font-bold text-amber-700">3. RENDER &amp; CRITIQUE 3D TWIN</div>
+              <div class="font-bold text-slate-900 mt-0.5">Record WebGL `.mp4` &amp; Score</div>
+              <div class="text-[11px] text-slate-500">Compares rendered Three.js 3D world against the real video &amp; pinpoints defects</div>
+            </div>
+            <div class="p-2.5 rounded-xl bg-white border border-indigo-100">
+              <div class="text-[10px] mono font-bold text-violet-700">4. CLOSED-LOOP 3D UPGRADE</div>
+              <div class="font-bold text-slate-900 mt-0.5">Stateful Fix (`previous_interaction_id`)</div>
+              <div class="text-[11px] text-slate-500">Synthesizes upgraded 3D game world + Robotics 3D Bounding Box &amp; Costmap overlay</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scenario Picker + Custom Goal Override -->
+        <div class="space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-700">
+              1. Select a Real-World Field Video (Bear Hike, Waterfall, NZ Sheep) or Procedural 3D World:
+            </span>
+            <span class="text-[11px] text-slate-500">
+              All multimodal video &amp; 3D synthesis calls stream live in <strong>📡 Live Argon API Traffic</strong> above
+            </span>
+          </div>
+          <div id="track2ScenarioCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5"></div>
+
+          <!-- Editable Goal & Optional Director Feedback -->
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 grid grid-cols-1 lg:grid-cols-12 gap-3 items-end">
+            <div class="lg:col-span-5">
+              <label class="block text-[11px] font-bold text-slate-700 mb-1">
+                Target 3D Virtual World &amp; Robotics Simulation Goal (Used by `gemini-4-argon` when watching the video):
+              </label>
+              <input id="track2GoalInput" type="text" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-xs text-slate-800" />
+            </div>
+            <div class="lg:col-span-3">
+              <label class="block text-[11px] font-bold text-slate-700 mb-1">
+                Optional Game Dev / Robot Trainer Steering Note:
+              </label>
+              <input id="track2FeedbackInput" type="text" placeholder="e.g. Add more trailside berry bushes & denser pine trees" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-xs text-slate-800" />
+            </div>
+            <div class="lg:col-span-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+              <button id="track2RunLoopBtn" onclick="runTrack2FullLoop()" class="flex-1 py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-500/15 transition flex items-center justify-center gap-1.5 cta-pulse" title="Execute the full autonomous loop: Record WebGL .mp4 → Watch & Critique with Gemini 4 Argon → Synthesize Upgraded 3D World → Verify Score">
+                <span>▶</span>
+                <span id="track2RunLoopBtnText">Run Full Loop: Render → Watch → Critique → Fix</span>
+              </button>
+              <button onclick="runTrack2CritiqueOnly()" id="track2CritiqueOnlyBtn" type="button" class="py-2 px-2.5 rounded-xl bg-white hover:bg-indigo-50 text-indigo-800 border border-indigo-300 text-[11px] font-bold transition shrink-0 flex items-center justify-center gap-1" title="Step 1 & 2 Only (~12s): Record the active 3D WebGL viewport into an .mp4 video and have Gemini 4 Argon watch & critique it without generating a new 3D iteration yet">
+                <span>🎬</span>
+                <span>Watch &amp; Critique Only (~12s)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- INLINE TRACK 2 LIVE 4-STAGE PROGRESS & STOPWATCH PANEL (Visible right below the button while running) -->
+          <div id="track2LiveProgressPanel" class="hidden p-4 rounded-xl bg-indigo-950 text-white border-2 border-indigo-400 shadow-lg space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div class="flex items-center gap-3">
+                <div class="w-5 h-5 rounded-full border-2 border-emerald-400 border-t-transparent animate-spin shrink-0"></div>
+                <div>
+                  <div id="track2ProgressTitle" class="text-xs font-extrabold text-white">
+                    Step 1/4: Recording WebGL Flythrough Video...
+                  </div>
+                  <div id="track2ProgressSub" class="text-[11px] text-indigo-200">
+                    Capturing live Three.js WebGL frames and encoding H.264 `.mp4` via `ffmpeg`...
+                  </div>
+                </div>
+              </div>
+              <div class="flex items-center gap-3 shrink-0 bg-slate-900/90 px-3 py-1.5 rounded-lg border border-indigo-500/40">
+                <div class="text-right">
+                  <div class="flex items-baseline gap-1.5 justify-end">
+                    <span id="track2LiveTimerDisplay" class="text-sm font-extrabold mono text-emerald-400 tabular">0.0s</span>
+                    <span id="track2EtaBadge" class="text-[10px] mono text-indigo-300">/ ~40–55s est.</span>
+                  </div>
+                  <div class="text-[9px] uppercase tracking-wider text-slate-400 font-semibold">Live Elapsed Time</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Visual Progress Bar -->
+            <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden border border-slate-700">
+              <div id="track2ProgressBarFill" class="h-full bg-gradient-to-r from-indigo-500 via-sky-400 to-emerald-400 transition-all duration-300" style="width: 15%"></div>
+            </div>
+
+            <!-- 4-Stage Pipeline Stepper Pills -->
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-2 text-[10px] mono">
+              <div id="t2StepPill-1" class="px-2.5 py-1.5 rounded-lg border border-indigo-500/40 bg-indigo-900/60 text-indigo-200 font-semibold flex items-center justify-between">
+                <span>1. Record WebGL (.mp4)</span>
+                <span class="opacity-75">~2s</span>
+              </div>
+              <div id="t2StepPill-2" class="px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-900/60 text-slate-400 flex items-center justify-between">
+                <span>2. Argon Video Critique</span>
+                <span class="opacity-75">~12s</span>
+              </div>
+              <div id="t2StepPill-3" class="px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-900/60 text-slate-400 flex items-center justify-between">
+                <span>3. Synthesize 3D Twin</span>
+                <span class="opacity-75">~22s</span>
+              </div>
+              <div id="t2StepPill-4" class="px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-900/60 text-slate-400 flex items-center justify-between">
+                <span>4. Verify Upgraded 3D</span>
+                <span class="opacity-75">~8s</span>
+              </div>
+            </div>
+
+            <!-- Live In-Flight API Call Ticker (Mirrors #liveBannerCallTicker right inside Track 2) -->
+            <div id="track2LiveCallTicker" class="text-[10px] mono bg-slate-900/95 border border-slate-800 rounded-lg px-3 py-2 text-slate-300 space-y-1 max-h-28 overflow-y-auto">
+              <div class="text-indigo-300">Dispatching live <span class="text-white font-semibold">client.interactions.create(model="gemini-4-argon", ...)</span> requests...</div>
+            </div>
+          </div>
+
+          <!-- NEW: ITERATIVE RENDERING EVOLUTION & LOOP PROGRESSION PANEL (Render -> Watch -> Critique -> Fix) -->
+          <div id="track2EvolutionPanel" class="p-4 rounded-xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white border border-indigo-400/50 shadow-md space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-indigo-500/30">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 text-[10px] mono font-extrabold uppercase">
+                  📈 Closed-Loop Evolution
+                </span>
+                <h3 class="text-xs sm:text-sm font-extrabold text-white">
+                  How <span class="mono text-indigo-300">gemini-4-argon</span> Iteratively Improved the 3D Rendering (<span class="mono text-emerald-300">Render → Watch → Critique → Fix</span>)
+                </h3>
+              </div>
+              <div class="flex items-center gap-2 flex-wrap">
+                <span id="track2EvolutionDeltaBadge" class="text-[11px] mono font-extrabold px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-400/40">
+                  Score: 24/100 → 94/100 (+70 pts)
+                </span>
+                <button onclick="toggleTrack2SplitCompare()" id="track2SplitCompareToggleBtn" type="button" class="px-3 py-1 rounded-lg bg-indigo-500 hover:bg-indigo-400 text-white text-[11px] font-extrabold shadow-sm transition flex items-center gap-1.5">
+                  <span>⚖️</span>
+                  <span id="track2SplitCompareBtnText">Compare Before vs. After (Split 3D View)</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Connected Iteration Progression Cards (Populated by renderTrack2EvolutionTimeline) -->
+            <div id="track2EvolutionCards" class="grid grid-cols-1 md:grid-cols-12 gap-3 items-stretch">
+              <!-- Populated dynamically -->
+            </div>
+
+            <!-- Side-by-Side Split 3D Comparison Drawer (Toggled by Compare Before vs. After) -->
+            <div id="track2SplitCompareContainer" class="hidden pt-2 border-t border-indigo-500/30 space-y-2">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <div class="text-xs font-extrabold text-emerald-300 flex items-center gap-2">
+                  <span>⚖️ Live Side-by-Side 3D WebGL Comparison: Initial Single-Pass Draft vs. Argon-Upgraded 3D World</span>
+                </div>
+                <button onclick="toggleTrack2SplitCompare()" type="button" class="text-[11px] mono text-indigo-200 hover:text-white underline">
+                  ✕ Close Split View
+                </button>
+              </div>
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                <div class="rounded-xl overflow-hidden border border-amber-400/50 bg-slate-950">
+                  <div class="bg-slate-900 px-3 py-1.5 border-b border-slate-800 flex items-center justify-between gap-2">
+                    <span id="track2SplitLeftTitle" class="text-[11px] font-bold text-amber-300">BEFORE: Iteration #1 — Initial Single-Pass Draft</span>
+                    <span id="track2SplitLeftBadge" class="text-[10px] mono px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-400/40 font-bold">24/100 • 3 Meshes • 0 Lights</span>
+                  </div>
+                  <iframe id="track2SplitLeftIframe" class="w-full h-[290px] border-0 bg-slate-950" sandbox="allow-scripts allow-same-origin"></iframe>
+                </div>
+                <div class="rounded-xl overflow-hidden border-2 border-emerald-400/70 bg-slate-950 shadow-lg">
+                  <div class="bg-slate-900 px-3 py-1.5 border-b border-slate-800 flex items-center justify-between gap-2">
+                    <span id="track2SplitRightTitle" class="text-[11px] font-bold text-emerald-300">AFTER: Iteration #2 — Upgraded via Argon Video Critique</span>
+                    <span id="track2SplitRightBadge" class="text-[10px] mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 font-bold">94/100 • 88 Meshes • 3 Lights</span>
+                  </div>
+                  <iframe id="track2SplitRightIframe" class="w-full h-[290px] border-0 bg-slate-950" sandbox="allow-scripts allow-same-origin"></iframe>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main Split Workspace: Left = Source Real Video + Live 3D WebGL Twin | Right = Artifacts Hub + Argon Video Critique -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+          <!-- Left 7 Cols: Iteration Switcher + Real Video & 3D WebGL Twin + Recorded Sim MP4 -->
+          <div class="lg:col-span-7 space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2 bg-slate-100 p-2 rounded-xl border border-slate-200">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 px-1.5">Inspect Iteration:</span>
+                <div class="flex items-center gap-1.5 flex-wrap" id="track2IterationTabs">
+                  <!-- Populated by renderTrack2State() -->
+                </div>
+              </div>
+              <span class="text-[10px] mono text-slate-500 hidden sm:inline">Click any iteration tab to inspect its 3D scene &amp; video critique</span>
+            </div>
+
+            <!-- Real-World Source Video Player (Shown whenever a Real-to-Sim video scenario is active) -->
+            <div id="track2RealVideoCard" class="p-3 rounded-xl bg-slate-900 border border-indigo-400/40 text-white space-y-2">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <div class="flex items-center gap-2">
+                  <span class="px-2 py-0.5 rounded bg-indigo-600 text-[10px] mono font-bold uppercase">📹 Real-World Source Video</span>
+                  <span id="track2RealVideoTitle" class="text-xs font-bold text-slate-100">bear_better.mp4</span>
+                </div>
+                <span id="track2RealVideoMetaBadge" class="text-[10px] mono px-2 py-0.5 rounded bg-slate-800 text-emerald-300 border border-slate-700">
+                  GPS +43.7626, -110.7713 • Google Pixel 8
+                </span>
+              </div>
+              <div id="track2CameraTakesBar" class="hidden pt-1 pb-1.5 border-b border-slate-800 flex flex-wrap items-center gap-1.5">
+                <!-- Populated dynamically with all camera takes from /Users/user/Downloads/gemini-argon-4-media -->
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                <div class="md:col-span-7">
+                  <video id="track2RealVideoPlayer" controls loop muted playsinline class="w-full max-h-52 rounded-lg bg-black border border-slate-700"></video>
+                </div>
+                <div class="md:col-span-5 space-y-1.5 text-[11px] text-slate-300">
+                  <div class="font-bold text-indigo-300">Real-to-Sim Digital Twin Pipeline:</div>
+                  <p class="leading-relaxed text-slate-300">
+                    1. <span class="mono text-white">gemini-4-argon</span> watches this real field video inline (<span class="mono">video/mp4</span>).<br/>
+                    2. Extracts terrain friction $\mu$, slope angle, dynamic entity kinematics, <strong>MuJoCo XML</strong> &amp; <strong>Gym RL Reward</strong>.<br/>
+                    3. Critiques Draft 1 and synthesizes an upgraded <strong>Three.js 3D Digital Twin</strong> below!
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Live 60FPS Three.js WebGL Virtual World & Robotics Sim Viewport -->
+            <div class="rounded-xl overflow-hidden border-2 border-indigo-200 bg-slate-950 shadow-sm">
+              <div class="bg-slate-900 px-3.5 py-2 border-b border-slate-800 flex flex-wrap items-center justify-between gap-2">
+                <div class="flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                  <span class="text-xs font-bold text-white" id="track2ViewportTitle">Live Interactive Three.js 3D Virtual World &amp; Robotics Twin</span>
+                </div>
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <!-- Interactive 3D Viewport Overlay Controls (Moved inside 3D Viewport Toolbar with live state badges) -->
+                  <button onclick="toggleTrack2RoboticsOverlay()" id="track2RoboticsToggleBtn" type="button" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-emerald-950 text-emerald-300 border border-emerald-500/50 text-[10px] mono font-bold transition flex items-center gap-1" title="Toggle 3D Oriented Bounding Boxes, 15m Wildlife Safety Standoff Rings, and Ground Traversability Costmap Grid inside the live 3D scene">
+                    <span>🤖 3D BBoxes &amp; Costmap:</span>
+                    <span id="track2RoboticsStateBadge" class="px-1 rounded bg-slate-700 text-slate-200">OFF</span>
+                  </button>
+                  <button onclick="cycleTrack2DomainRandomization()" id="track2DomainRandBtn" type="button" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-amber-950 text-amber-300 border border-amber-500/50 text-[10px] mono font-bold transition flex items-center gap-1" title="Cycle Sim-to-Real Domain Randomization lighting &amp; sensor profiles inside the live 3D scene (☀️ Daylight → 🌫️ LiDAR Fog → 🌙 Dusk / Night → 🔥 Thermal IR)">
+                    <span>🌦️ Weather / Sensor:</span>
+                    <span id="track2DomainRandStateBadge" class="px-1 rounded bg-amber-500/20 text-amber-200">☀️ Daylight</span>
+                  </button>
+                  <div id="track2TelemetryPills" class="flex items-center gap-1 text-[10px] mono text-slate-300">
+                    <span class="px-2 py-0.5 rounded bg-slate-800 border border-slate-700">WebGL Ready</span>
+                  </div>
+                </div>
+              </div>
+              <iframe id="track2WebglIframe" class="w-full h-[360px] border-0 bg-slate-950" sandbox="allow-scripts allow-same-origin"></iframe>
+            </div>
+
+            <!-- Recorded H.264 MP4 Video Clip of the 3D WebGL Simulation -->
+            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <div class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                    <span>🎥 Recorded 3D WebGL Simulation Video (`iter_N.mp4` via `ffmpeg`)</span>
+                  </div>
+                  <p class="text-[11px] text-slate-500">
+                    Captured from the 3D WebGL canvas above into <span class="mono" id="track2VideoPathLabel">awaiting video capture...</span> for closed-loop visual verification.
+                  </p>
+                </div>
+                <span id="track2VideoStatusPill" class="text-[10px] mono px-2 py-0.5 rounded bg-slate-200 text-slate-700 font-semibold">
+                  Not Recorded Yet
+                </span>
+              </div>
+              <video id="track2VideoPlayer" controls autoplay loop muted playsinline class="hidden w-full max-h-44 rounded-lg bg-slate-950 border border-slate-300"></video>
+            </div>
+          </div>
+
+          <!-- Right 5 Cols: Real-to-Sim Game & Robotics Artifact Hub + Gemini 4 Argon Multimodal Video Critique -->
+          <div class="lg:col-span-5 space-y-3">
+            <!-- NEW: Real-to-Sim Game & Robotics Training Artifacts Hub -->
+            <div class="p-4 rounded-xl bg-white border-2 border-emerald-200 shadow-sm space-y-3">
+              <div class="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-slate-200">
+                <div>
+                  <span class="text-[10px] mono uppercase text-emerald-700 font-extrabold">📦 Exportable Real-to-Sim Artifacts</span>
+                  <h4 class="text-xs font-extrabold text-slate-900">Game Engine &amp; Robotics Training Artifact Pack</h4>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <button onclick="copyActiveTrack2Artifact()" id="track2CopyArtifactBtn" type="button" class="px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] mono font-bold transition">
+                    📋 Copy Artifact
+                  </button>
+                  <button onclick="downloadTrack2ArtifactsZip()" type="button" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] mono font-bold transition">
+                    ⬇️ .ZIP Bundle
+                  </button>
+                </div>
+              </div>
+
+              <!-- 4 Artifact Tabs -->
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 text-[10px] font-bold">
+                <button onclick="selectTrack2ArtifactTab('scene_perception')" id="artTab-scene_perception" type="button" class="px-2 py-1.5 rounded-lg bg-emerald-600 text-white transition text-center">
+                  🌍 Perception JSON
+                </button>
+                <button onclick="selectTrack2ArtifactTab('mujoco_xml')" id="artTab-mujoco_xml" type="button" class="px-2 py-1.5 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 transition text-center">
+                  🤖 MuJoCo XML
+                </button>
+                <button onclick="selectTrack2ArtifactTab('rl_reward_py')" id="artTab-rl_reward_py" type="button" class="px-2 py-1.5 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 transition text-center">
+                  🐍 Gym RL Reward
+                </button>
+                <button onclick="selectTrack2ArtifactTab('game_blueprint')" id="artTab-game_blueprint" type="button" class="px-2 py-1.5 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 transition text-center">
+                  🎮 Game Blueprint
+                </button>
+              </div>
+
+              <div id="track2ArtifactDesc" class="text-[11px] text-slate-600 bg-emerald-50/60 border border-emerald-200 rounded-lg px-2.5 py-1.5">
+                <strong>`scene_perception.json`:</strong> Biome classification, surface friction coefficient ($\mu$), terrain slope angle, sensor occlusion hazards, and timestamped dynamic entity kinematics extracted from the video.
+              </div>
+
+              <pre id="track2ArtifactPre" class="p-3 rounded-lg bg-slate-900 text-emerald-100 text-[11px] mono max-h-60 overflow-y-auto whitespace-pre-wrap leading-relaxed"></pre>
+            </div>
+
+            <!-- Multimodal Video Critique Card -->
+            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+              <div class="flex items-center justify-between gap-2 pb-2 border-b border-slate-200">
+                <div>
+                  <span class="text-[10px] mono uppercase text-indigo-700 font-bold">Gemini 4 Argon Video Understanding</span>
+                  <h4 class="text-xs font-extrabold text-slate-900">Multimodal Video Critique vs. Real Video &amp; Goal</h4>
+                </div>
+                <span id="track2ScoreBadge" class="text-xs mono font-extrabold px-2.5 py-1 rounded-lg bg-slate-200 text-slate-700">
+                  Awaiting Video Critique
+                </span>
+              </div>
+
+              <!-- Server-Side Interaction IDs for Track 2 -->
+              <div class="space-y-1 text-[10px] mono bg-white p-2.5 rounded-lg border border-slate-200">
+                <div class="flex items-center justify-between gap-2">
+                  <span class="text-slate-500">Video Critique `interaction.id`:</span>
+                  <span id="track2CritiqueIdSpan" class="text-indigo-700 font-semibold break-all">not run yet</span>
+                </div>
+                <div class="flex items-center justify-between gap-2">
+                  <span class="text-slate-500">3D Synthesis `interaction.id`:</span>
+                  <span id="track2SynthIdSpan" class="text-emerald-700 font-semibold break-all">initial draft</span>
+                </div>
+              </div>
+
+              <div id="track2CritiqueBody" class="space-y-2.5 text-xs">
+                <div class="p-5 text-center text-slate-500 text-xs">
+                  Click <strong>▶ Watch Real Video → Critique → Upgrade 3D Twin</strong> above to have <span class="mono font-semibold text-indigo-700">gemini-4-argon</span> watch the real-world video, update the perception artifacts, critique Draft 1, and synthesize an upgraded 3D Virtual World!
+                </div>
+              </div>
+            </div>
+
+            <!-- Implemented 3D Features & Raw Three.js Source Code Inspector -->
+            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2.5">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-800">Iteration Summary &amp; `sim_world.html` Code</span>
+                <button onclick="document.getElementById('track2CodePre').classList.toggle('hidden')" class="text-[11px] font-semibold text-indigo-600 hover:text-indigo-800 underline">
+                  Toggle Three.js Source Code ▾
+                </button>
+              </div>
+              <p id="track2ChangeSummaryText" class="text-[11px] text-slate-600 leading-relaxed"></p>
+              <div id="track2FeaturesList" class="flex flex-wrap gap-1.5"></div>
+              <pre id="track2CodePre" class="hidden p-3 rounded-lg bg-slate-900 text-slate-100 text-[11px] mono max-h-64 overflow-y-auto whitespace-pre-wrap"></pre>
+            </div>
           </div>
         </div>
       </div>
@@ -1041,23 +1437,42 @@
           judgeCountEl.textContent = inFlight > 0 ? `(${inFlight} in-flight / ${calls.length} calls)` : `(${calls.length} calls)`;
         }
 
-        // Update mini ticker inside #liveActivityBanner
+        // Update mini ticker inside #liveActivityBanner and #track2LiveCallTicker
         const tickerEl = document.getElementById('liveBannerCallTicker');
-        if (tickerEl && calls.length > 0) {
-          tickerEl.innerHTML = calls.slice(0, 6).map(c => {
-            const isFlight = c.status === 'IN_FLIGHT';
-            const badge = isFlight
-              ? `<span class="px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-300 font-bold">⏳ IN_FLIGHT ${c.elapsed_seconds}s</span>`
-              : c.status === 'ERROR'
-              ? `<span class="px-1.5 py-0.5 rounded bg-rose-100 text-rose-800 border border-rose-300 font-bold">✕ ERROR</span>`
-              : `<span class="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold">✓ ${c.elapsed_seconds}s</span>`;
-            const idPart = c.interaction_id ? `• id: <span class="text-indigo-700 font-semibold">${escapeHtml(c.interaction_id)}</span>` : '';
-            const tokPart = c.total_tokens ? `• <span class="text-emerald-700 font-semibold">${c.total_tokens.toLocaleString()} tok</span>` : '';
-            return `<div class="flex flex-wrap items-center justify-between gap-2 py-0.5 border-b border-slate-100 last:border-0">
-              <div class="truncate max-w-[75%]">${badge} <span class="font-bold text-slate-900">${escapeHtml(c.model)}</span> <span class="text-slate-500">(${escapeHtml(c.sdk_call)})</span></div>
-              <div class="text-[10px] shrink-0">${idPart} ${tokPart}</div>
-            </div>`;
-          }).join('');
+        const t2TickerEl = document.getElementById('track2LiveCallTicker');
+        if (calls.length > 0) {
+          if (tickerEl) {
+            tickerEl.innerHTML = calls.slice(0, 6).map(c => {
+              const isFlight = c.status === 'IN_FLIGHT';
+              const badge = isFlight
+                ? `<span class="px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-300 font-bold">⏳ IN_FLIGHT ${c.elapsed_seconds}s</span>`
+                : c.status === 'ERROR'
+                ? `<span class="px-1.5 py-0.5 rounded bg-rose-100 text-rose-800 border border-rose-300 font-bold">✕ ERROR</span>`
+                : `<span class="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold">✓ ${c.elapsed_seconds}s</span>`;
+              const idPart = c.interaction_id ? `• id: <span class="text-indigo-700 font-semibold">${escapeHtml(c.interaction_id)}</span>` : '';
+              const tokPart = c.total_tokens ? `• <span class="text-emerald-700 font-semibold">${c.total_tokens.toLocaleString()} tok</span>` : '';
+              return `<div class="flex flex-wrap items-center justify-between gap-2 py-0.5 border-b border-slate-100 last:border-0">
+                <div class="truncate max-w-[75%]">${badge} <span class="font-bold text-slate-900">${escapeHtml(c.model)}</span> <span class="text-slate-500">(${escapeHtml(c.sdk_call)})</span></div>
+                <div class="text-[10px] shrink-0">${idPart} ${tokPart}</div>
+              </div>`;
+            }).join('');
+          }
+          if (t2TickerEl) {
+            t2TickerEl.innerHTML = calls.slice(0, 4).map(c => {
+              const isFlight = c.status === 'IN_FLIGHT';
+              const badge = isFlight
+                ? `<span class="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-400/50 font-bold animate-pulse">⏳ IN_FLIGHT ${c.elapsed_seconds}s</span>`
+                : c.status === 'ERROR'
+                ? `<span class="px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-400/50 font-bold">✕ ERROR</span>`
+                : `<span class="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-400/50 font-bold">✓ DONE ${c.elapsed_seconds}s</span>`;
+              const idPart = c.interaction_id ? `• id: <span class="text-amber-300 font-semibold">${escapeHtml(c.interaction_id)}</span>` : '• <span class="text-indigo-300">streaming multimodal video/3D tokens...</span>';
+              const tokPart = c.total_tokens ? `• <span class="text-emerald-300 font-semibold">${c.total_tokens.toLocaleString()} tok</span>` : '';
+              return `<div class="flex flex-wrap items-center justify-between gap-2 py-0.5 border-b border-slate-800 last:border-0">
+                <div class="truncate max-w-[72%]">${badge} <span class="font-bold text-white">${escapeHtml(c.model)}</span> <span class="text-slate-400">(${escapeHtml(c.sdk_call)})</span></div>
+                <div class="text-[10px] shrink-0">${idPart} ${tokPart}</div>
+              </div>`;
+            }).join('');
+          }
         }
 
         // Update full #liveTrafficList drawer
@@ -1759,9 +2174,10 @@
     }
 
     function switchMainTab(tab) {
-      ['ledger', 'diffs', 'logs', 'arch'].forEach(t => {
+      ['ledger', 'diffs', 'logs', 'arch', 'track2'].forEach(t => {
         const pane = document.getElementById(`tabPane-${t}`);
         const btn = document.getElementById(`tabBtn-${t}`);
+        if (!pane || !btn) return;
         if (t === tab) {
           pane.classList.remove('hidden');
           btn.className = 'px-4 py-3 text-xs font-bold border-b-2 border-indigo-600 text-indigo-700 bg-white flex items-center gap-2';
@@ -1770,6 +2186,956 @@
           btn.className = 'px-4 py-3 text-xs font-bold border-b-2 border-transparent text-slate-600 hover:text-slate-900 flex items-center gap-2';
         }
       });
+      if (tab === 'track2' && !track2Session) {
+        initTrack2();
+      }
+    }
+
+    function openTrack2Studio() {
+      switchMainTab('track2');
+      const el = document.getElementById('tabBtn-track2');
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // -------------------------------------------------------------------------
+    // Track 2: Real-to-Sim Video-to-World & Robotics Artifact Studio
+    // -------------------------------------------------------------------------
+    let track2Scenarios = [];
+    let activeTrack2ScenarioId = 'real_bear_hike';
+    let track2Session = null;
+    let activeTrack2IterIdx = 0;
+    let lastRenderedIframeKey = '';
+    let activeTrack2ArtifactTab = 'scene_perception';
+
+    async function initTrack2() {
+      try {
+        const res = await fetch('/api/track2/scenarios');
+        if (res.ok) {
+          track2Scenarios = await res.json();
+        }
+        renderTrack2ScenarioCards();
+        await selectTrack2Scenario(activeTrack2ScenarioId);
+      } catch (e) {
+        console.error('Failed to initialize Track 2:', e);
+      }
+    }
+
+    function renderTrack2ScenarioCards() {
+      const container = document.getElementById('track2ScenarioCards');
+      if (!container) return;
+      const icons = {
+        real_bear_hike: '🐻',
+        real_waterfall_cascade: '🌊',
+        real_nz_sheep: '🐑',
+        real_forest_deer: '🦌',
+        real_kenai_glacier: '🧊',
+        real_hillside_waterfall: '⛰️',
+        synthwave_canyon_racer: '🏎️',
+        floating_sky_archipelago: '🏝️',
+        orbital_defense_station: '🛸'
+      };
+      container.innerHTML = track2Scenarios.map(s => {
+        const active = s.id === activeTrack2ScenarioId;
+        const isRealVideo = Boolean(s.real_video_url);
+        const takeCount = (s.camera_takes && s.camera_takes.length) ? s.camera_takes.length : (isRealVideo ? 1 : 0);
+        const borderCls = active
+          ? 'border-2 border-indigo-600 bg-indigo-50/60 shadow-sm'
+          : 'border border-slate-200 bg-white hover:border-indigo-300';
+        const pillBadge = isRealVideo
+          ? `<span class="text-[9px] mono px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold shrink-0">📹 ${takeCount > 1 ? takeCount + ' TAKES' : 'REAL FOOTAGE'}</span>`
+          : `<span class="text-[9px] mono px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200 font-semibold shrink-0">🎮 PROMPT → 3D GAME</span>`;
+        const rawTitle = String(s.title || '');
+        const iconPrefix = icons[s.id] || '🎬';
+        const displayTitle = rawTitle.startsWith(iconPrefix) ? rawTitle : `${iconPrefix} ${rawTitle}`;
+        const statusText = active
+          ? (isRealVideo ? '● Active Real-to-Sim Twin' : '● Active Procedural 3D Game World')
+          : (isRealVideo ? 'Click to Load Real Video + 3D Twin' : 'Click to Load Procedural 3D Game');
+        return `
+          <button onclick="selectTrack2Scenario('${s.id}')" type="button" class="text-left p-3 rounded-xl transition flex flex-col justify-between gap-2 ${borderCls}">
+            <div>
+              <div class="flex items-center justify-between gap-1.5 mb-1">
+                <span class="text-xs font-extrabold text-slate-900 truncate">${escapeHtml(displayTitle)}</span>
+                ${pillBadge}
+              </div>
+              <div class="text-[10px] font-semibold text-indigo-700 mb-1 truncate">${escapeHtml(s.category || '')}</div>
+              <p class="text-[11px] text-slate-600 line-clamp-2 leading-relaxed">${escapeHtml(s.draft1_summary)}</p>
+            </div>
+            <div class="text-[10px] mono font-bold ${active ? 'text-indigo-700' : 'text-slate-400'}">
+              ${statusText}
+            </div>
+          </button>
+        `;
+      }).join('');
+    }
+
+    async function selectTrack2Scenario(scenarioId) {
+      activeTrack2ScenarioId = scenarioId;
+      renderTrack2ScenarioCards();
+      const thinkingLevel = document.getElementById('thinkingLevelSelect').value;
+      const res = await fetch('/api/track2/sessions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          scenario_id: scenarioId,
+          thinking_level: thinkingLevel
+        })
+      });
+      if (!res.ok) return;
+      track2Session = await res.json();
+      activeTrack2IterIdx = track2Session.iterations.length - 1;
+      lastRenderedIframeKey = '';
+      document.getElementById('track2GoalInput').value = track2Session.goal_prompt || '';
+      renderTrack2State(true);
+    }
+
+    let track2SplitCompareActive = false;
+    let track2RoboticsOverlayOn = false;
+    let track2DomainRandLabel = '☀️ Daylight';
+    let lastSplitLeftKey = '';
+    let lastSplitRightKey = '';
+
+    window.addEventListener('message', (ev) => {
+      if (!ev.data || typeof ev.data !== 'object') return;
+      if (ev.data.type === 'ARGON_ROBOTICS_MODE_CHANGED') {
+        track2RoboticsOverlayOn = Boolean(ev.data.active);
+        updateTrack2ViewportOverlayBadges();
+      } else if (ev.data.type === 'ARGON_DOMAIN_RAND_CHANGED') {
+        track2DomainRandLabel = ev.data.label || '☀️ Daylight';
+        updateTrack2ViewportOverlayBadges();
+      }
+    });
+
+    function updateTrack2ViewportOverlayBadges() {
+      const robBadge = document.getElementById('track2RoboticsStateBadge');
+      const robBtn = document.getElementById('track2RoboticsToggleBtn');
+      if (robBadge && robBtn) {
+        if (track2RoboticsOverlayOn) {
+          robBadge.textContent = 'ON';
+          robBadge.className = 'px-1.5 rounded bg-emerald-400 text-slate-950 font-extrabold';
+          robBtn.className = 'px-2.5 py-1 rounded-lg bg-emerald-900/90 hover:bg-emerald-800 text-emerald-200 border border-emerald-400 text-[10px] mono font-bold transition flex items-center gap-1 shadow-sm';
+        } else {
+          robBadge.textContent = 'OFF';
+          robBadge.className = 'px-1 rounded bg-slate-700 text-slate-200';
+          robBtn.className = 'px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-emerald-950 text-emerald-300 border border-emerald-500/50 text-[10px] mono font-bold transition flex items-center gap-1';
+        }
+      }
+      const domBadge = document.getElementById('track2DomainRandStateBadge');
+      if (domBadge) {
+        domBadge.textContent = track2DomainRandLabel;
+      }
+    }
+
+    function selectTrack2Iteration(idx) {
+      if (!track2Session || !track2Session.iterations[idx]) return;
+      activeTrack2IterIdx = idx;
+      track2RoboticsOverlayOn = false;
+      track2DomainRandLabel = '☀️ Daylight';
+      updateTrack2ViewportOverlayBadges();
+      renderTrack2State(true);
+    }
+
+    function toggleTrack2RoboticsOverlay() {
+      ['track2WebglIframe', 'track2SplitLeftIframe', 'track2SplitRightIframe'].forEach(id => {
+        const ifr = document.getElementById(id);
+        if (ifr && ifr.contentWindow) {
+          ifr.contentWindow.postMessage({ type: 'ARGON_TOGGLE_ROBOTICS' }, '*');
+        }
+      });
+    }
+
+    function cycleTrack2DomainRandomization() {
+      ['track2WebglIframe', 'track2SplitLeftIframe', 'track2SplitRightIframe'].forEach(id => {
+        const ifr = document.getElementById(id);
+        if (ifr && ifr.contentWindow) {
+          ifr.contentWindow.postMessage({ type: 'ARGON_CYCLE_DOMAIN_RAND' }, '*');
+        }
+      });
+    }
+
+    function toggleTrack2SplitCompare() {
+      track2SplitCompareActive = !track2SplitCompareActive;
+      const container = document.getElementById('track2SplitCompareContainer');
+      const btnText = document.getElementById('track2SplitCompareBtnText');
+      const btn = document.getElementById('track2SplitCompareToggleBtn');
+      if (container) {
+        if (track2SplitCompareActive) {
+          container.classList.remove('hidden');
+          if (btnText) btnText.textContent = 'Hide Split 3D View';
+          if (btn) btn.className = 'px-3 py-1 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-[11px] font-extrabold shadow-sm transition flex items-center gap-1.5';
+          renderTrack2SplitViewports(true);
+        } else {
+          container.classList.add('hidden');
+          if (btnText) btnText.textContent = 'Compare Before vs. After (Split 3D View)';
+          if (btn) btn.className = 'px-3 py-1 rounded-lg bg-indigo-500 hover:bg-indigo-400 text-white text-[11px] font-extrabold shadow-sm transition flex items-center gap-1.5';
+        }
+      }
+    }
+
+    function renderTrack2SplitViewports(forceReload = false) {
+      if (!track2Session || !track2SplitCompareActive) return;
+      const iters = track2Session.iterations || [];
+      if (iters.length === 0) return;
+      const firstIt = iters[0];
+      const latestIt = iters[iters.length - 1];
+
+      const leftTitle = document.getElementById('track2SplitLeftTitle');
+      const leftBadge = document.getElementById('track2SplitLeftBadge');
+      const leftIframe = document.getElementById('track2SplitLeftIframe');
+      if (leftTitle && firstIt) {
+        leftTitle.textContent = `BEFORE: ${firstIt.label}`;
+      }
+      if (leftBadge && firstIt) {
+        const s1 = firstIt.critique ? `${firstIt.critique.visual_fidelity_score}/100` : 'Draft';
+        const m1 = (firstIt.telemetry && firstIt.telemetry.mesh_count !== undefined) ? `${firstIt.telemetry.mesh_count} Meshes` : '';
+        const l1 = (firstIt.telemetry && firstIt.telemetry.light_count !== undefined) ? `${firstIt.telemetry.light_count} Lights` : '';
+        leftBadge.textContent = [s1, m1, l1].filter(Boolean).join(' • ');
+      }
+      const leftKey = `${track2Session.session_id}_split_left_${firstIt.iteration}`;
+      if (leftIframe && (forceReload || lastSplitLeftKey !== leftKey)) {
+        leftIframe.srcdoc = firstIt.html_code || '';
+        lastSplitLeftKey = leftKey;
+      }
+
+      const rightTitle = document.getElementById('track2SplitRightTitle');
+      const rightBadge = document.getElementById('track2SplitRightBadge');
+      const rightIframe = document.getElementById('track2SplitRightIframe');
+      if (rightTitle && latestIt) {
+        rightTitle.textContent = `AFTER: ${latestIt.label}`;
+      }
+      if (rightBadge && latestIt) {
+        const s2 = latestIt.critique ? `${latestIt.critique.visual_fidelity_score}/100` : 'Upgraded';
+        const m2 = (latestIt.telemetry && latestIt.telemetry.mesh_count !== undefined) ? `${latestIt.telemetry.mesh_count} Meshes` : '';
+        const l2 = (latestIt.telemetry && latestIt.telemetry.light_count !== undefined) ? `${latestIt.telemetry.light_count} Lights` : '';
+        rightBadge.textContent = [s2, m2, l2].filter(Boolean).join(' • ');
+      }
+      const rightKey = `${track2Session.session_id}_split_right_${latestIt.iteration}`;
+      if (rightIframe && (forceReload || lastSplitRightKey !== rightKey)) {
+        rightIframe.srcdoc = latestIt.html_code || '';
+        lastSplitRightKey = rightKey;
+      }
+    }
+
+    function renderTrack2EvolutionTimeline() {
+      if (!track2Session) return;
+      const cardsEl = document.getElementById('track2EvolutionCards');
+      const deltaBadge = document.getElementById('track2EvolutionDeltaBadge');
+      if (!cardsEl) return;
+
+      const iters = track2Session.iterations || [];
+      if (iters.length >= 2) {
+        const firstScore = (iters[0].critique && iters[0].critique.visual_fidelity_score) || 24;
+        const lastIt = iters[iters.length - 1];
+        const lastScore = (lastIt.critique && lastIt.critique.visual_fidelity_score) || 94;
+        const diff = lastScore - firstScore;
+        const m1 = (iters[0].telemetry && iters[0].telemetry.mesh_count) || 3;
+        const m2 = (lastIt.telemetry && lastIt.telemetry.mesh_count) || 88;
+        if (deltaBadge) {
+          deltaBadge.textContent = `Score: ${firstScore}/100 → ${lastScore}/100 (${diff >= 0 ? '+' : ''}${diff} pts) • Meshes: ${m1} → ${m2}`;
+        }
+      } else if (iters.length === 1 && deltaBadge) {
+        const s1 = (iters[0].critique && iters[0].critique.visual_fidelity_score) || 'Unscored';
+        deltaBadge.textContent = `Draft #1 Score: ${s1}/100 • Click 'Run Full Loop' to Upgrade`;
+      }
+
+      const colSpan = iters.length >= 3 ? 'md:col-span-4' : 'md:col-span-5';
+      const iterCardsHtml = iters.map((it, idx) => {
+        const isSelected = idx === activeTrack2IterIdx;
+        const score = it.critique ? it.critique.visual_fidelity_score : null;
+        const prevScore = (idx > 0 && iters[idx - 1].critique) ? iters[idx - 1].critique.visual_fidelity_score : null;
+        const deltaStr = (score !== null && prevScore !== null) ? `+${score - prevScore} pts` : '';
+        const tel = it.telemetry || {};
+        const findings = (it.critique && it.critique.timestamped_findings) || [];
+        const criticalCount = findings.filter(f => f.severity === 'CRITICAL' || f.severity === 'MAJOR').length;
+
+        const borderCls = isSelected
+          ? 'border-2 border-emerald-400 bg-slate-900/95 shadow-lg ring-2 ring-emerald-400/20'
+          : 'border border-slate-700 bg-slate-900/60 hover:bg-slate-900/90 hover:border-indigo-400/60';
+        const scoreBadgeCls = score >= 85
+          ? 'bg-emerald-500/20 text-emerald-300 border-emerald-400/50'
+          : 'bg-amber-500/20 text-amber-300 border-amber-400/50';
+
+        const defectsOrFixesHtml = idx === 0
+          ? findings.slice(0, 2).map(f =>
+              `<div class="text-[10px] text-amber-200/90 truncate" title="${escapeHtml(f.defect_observed)}">⚠️ <span class="mono text-amber-300">${escapeHtml(f.timestamp)}</span>: ${escapeHtml(f.defect_observed)}</div>`
+            ).join('')
+          : (it.features_implemented || []).slice(0, 3).map(feat =>
+              `<div class="text-[10px] text-emerald-200/90 truncate" title="${escapeHtml(feat)}">✓ ${escapeHtml(feat)}</div>`
+            ).join('');
+
+        return `
+          <div onclick="selectTrack2Iteration(${idx})" class="${colSpan} cursor-pointer p-3 rounded-xl transition flex flex-col justify-between gap-2 ${borderCls}">
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between gap-1.5">
+                <span class="text-[10px] mono font-extrabold uppercase px-2 py-0.5 rounded ${isSelected ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-indigo-300'}">
+                  ${idx === 0 ? '1️⃣ Draft #1 (Render & Watch)' : `✨ Iteration #${it.iteration} (Critique → Fix)`}
+                </span>
+                ${score !== null ? `<span class="text-[10px] mono font-extrabold px-2 py-0.5 rounded border ${scoreBadgeCls}">${score}/100 ${deltaStr ? `(${deltaStr})` : ''}</span>` : ''}
+              </div>
+              <div class="text-xs font-bold text-white">${escapeHtml(it.label)}</div>
+              <p class="text-[11px] text-slate-300 line-clamp-2 leading-snug">${escapeHtml(it.change_summary || '')}</p>
+            </div>
+            <div class="space-y-1.5 pt-1.5 border-t border-slate-800">
+              <div class="flex flex-wrap items-center gap-1.5 text-[10px] mono">
+                <span class="px-1.5 py-0.5 rounded bg-slate-800 text-indigo-300">Meshes: ${tel.mesh_count !== undefined ? tel.mesh_count : '—'}</span>
+                <span class="px-1.5 py-0.5 rounded bg-slate-800 text-amber-300">Lights: ${tel.light_count !== undefined ? tel.light_count : '—'}</span>
+                <span class="px-1.5 py-0.5 rounded bg-slate-800 text-emerald-300">Verts: ${tel.vertex_count !== undefined ? tel.vertex_count.toLocaleString() : '—'}</span>
+                ${idx === 0 && criticalCount > 0 ? `<span class="px-1.5 py-0.5 rounded bg-rose-950/90 text-rose-300 border border-rose-500/40">${criticalCount} Video Defects Found</span>` : ''}
+              </div>
+              <div class="space-y-0.5">
+                ${defectsOrFixesHtml}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      const nextCtaSpan = iters.length >= 3 ? 'md:col-span-12' : 'md:col-span-2';
+      const nextIterNum = iters.length + 1;
+      const ctaCardHtml = `
+        <div class="${nextCtaSpan} p-3 rounded-xl border border-dashed border-indigo-400/60 bg-indigo-950/40 flex flex-col justify-between gap-2">
+          <div class="space-y-1">
+            <span class="text-[10px] mono font-bold uppercase text-indigo-300">🔁 Closed-Loop Next Pass</span>
+            <div class="text-xs font-bold text-white">Run Live Iteration #${nextIterNum}</div>
+            <p class="text-[10px] text-indigo-200 leading-relaxed">
+              Add a steering note above or click below to record WebGL <span class="mono">.mp4</span>, critique with <span class="mono">gemini-4-argon</span>, and synthesize Iteration #${nextIterNum}.
+            </p>
+          </div>
+          <button onclick="runTrack2FullLoop()" type="button" class="w-full py-1.5 px-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-bold transition shadow-sm">
+            ▶ Run Iteration #${nextIterNum}
+          </button>
+        </div>
+      `;
+
+      cardsEl.innerHTML = iterCardsHtml + ctaCardHtml;
+    }
+
+    async function switchTrack2CameraTake(videoFilename) {
+      if (!track2Session || !videoFilename) return;
+      const res = await fetch(`/api/track2/sessions/${track2Session.session_id}/switch_take`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ filename: videoFilename })
+      });
+      if (!res.ok) return;
+      track2Session = await res.json();
+      renderTrack2State(false);
+    }
+
+    function selectTrack2ArtifactTab(tabKey) {
+      activeTrack2ArtifactTab = tabKey;
+      const tabs = ['scene_perception', 'mujoco_xml', 'rl_reward_py', 'game_blueprint'];
+      tabs.forEach(k => {
+        const btn = document.getElementById(`artTab-${k}`);
+        if (!btn) return;
+        if (k === tabKey) {
+          btn.className = 'px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-indigo-600 text-white shadow-sm transition';
+        } else {
+          btn.className = 'px-2.5 py-1.5 rounded-lg text-[11px] font-semibold bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 transition';
+        }
+      });
+      renderTrack2Artifacts();
+    }
+
+    function renderTrack2Artifacts() {
+      if (!track2Session) return;
+      const arts = track2Session.artifacts || {};
+      const descEl = document.getElementById('track2ArtifactDesc');
+      const preEl = document.getElementById('track2ArtifactPre');
+      if (!preEl) return;
+
+      if (activeTrack2ArtifactTab === 'scene_perception') {
+        if (descEl) {
+          descEl.innerHTML = 'Structured <strong>Scene Perception &amp; Biome Spec (`scene_perception.json`)</strong> extracted from real video: surface friction ($\mu$), slope grade, dynamic actor kinematics, and LiDAR/camera occlusion hazards.';
+        }
+        preEl.textContent = JSON.stringify(arts.scene_perception || {}, null, 2);
+      } else if (activeTrack2ArtifactTab === 'mujoco_xml') {
+        if (descEl) {
+          descEl.innerHTML = 'Ready-to-run <strong>MuJoCo MJCF Physics Arena (`scene_mujoco.xml`)</strong> with calibrated ground friction geoms, obstacle primitives, dynamic biological agents, and quadruped ego-robot.';
+        }
+        preEl.textContent = arts.mujoco_xml || '<!-- No MuJoCo XML available -->';
+      } else if (activeTrack2ArtifactTab === 'rl_reward_py') {
+        if (descEl) {
+          descEl.innerHTML = 'Executable <strong>Gymnasium RL Reward &amp; Curriculum (`reward_env.py`)</strong> for training legged locomotion, wildlife safety standoff, or multi-agent herding policies.';
+        }
+        preEl.textContent = arts.rl_reward_py || '# No RL reward script available';
+      } else if (activeTrack2ArtifactTab === 'game_blueprint') {
+        if (descEl) {
+          descEl.innerHTML = 'Procedural <strong>Game Engine World Blueprint (`game_world_blueprint.json`)</strong> for Unreal/Unity/Three.js: heightmap recipe, foliage scatter layers, and NPC AI behavior tree / Boids rules.';
+        }
+        preEl.textContent = JSON.stringify(arts.game_blueprint || {}, null, 2);
+      }
+    }
+
+    async function copyActiveTrack2Artifact() {
+      const preEl = document.getElementById('track2ArtifactPre');
+      if (!preEl) return;
+      try {
+        await navigator.clipboard.writeText(preEl.textContent || '');
+      } catch (e) {
+        console.error('Copy failed:', e);
+      }
+    }
+
+    function downloadTrack2ArtifactsZip() {
+      if (!track2Session) return;
+      window.location.href = `/api/track2/sessions/${track2Session.session_id}/artifacts.zip`;
+    }
+
+    async function handleTrack2VideoUpload(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      const thinkingLevel = document.getElementById('thinkingLevelSelect').value;
+      showLiveActivity(
+        `Uploading & Transcoding Custom Field Video (${file.name})...`,
+        'Normalizing video to H.264 yuv420p `.mp4` and initializing Real-to-Sim 3D Twin & Robotics Artifact Pack...'
+      );
+      try {
+        const dataUrl = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+        const title = file.name.replace(/\.[^/.]+$/, '').replace(/[_-]+/g, ' ');
+        const res = await fetch('/api/track2/upload_video', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            filename: file.name,
+            video_base64: dataUrl,
+            title: `Custom Video: ${title}`,
+            goal_prompt: `Extract biome physics, obstacles, and dynamic entities from ${file.name} and build an interactive 3D simulation twin + MuJoCo/RL robotics artifacts.`,
+            thinking_level: thinkingLevel
+          })
+        });
+        if (!res.ok) {
+          const err = await res.json();
+          alert('Video upload failed: ' + (err.detail || res.statusText));
+          return;
+        }
+        track2Session = await res.json();
+        activeTrack2ScenarioId = track2Session.scenario_id;
+        activeTrack2IterIdx = track2Session.iterations.length - 1;
+        lastRenderedIframeKey = '';
+        document.getElementById('track2GoalInput').value = track2Session.goal_prompt || '';
+        renderTrack2ScenarioCards();
+        renderTrack2State(true);
+      } finally {
+        hideLiveActivity();
+        event.target.value = '';
+      }
+    }
+
+    function captureFramesFromTrack2Iframe(frameCount = 12, intervalMs = 130) {
+      return new Promise((resolve) => {
+        const iframe = document.getElementById('track2WebglIframe');
+        if (!iframe || !iframe.contentWindow) {
+          resolve({ frames: [], telemetry: {} });
+          return;
+        }
+        let resolved = false;
+        const timeoutId = setTimeout(() => {
+          if (!resolved) {
+            resolved = true;
+            window.removeEventListener('message', onMsg);
+            resolve({ frames: [], telemetry: { note: 'capture timeout fallback' } });
+          }
+        }, frameCount * intervalMs + 2500);
+
+        function onMsg(ev) {
+          if (!ev.data || ev.data.type !== 'ARGON_CAPTURE_COMPLETE') return;
+          if (!resolved) {
+            resolved = true;
+            clearTimeout(timeoutId);
+            window.removeEventListener('message', onMsg);
+            resolve({
+              frames: ev.data.frames || [],
+              telemetry: ev.data.telemetry || {}
+            });
+          }
+        }
+        window.addEventListener('message', onMsg);
+        iframe.contentWindow.postMessage({
+          type: 'ARGON_CAPTURE_VIDEO',
+          frames: frameCount,
+          intervalMs: intervalMs
+        }, '*');
+      });
+    }
+
+    let track2LoopTimerInterval = null;
+    let track2LoopStartMs = 0;
+    let track2ActiveShortStep = '';
+
+    function showTrack2StepProgress(stepIdx, totalSteps, shortLabel, title, sub, pct, etaText = '/ ~35–50s est.') {
+      showLiveActivity(title, sub);
+      track2ActiveShortStep = shortLabel;
+      const panel = document.getElementById('track2LiveProgressPanel');
+      if (panel) panel.classList.remove('hidden');
+      const titleEl = document.getElementById('track2ProgressTitle');
+      if (titleEl) titleEl.textContent = title;
+      const subEl = document.getElementById('track2ProgressSub');
+      if (subEl) subEl.textContent = sub;
+      const barEl = document.getElementById('track2ProgressBarFill');
+      if (barEl) barEl.style.width = `${pct}%`;
+      const etaEl = document.getElementById('track2EtaBadge');
+      if (etaEl) etaEl.textContent = etaText;
+
+      const stepLabels = [
+        { idx: 1, text: '1. Record WebGL (.mp4)', est: '~2s' },
+        { idx: 2, text: '2. Argon Video Critique', est: '~12s' },
+        { idx: 3, text: '3. Synthesize 3D Twin', est: '~22s' },
+        { idx: 4, text: '4. Verify Upgraded 3D', est: '~8s' },
+      ];
+      stepLabels.forEach(s => {
+        const pill = document.getElementById(`t2StepPill-${s.idx}`);
+        if (!pill) return;
+        if (s.idx < stepIdx) {
+          pill.className = 'px-2.5 py-1.5 rounded-lg border border-emerald-400/60 bg-emerald-950/80 text-emerald-300 font-bold flex items-center justify-between';
+          pill.innerHTML = `<span>✓ ${s.text}</span><span>Done</span>`;
+        } else if (s.idx === stepIdx) {
+          pill.className = 'px-2.5 py-1.5 rounded-lg border-2 border-indigo-400 bg-indigo-900/90 text-white font-extrabold flex items-center justify-between animate-pulse shadow-sm';
+          pill.innerHTML = `<span>⏳ ${s.text}</span><span>${s.est}</span>`;
+        } else {
+          pill.className = 'px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-900/60 text-slate-400 flex items-center justify-between';
+          pill.innerHTML = `<span>${s.text}</span><span class="opacity-75">${s.est}</span>`;
+        }
+      });
+
+      if (!track2LoopStartMs) {
+        track2LoopStartMs = performance.now();
+      }
+      if (track2LoopTimerInterval) clearInterval(track2LoopTimerInterval);
+      const timerEl = document.getElementById('track2LiveTimerDisplay');
+      const btnText = document.getElementById('track2RunLoopBtnText');
+      const updateTick = () => {
+        const elapsed = ((performance.now() - track2LoopStartMs) / 1000).toFixed(1);
+        if (timerEl) timerEl.textContent = `${elapsed}s`;
+        if (btnText && track2ActiveShortStep) {
+          btnText.textContent = `⏳ ${track2ActiveShortStep} (${elapsed}s elapsed)`;
+        }
+      };
+      updateTick();
+      track2LoopTimerInterval = setInterval(updateTick, 100);
+    }
+
+    function hideTrack2StepProgress() {
+      track2ActiveShortStep = '';
+      track2LoopStartMs = 0;
+      if (track2LoopTimerInterval) {
+        clearInterval(track2LoopTimerInterval);
+        track2LoopTimerInterval = null;
+      }
+      const panel = document.getElementById('track2LiveProgressPanel');
+      if (panel) panel.classList.add('hidden');
+      hideLiveActivity();
+    }
+
+    async function runTrack2CritiqueOnly() {
+      if (!track2Session) await initTrack2();
+      if (!track2Session) return;
+      const btn = document.getElementById('track2RunLoopBtn');
+      const critBtn = document.getElementById('track2CritiqueOnlyBtn');
+      btn.disabled = true;
+      critBtn.disabled = true;
+      track2LoopStartMs = performance.now();
+      try {
+        const activeIt = track2Session.iterations[activeTrack2IterIdx] || track2Session.iterations[track2Session.iterations.length - 1];
+        showTrack2StepProgress(
+          1,
+          2,
+          'Step 1/2: Recording WebGL Video',
+          `Step 1/2: Recording Iteration #${activeIt.iteration} WebGL 3D Flythrough Video (\`ffmpeg\` H.264 \`.mp4\`)...`,
+          'Capturing 12 WebGL frames + scene telemetry from the live Three.js canvas (~1.8s)...',
+          35,
+          '/ ~12–15s est.'
+        );
+        const cap = await captureFramesFromTrack2Iframe(12, 130);
+
+        const isRealRef = Boolean(track2Session.real_video_url) && activeIt.iteration === 1;
+        showTrack2StepProgress(
+          2,
+          2,
+          'Step 2/2: Argon Watching Video',
+          isRealRef
+            ? 'Step 2/2: Gemini 4 Argon Watching Real Field Footage (`video/mp4`) & Critiquing 3D Twin...'
+            : `Step 2/2: Gemini 4 Argon Watching Recorded iter_${activeIt.iteration}.mp4 Video & Critiquing vs. Goal...`,
+          'Sending inline H.264 `video/mp4` + WebGL telemetry to `client.interactions.create(model="gemini-4-argon", input=[video, text])` (~12s)...',
+          80,
+          '/ ~12–15s est.'
+        );
+        const res = await fetch(`/api/track2/sessions/${track2Session.session_id}/critique`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            frames: cap.frames,
+            telemetry: cap.telemetry,
+            target_iteration: activeIt.iteration
+          })
+        });
+        if (!res.ok) {
+          const err = await res.json();
+          alert('Video critique error: ' + (err.detail || res.statusText));
+          return;
+        }
+        track2Session = await res.json();
+        renderTrack2State(false);
+      } finally {
+        btn.disabled = false;
+        critBtn.disabled = false;
+        hideTrack2StepProgress();
+      }
+    }
+
+    async function runTrack2FullLoop() {
+      if (!track2Session) await initTrack2();
+      if (!track2Session) return;
+
+      const btn = document.getElementById('track2RunLoopBtn');
+      const btnText = document.getElementById('track2RunLoopBtnText');
+      const critBtn = document.getElementById('track2CritiqueOnlyBtn');
+      btn.disabled = true;
+      critBtn.disabled = true;
+      btn.className = 'flex-1 py-2 px-3 rounded-xl bg-indigo-900 text-amber-300 border border-indigo-400 text-xs font-bold cursor-wait flex items-center justify-center gap-1.5 shadow-inner';
+      track2LoopStartMs = performance.now();
+
+      try {
+        // Always ensure the latest iteration is active in the viewport so we record and evolve from it
+        activeTrack2IterIdx = track2Session.iterations.length - 1;
+        renderTrack2State(true);
+        const curIt = track2Session.iterations[activeTrack2IterIdx];
+
+        // Step 1 & 2: Record live WebGL .mp4 and run live Argon video critique if not yet recorded (or if synthetic precomputed critique)
+        const hasLiveCritique = curIt.critique && curIt.critique_interaction_id && !String(curIt.critique_interaction_id).startsWith('argon_');
+        if (!hasLiveCritique) {
+          showTrack2StepProgress(
+            1,
+            4,
+            'Step 1/4: Recording WebGL .mp4',
+            `Track 2 (Step 1 of 4): Recording Iteration #${curIt.iteration} WebGL Flythrough Video...`,
+            'Capturing 12 live Three.js WebGL frames and encoding H.264 `.mp4` via `ffmpeg` (~2s)...',
+            18
+          );
+          const cap1 = await captureFramesFromTrack2Iframe(12, 130);
+
+          const isRealRef = Boolean(track2Session.real_video_url) && curIt.iteration === 1;
+          showTrack2StepProgress(
+            2,
+            4,
+            'Step 2/4: Argon Watching Video',
+            isRealRef
+              ? `Track 2 (Step 2 of 4): Gemini 4 Argon Watching Real Field Video & Critiquing Draft 1 Twin...`
+              : `Track 2 (Step 2 of 4): Gemini 4 Argon Watching iter_${curIt.iteration}.mp4 & Critiquing vs. Goal...`,
+            'Multimodal `client.interactions.create(model="gemini-4-argon", input=[{"type": "video", "mime_type": "video/mp4"}, ...])` (~12s)...',
+            42
+          );
+          const critRes = await fetch(`/api/track2/sessions/${track2Session.session_id}/critique`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              frames: cap1.frames,
+              telemetry: cap1.telemetry,
+              target_iteration: curIt.iteration
+            })
+          });
+          if (!critRes.ok) {
+            const err = await critRes.json();
+            alert('Track 2 video critique error: ' + (err.detail || critRes.statusText));
+            return;
+          }
+          track2Session = await critRes.json();
+          activeTrack2IterIdx = track2Session.iterations.length - 1;
+          renderTrack2State(false);
+        }
+
+        // Step 3: Chain onto previous_interaction_id to synthesize the upgraded Three.js 3D world
+        const feedback = document.getElementById('track2FeedbackInput').value.trim();
+        const nextNum = track2Session.iterations.length + 1;
+        showTrack2StepProgress(
+          3,
+          4,
+          `Step 3/4: Building 3D Twin #${nextNum}`,
+          `Track 2 (Step 3 of 4): Gemini 4 Argon Synthesizing Upgraded 3D Sim Twin (Iteration #${nextNum})...`,
+          'Chaining onto video critique `previous_interaction_id` to build full 3D Three.js scene + updated MuJoCo XML (~22s)...',
+          74
+        );
+        const fixRes = await fetch(`/api/track2/sessions/${track2Session.session_id}/fix`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            custom_feedback: feedback || null
+          })
+        });
+        if (!fixRes.ok) {
+          const err = await fixRes.json();
+          alert('Track 2 3D synthesis error: ' + (err.detail || fixRes.statusText));
+          return;
+        }
+        track2Session = await fixRes.json();
+        activeTrack2IterIdx = track2Session.iterations.length - 1;
+        renderTrack2State(true);
+
+        // Step 4: Give the new Three.js scene 900ms to initialize and start animating in the iframe, then record & verify its video!
+        await new Promise(r => setTimeout(r, 900));
+        showTrack2StepProgress(
+          4,
+          4,
+          `Step 4/4: Verifying Upgraded 3D`,
+          `Track 2 (Step 4 of 4): Recording Upgraded Iteration #${nextNum} Video & Running Argon Visual Verification...`,
+          `Capturing upgraded 3D WebGL scene into iter_${nextNum}.mp4 and verifying visual score improvement with gemini-4-argon (thinking_level="low", ~8s)...`,
+          92
+        );
+        const cap2 = await captureFramesFromTrack2Iframe(12, 130);
+        const verifyRes = await fetch(`/api/track2/sessions/${track2Session.session_id}/critique`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            frames: cap2.frames,
+            telemetry: cap2.telemetry,
+            target_iteration: nextNum
+          })
+        });
+        if (verifyRes.ok) {
+          track2Session = await verifyRes.json();
+          activeTrack2IterIdx = track2Session.iterations.length - 1;
+          renderTrack2State(false);
+        }
+      } finally {
+        btn.disabled = false;
+        critBtn.disabled = false;
+        btn.className = 'flex-1 py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-500/15 transition flex items-center justify-center gap-1.5';
+        btnText.textContent = '🔁 Run Another Critique & 3D Upgrade Iteration';
+        hideTrack2StepProgress();
+      }
+    }
+
+    function renderTrack2State(reloadIframe = false) {
+      if (!track2Session) return;
+      const badge = document.getElementById('track2SessionBadge');
+      if (badge) {
+        badge.textContent = `Session ${track2Session.session_id} • ${track2Session.iterations.length} Iteration(s)`;
+      }
+
+      // Render Iterative Evolution Timeline & Optional Split-Screen Viewports
+      renderTrack2EvolutionTimeline();
+      renderTrack2SplitViewports(reloadIframe);
+      updateTrack2ViewportOverlayBadges();
+
+      // Real-world source video panel
+      const realCard = document.getElementById('track2RealVideoCard');
+      const realPlayer = document.getElementById('track2RealVideoPlayer');
+      const realTitle = document.getElementById('track2RealVideoTitle');
+      const realMetaBadge = document.getElementById('track2RealVideoMetaBadge');
+      const takesBar = document.getElementById('track2CameraTakesBar');
+      if (realCard && realPlayer) {
+        if (track2Session.real_video_url) {
+          realCard.classList.remove('hidden');
+          if (realPlayer.getAttribute('src') !== track2Session.real_video_url) {
+            realPlayer.src = track2Session.real_video_url;
+          }
+          const takes = track2Session.camera_takes || [];
+          const activeTake = takes.find(t => `/api/track2/real_videos/${t.filename}` === track2Session.real_video_url);
+          if (realTitle) {
+            realTitle.textContent = activeTake
+              ? `${track2Session.title} — ${activeTake.label}`
+              : `${track2Session.title} (${track2Session.real_video_url})`;
+          }
+          const meta = track2Session.real_video_meta || {};
+          if (realMetaBadge) {
+            realMetaBadge.textContent = meta.location
+              ? `📍 ${meta.location} (${meta.gps || 'Real Footage'})`
+              : 'Real Field Footage';
+          }
+          if (takesBar) {
+            if (takes.length > 0) {
+              takesBar.classList.remove('hidden');
+              takesBar.innerHTML = `<span class="text-[10px] mono font-bold uppercase text-indigo-300 mr-1">🗂️ Field Camera Vault (${takes.length} take${takes.length > 1 ? 's' : ''}):</span>` +
+                takes.map(t => {
+                  const tUrl = `/api/track2/real_videos/${t.filename}`;
+                  const isCur = tUrl === track2Session.real_video_url;
+                  const cls = isCur
+                    ? 'bg-emerald-500 text-slate-950 font-extrabold border-emerald-400 shadow-sm'
+                    : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border-slate-700 font-semibold';
+                  return `<button onclick="switchTrack2CameraTake('${escapeHtml(t.filename)}')" type="button" class="px-2 py-0.5 rounded border text-[10px] mono transition ${cls}" title="Source file: ${escapeHtml(t.original || t.filename)}">
+                    ${isCur ? '▶ ' : ''}${escapeHtml(t.label)}
+                  </button>`;
+                }).join('');
+            } else {
+              takesBar.classList.add('hidden');
+              takesBar.innerHTML = '';
+            }
+          }
+        } else {
+          realCard.classList.add('hidden');
+          realPlayer.removeAttribute('src');
+          if (takesBar) {
+            takesBar.classList.add('hidden');
+            takesBar.innerHTML = '';
+          }
+        }
+      }
+
+      const tabsEl = document.getElementById('track2IterationTabs');
+      if (tabsEl) {
+        tabsEl.innerHTML = track2Session.iterations.map((it, idx) => {
+          const active = idx === activeTrack2IterIdx;
+          const scoreStr = it.critique ? ` • ${it.critique.visual_fidelity_score}/100` : '';
+          const cls = active
+            ? 'bg-indigo-600 text-white shadow-sm font-bold'
+            : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-200 font-semibold';
+          return `<button onclick="selectTrack2Iteration(${idx})" type="button" class="px-3 py-1.5 rounded-lg text-xs transition ${cls}">
+            ${escapeHtml(it.label)}${scoreStr}
+          </button>`;
+        }).join('');
+      }
+
+      const it = track2Session.iterations[activeTrack2IterIdx];
+      if (!it) return;
+
+      document.getElementById('track2ViewportTitle').textContent = `${track2Session.title} — ${it.label}`;
+      const iframeKey = `${track2Session.session_id}_${it.iteration}`;
+      const iframe = document.getElementById('track2WebglIframe');
+      if (iframe && (reloadIframe || lastRenderedIframeKey !== iframeKey)) {
+        iframe.srcdoc = it.html_code;
+        lastRenderedIframeKey = iframeKey;
+      }
+
+      // Telemetry pills
+      const tel = it.telemetry || {};
+      const telEl = document.getElementById('track2TelemetryPills');
+      if (telEl) {
+        if (tel.mesh_count !== undefined) {
+          telEl.innerHTML = `
+            <span class="px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-indigo-300">Meshes: ${tel.mesh_count}</span>
+            <span class="px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-amber-300">Lights: ${tel.light_count}</span>
+            <span class="px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-emerald-300">Vertices: ${(tel.vertex_count || 0).toLocaleString()}</span>
+          `;
+        } else {
+          telEl.innerHTML = `<span class="px-2 py-0.5 rounded bg-slate-800 border border-slate-700">Live 60FPS WebGL + Robotics Overlay</span>`;
+        }
+      }
+
+      // Recorded MP4 video player
+      const vidEl = document.getElementById('track2VideoPlayer');
+      const vidStatus = document.getElementById('track2VideoStatusPill');
+      const vidPathLabel = document.getElementById('track2VideoPathLabel');
+      if (it.has_video && it.video_url) {
+        vidEl.src = it.video_url;
+        vidEl.classList.remove('hidden');
+        vidStatus.textContent = '✓ H.264 .mp4 Recorded & Sent to Argon';
+        vidStatus.className = 'text-[10px] mono px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold';
+        vidPathLabel.textContent = `runs/track2_worlds/${track2Session.session_id}/iter_${it.iteration}.mp4`;
+      } else {
+        vidEl.classList.add('hidden');
+        vidStatus.textContent = 'Not Recorded Yet';
+        vidStatus.className = 'text-[10px] mono px-2 py-0.5 rounded bg-slate-200 text-slate-700 font-semibold';
+        vidPathLabel.textContent = `Click 'Watch Real Video → Critique → Upgrade 3D Twin' to capture iter_${it.iteration}.mp4`;
+      }
+
+      // Render Exportable Real-to-Sim Artifacts Hub
+      renderTrack2Artifacts();
+
+      // Interaction IDs
+      document.getElementById('track2CritiqueIdSpan').textContent = it.critique_interaction_id || 'awaiting video critique';
+      document.getElementById('track2SynthIdSpan').textContent = it.synthesis_interaction_id || 'initial first-pass draft';
+
+      // Critique card
+      const scoreBadge = document.getElementById('track2ScoreBadge');
+      const critBody = document.getElementById('track2CritiqueBody');
+      if (it.critique) {
+        const c = it.critique;
+        const score = c.visual_fidelity_score || 0;
+        const passed = Boolean(c.goal_satisfied) || score >= 85;
+        scoreBadge.textContent = passed
+          ? `✓ ${score}/100 • GOAL SATISFIED`
+          : `⚠️ ${score}/100 • NEEDS REFINEMENT`;
+        scoreBadge.className = passed
+          ? 'text-xs mono font-extrabold px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-800 border border-emerald-300'
+          : 'text-xs mono font-extrabold px-2.5 py-1 rounded-lg bg-amber-100 text-amber-900 border border-amber-300';
+
+        let realInsightHtml = '';
+        if (c.real_video_perception_insights) {
+          const rvi = c.real_video_perception_insights;
+          if (typeof rvi === 'object') {
+            const agentsStr = Array.isArray(rvi.key_dynamic_agents) ? rvi.key_dynamic_agents.join(', ') : (rvi.key_dynamic_agents || '');
+            realInsightHtml = `
+              <div class="text-[11px] text-emerald-950 leading-relaxed space-y-1">
+                ${rvi.biome_summary ? `<div><strong>Biome:</strong> ${escapeHtml(rvi.biome_summary)}</div>` : ''}
+                <div class="flex flex-wrap gap-2 text-[10px] mono font-bold text-emerald-900">
+                  ${rvi.estimated_surface_friction_mu !== undefined ? `<span class="px-1.5 py-0.5 rounded bg-emerald-100 border border-emerald-300">Friction μ = ${escapeHtml(String(rvi.estimated_surface_friction_mu))}</span>` : ''}
+                  ${rvi.estimated_slope_deg !== undefined ? `<span class="px-1.5 py-0.5 rounded bg-emerald-100 border border-emerald-300">Slope = ${escapeHtml(String(rvi.estimated_slope_deg))}°</span>` : ''}
+                  ${agentsStr ? `<span class="px-1.5 py-0.5 rounded bg-emerald-100 border border-emerald-300">Agents: ${escapeHtml(agentsStr)}</span>` : ''}
+                </div>
+                ${rvi.robotics_hazard_notes ? `<div class="text-emerald-900"><strong>Robotics / Perception Hazard:</strong> ${escapeHtml(rvi.robotics_hazard_notes)}</div>` : ''}
+              </div>
+            `;
+          } else {
+            realInsightHtml = `<p class="text-[11px] text-emerald-950 leading-relaxed">${escapeHtml(String(rvi))}</p>`;
+          }
+        }
+        const realInsightBlock = realInsightHtml
+          ? `
+            <div class="p-2.5 rounded-lg bg-emerald-50/90 border border-emerald-200">
+              <div class="text-[10px] font-bold uppercase tracking-wider text-emerald-800 mb-1">📹 Real Field Video Perception Insights (\`gemini-4-argon\`)</div>
+              ${realInsightHtml}
+            </div>
+          `
+          : '';
+
+        const findingsHtml = (c.timestamped_findings || []).map(f => {
+          const sevCls = f.severity === 'CRITICAL'
+            ? 'bg-rose-100 text-rose-800 border-rose-300'
+            : f.severity === 'MAJOR'
+            ? 'bg-amber-100 text-amber-800 border-amber-300'
+            : 'bg-emerald-100 text-emerald-800 border-emerald-300';
+          return `
+            <div class="p-2.5 rounded-lg bg-white border border-slate-200 space-y-1">
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-[10px] mono font-bold text-indigo-700 bg-indigo-50 px-1.5 py-0.5 rounded border border-indigo-200">⏱ ${escapeHtml(f.timestamp)}</span>
+                <span class="text-[10px] mono font-bold px-1.5 py-0.5 rounded border ${sevCls}">${escapeHtml(f.severity)}</span>
+              </div>
+              <div class="text-[11px] text-slate-800"><strong>Video Observation:</strong> ${escapeHtml(f.defect_observed)}</div>
+              <div class="text-[11px] text-indigo-700"><strong>Three.js / Sim Fix Directive:</strong> ${escapeHtml(f.fix_directive)}</div>
+            </div>
+          `;
+        }).join('');
+
+        critBody.innerHTML = `
+          ${realInsightBlock}
+          <div class="p-3 rounded-lg bg-white border border-indigo-200">
+            <div class="text-[10px] font-bold uppercase tracking-wider text-indigo-700 mb-0.5">Executive Video Critique (` + '`gemini-4-argon`' + `)</div>
+            <p class="text-[11px] text-slate-700 leading-relaxed">${escapeHtml(c.executive_critique || '')}</p>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div class="p-2.5 rounded-lg bg-white border border-slate-200">
+              <div class="text-[10px] font-bold uppercase text-amber-700 mb-0.5">Lighting &amp; Shaders</div>
+              <p class="text-[11px] text-slate-600 leading-snug">${escapeHtml(c.lighting_and_shader_critique || '')}</p>
+            </div>
+            <div class="p-2.5 rounded-lg bg-white border border-slate-200">
+              <div class="text-[10px] font-bold uppercase text-sky-700 mb-0.5">Motion &amp; Kinematics</div>
+              <p class="text-[11px] text-slate-600 leading-snug">${escapeHtml(c.motion_and_camera_critique || '')}</p>
+            </div>
+          </div>
+          <div class="space-y-1.5 max-h-56 overflow-y-auto pr-1">
+            <div class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Timestamped Video Findings</div>
+            ${findingsHtml}
+          </div>
+        `;
+      } else {
+        scoreBadge.textContent = 'Awaiting Video Critique';
+        scoreBadge.className = 'text-xs mono font-extrabold px-2.5 py-1 rounded-lg bg-slate-200 text-slate-700';
+        critBody.innerHTML = `
+          <div class="p-4 text-center text-slate-500 text-xs">
+            Click <strong>▶ Watch Real Video → Critique → Upgrade 3D Twin</strong> above to have <span class="mono font-semibold text-indigo-700">gemini-4-argon</span> inspect the real field video + WebGL twin and synthesize an upgraded 3D environment!
+          </div>
+        `;
+      }
+
+      document.getElementById('track2ChangeSummaryText').textContent = it.change_summary || '';
+      document.getElementById('track2FeaturesList').innerHTML = (it.features_implemented || []).map(f =>
+        `<span class="text-[10px] mono px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200 font-medium">✓ ${escapeHtml(f)}</span>`
+      ).join('');
+      document.getElementById('track2CodePre').textContent = it.html_code || '';
     }
 
     function openCustomRepoModal() {

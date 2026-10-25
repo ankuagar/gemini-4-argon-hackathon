@@ -11,6 +11,7 @@ Supports:
 """
 from __future__ import annotations
 
+import json
 import threading
 import time
 from dataclasses import dataclass, field
@@ -42,6 +43,32 @@ class InteractionResult:
     thinking_level: str = "medium"
     used_background: bool = False
 
+    @property
+    def text(self) -> str:
+        return self.output_text
+
+    @property
+    def latency_seconds(self) -> float:
+        return self.elapsed_seconds
+
+    @property
+    def parsed_json(self) -> Optional[Dict[str, Any]]:
+        raw = (self.output_text or "").strip()
+        if not raw:
+            return None
+        if raw.startswith("```"):
+            lines = raw.splitlines()
+            if lines and lines[0].startswith("```"):
+                lines = lines[1:]
+            if lines and lines[-1].strip().startswith("```"):
+                lines = lines[:-1]
+            raw = "\n".join(lines).strip()
+        try:
+            obj = json.loads(raw)
+            return obj if isinstance(obj, dict) else None
+        except Exception:
+            return None
+
 
 class ArgonClient:
     def __init__(self, api_key: Optional[str] = None) -> None:
@@ -72,17 +99,23 @@ class ArgonClient:
         max_output_tokens: int = 65536,
         previous_interaction_id: Optional[str] = None,
         json_schema: Optional[Dict[str, Any]] = None,
+        response_schema: Optional[Dict[str, Any]] = None,
         force_background: bool = False,
         on_poll: Optional[Callable[[str, float], None]] = None,
+        video_base64: Optional[str] = None,
+        video_mime_type: str = "video/mp4",
+        phase_label: Optional[str] = None,
     ) -> InteractionResult:
         """
         Execute a turn on Gemini 4 Argon (`gemini-4-argon`) or Flash Subagent (`gemini-3.8-flash`) via the Interactions API.
+        Supports both text and multimodal video+text inputs (`type="video"`).
         Automatically switches to `background=True` when `max_output_tokens > 65536`
         or `force_background=True`, polling until completion and joining all `model_output` steps.
         """
         start_time = time.monotonic()
         wall_start = time.time()
         use_background = force_background or (max_output_tokens > 65536)
+        effective_schema = json_schema if json_schema is not None else response_schema
 
         gen_config: Dict[str, Any] = {
             "thinking_level": thinking_level,
@@ -90,9 +123,17 @@ class ArgonClient:
             "max_output_tokens": max_output_tokens,
         }
 
+        if video_base64:
+            input_payload: Any = [
+                {"type": "video", "data": video_base64, "mime_type": video_mime_type},
+                {"type": "text", "text": prompt},
+            ]
+        else:
+            input_payload = prompt
+
         kwargs: Dict[str, Any] = {
             "model": model,
-            "input": prompt,
+            "input": input_payload,
             "generation_config": gen_config,
         }
         if system_instruction:
@@ -101,17 +142,18 @@ class ArgonClient:
             kwargs["previous_interaction_id"] = previous_interaction_id
         if use_background:
             kwargs["background"] = True
-        if json_schema is not None:
+        if effective_schema is not None:
             kwargs["response_format"] = {
                 "type": "text",
                 "mime_type": "application/json",
-                "schema": json_schema,
+                "schema": effective_schema,
             }
 
         prev_arg = f', previous_interaction_id="{previous_interaction_id}"' if previous_interaction_id else ""
         bg_arg = ", background=True" if use_background else ""
+        vid_arg = f', input=[{{"type": "video", "mime_type": "{video_mime_type}"}}, {{"type": "text"}}]' if video_base64 else ""
         sdk_call_str = (
-            f'client.interactions.create(model="{model}", '
+            f'client.interactions.create(model="{model}"{vid_arg}, '
             f'generation_config={{"thinking_level": "{thinking_level}", "max_output_tokens": {max_output_tokens}}}'
             f'{prev_arg}{bg_arg})'
         )

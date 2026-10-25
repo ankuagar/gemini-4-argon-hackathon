@@ -18,6 +18,10 @@
 ### Quirk 1.3: Lead Architect (`gemini-4-argon`) + Parallel Subagents (`gemini-3.8-flash`)
 - **Pattern**: Use `gemini-4-argon` (`thinking_level="medium"` or `"high"`) as the Lead Architect to build the **Cross-File Interface Contract Ledger** and synthesize synchronized multi-file changes, while running parallel `gemini-3.8-flash` subagents via `ThreadPoolExecutor` to scan individual leaf modules for security hazards, deprecated APIs, and boundary edge cases concurrently with zero added wall-clock latency.
 
+### Quirk 1.4: Track 2 Multimodal Video Critique (`video/mp4`) + Stateful 3D Code Fix Loop
+- **Pattern**: `client.interactions.create(model="gemini-4-argon", input=[{"type": "video", "data": b64_mp4, "mime_type": "video/mp4"}, {"type": "text", "text": prompt}])` natively watches recorded H.264 `.mp4` WebGL flythrough videos and emits timestamped (`MM:SS`) visual, lighting/shader, and camera motion critiques.
+- **Rule**: Chain the 3D scene upgrade turn onto the video critique turn via `previous_interaction_id=critique_interaction_id` so `gemini-4-argon` retains both the video understanding context and its own timestamped fix directives without re-uploading the `.mp4` video.
+
 ---
 
 ## 2. Proving Ground Verification & Build Quirks
@@ -42,3 +46,12 @@
 ### Quirk 2.4: Ray / Pydantic v2 Strict (`py_v1_to_v2`)
 - **Validator Execution Order & `ConfigDict(extra="forbid")`**:
   - **Snag**: Replacing `@root_validator(pre=True)` with `@model_validator(mode="before")` requires `@classmethod` in Pydantic v2, whereas `@model_validator(mode="after")` receives `self` (the validated model instance) rather than `cls, values`.
+
+### Quirk 2.5: Track 2 WebGL Canvas Capture & Three.js `r128` Compatibility (`world_loop.py`)
+- **Black Frame Buffer Without `preserveDrawingBuffer: true`**:
+  - **Snag**: Calling `canvas.toDataURL('image/jpeg', 0.82)` asynchronously from a `postMessage` capture timer returns blank black frames if the WebGL drawing buffer was swapped and cleared after `renderer.render(scene, camera)`.
+  - **Rule**: Always initialize `new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true })` and enforce `scale=trunc(iw/2)*2:trunc(ih/2)*2 -c:v libx264 -pix_fmt yuv420p` in `ffmpeg` so odd-pixel iframe dimensions never fail H.264 encoding. Also avoid `THREE.CapsuleGeometry` when targeting Three.js `r128` (use `CylinderGeometry` / `SphereGeometry` / `ConeGeometry` / `TorusGeometry` / `DodecahedronGeometry`).
+
+### Quirk 2.6: Smartphone HEVC (`hvc1`) + `mett` Telemetry Stream + Display Matrix Rotation in Real-to-Sim Video Ingestion
+- **Snag**: Field videos captured on modern smartphones (e.g., Pixel 8 1080p30 HEVC `hvc1`, 20MB–72MB) contain a 3rd `codec_name=unknown` (`mett`) metadata stream, a `-90°` display matrix rotation tag, and exceed the `<20MB` inline payload budget for fast multimodal `video/mp4` turns.
+- **Rule**: Normalize field videos via `ffmpeg -map "0:v:0" -map "0:a:0?" -vf "scale='if(gt(iw,ih),min(720,iw),-2)':'if(gt(iw,ih),-2,min(720,ih))',fps=12" -c:v libx264 -preset fast -crf 27 -pix_fmt yuv420p -movflags +faststart`. This strips the unsupported `mett` stream, bakes in upright orientation, ensures universal browser `<video>` playback, and compresses 30s clips into `<4MB` for instant inline `gemini-4-argon` multimodal perception.
