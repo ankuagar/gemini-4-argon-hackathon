@@ -79,82 +79,115 @@
 </head>
 <body class="min-h-screen flex flex-col selection:bg-indigo-100 selection:text-indigo-900">
 
-  <!-- TOP NAVIGATION BAR (Light Frosted Glass) -->
-  <header class="border-b border-slate-200 bg-white/90 backdrop-blur-md sticky top-0 z-30">
-    <div class="max-w-[1440px] mx-auto px-6 py-3 flex flex-wrap items-center justify-between gap-4">
+  <!-- TOP NAVIGATION BAR (Clean 3-Mode Workspace Switcher) -->
+  <header class="border-b border-slate-200 bg-white/95 backdrop-blur-md sticky top-0 z-30 shadow-xs">
+    <div class="max-w-[1440px] mx-auto px-6 py-2.5 flex flex-wrap items-center justify-between gap-3">
+      <!-- Brand Identity -->
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 via-violet-600 to-sky-500 flex items-center justify-center shadow-sm shadow-indigo-500/20 font-bold text-lg tracking-tight text-white">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 via-violet-600 to-sky-500 flex items-center justify-center shadow-sm shadow-indigo-500/20 font-bold text-base tracking-tight text-white">
           AL
         </div>
         <div>
-          <div class="flex items-center gap-2 flex-wrap">
-            <h1 class="text-base font-extrabold tracking-tight text-slate-900">ArgonLedger</h1>
-            <span class="text-[11px] mono uppercase px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 font-semibold">
-              Lead: gemini-4-argon
-            </span>
-            <span class="text-[11px] mono uppercase px-2 py-0.5 rounded-full bg-sky-50 text-sky-700 border border-sky-200 font-semibold">
-              Subagents: gemini-3.8-flash
-            </span>
-            <span class="text-[11px] mono px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-medium hidden sm:inline">
-              1M Shared Context • Interactions API
+          <div class="flex items-center gap-2">
+            <h1 class="text-sm sm:text-base font-extrabold tracking-tight text-slate-900">ArgonLedger</h1>
+            <span class="text-[10px] mono px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 font-semibold">
+              gemini-4-argon • 1M Context
             </span>
           </div>
-          <p class="text-xs text-slate-600">
-            <strong>Million Token Engineering</strong> (Whole-Repo Codebase Migration) &amp; <strong>More Dimensions</strong> (Create 3D Virtual Worlds from Real Videos)
+          <p class="text-[11px] text-slate-500 hidden sm:block">
+            Whole-Repo Engineering &amp; Real-to-Sim 3D Virtual Worlds
           </p>
         </div>
       </div>
 
-      <!-- Right Controls -->
-      <div class="flex items-center gap-2.5 flex-wrap">
-        <button onclick="openTrack2Studio()" class="px-3 py-1.5 rounded-lg bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+      <!-- Center: Segmented 3-Mode Workspace Switcher -->
+      <nav class="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200/90 gap-1">
+        <button onclick="switchAppMode('engineering')" id="modeBtn-engineering" type="button" class="px-3.5 py-1.5 rounded-lg text-xs font-extrabold transition flex items-center gap-1.5 bg-white text-indigo-700 shadow-xs border border-slate-200/80">
+          <span>🏗️</span>
+          <span>Million Token Engineering</span>
+        </button>
+        <button onclick="switchAppMode('track2')" id="modeBtn-track2" type="button" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 text-slate-600 hover:text-slate-900">
           <span>🌍</span>
-          <span>More Dimensions: Create Virtual Worlds from Real Videos</span>
+          <span>More Dimensions</span>
+          <span class="text-[10px] mono px-1.5 py-0.2 rounded bg-violet-100 text-violet-800 border border-violet-200 font-bold hidden md:inline">Videos → 3D Worlds</span>
         </button>
-
-        <button onclick="switchMainTab('arch')" class="px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-semibold transition flex items-center gap-1.5 shadow-sm">
+        <button onclick="switchAppMode('arch')" id="modeBtn-arch" type="button" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 text-slate-600 hover:text-slate-900">
           <span>🗺️</span>
-          <span>Architecture, 5 Patterns &amp; AGENTS.md</span>
+          <span>Architecture &amp; Playbook</span>
         </button>
+      </nav>
 
-        <button onclick="openCustomRepoModal()" class="px-3 py-1.5 rounded-lg bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 text-xs font-semibold transition flex items-center gap-1.5 shadow-sm">
-          <span>🌐</span>
-          <span>Open-Source Crisis Catalog</span>
+      <!-- Right: Compact Model Reasoning & Live API Telemetry Controls -->
+      <div class="flex items-center gap-2 flex-wrap">
+        <button onclick="toggleLiveTrafficDrawer()" id="headerLiveTrafficBtn" type="button" class="px-2.5 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-[11px] font-bold transition flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span>API Traffic</span>
+          <span id="judgeTrafficCountSpan" class="mono text-[10px]">(0)</span>
         </button>
 
         <div class="flex items-center gap-1.5 bg-slate-100 border border-slate-200 rounded-lg px-2.5 py-1">
           <label class="text-[11px] text-slate-600 font-medium">Reasoning:</label>
           <select id="thinkingLevelSelect" class="bg-transparent text-xs mono text-indigo-700 font-bold focus:outline-none cursor-pointer">
-            <option value="low">low (Fastest)</option>
-            <option value="medium" selected>medium (Balanced)</option>
-            <option value="high">high (Deepest)</option>
+            <option value="low">low</option>
+            <option value="medium" selected>medium</option>
+            <option value="high">high</option>
           </select>
         </div>
 
         <label class="flex items-center gap-1.5 bg-slate-100 border border-slate-200 rounded-lg px-2.5 py-1 cursor-pointer" title="Enable background=True with >64K output token budget on the Interactions API">
           <input type="checkbox" id="longDecodeToggle" class="accent-indigo-600 rounded cursor-pointer" />
-          <span class="text-[11px] text-slate-600 mono font-medium">Long Decode (&gt;64K)</span>
+          <span class="text-[11px] text-slate-600 mono font-medium">&gt;64K</span>
         </label>
       </div>
     </div>
   </header>
 
-  <main class="max-w-[1440px] w-full mx-auto px-6 py-5 flex-1 flex flex-col gap-5">
+  <main class="max-w-[1440px] w-full mx-auto px-6 py-4 flex-1 flex flex-col gap-4">
 
-    <!-- STEP 0: CHOOSE A PROVING GROUND -->
-    <section>
-      <div class="flex items-center justify-between mb-2.5">
+    <!-- GLOBAL EXPANDABLE LIVE ARGON API TRAFFIC DRAWER (Accessible from any mode via top bar) -->
+    <div id="liveTrafficDrawer" class="hidden p-4 rounded-xl bg-slate-900 text-slate-100 border border-slate-800 space-y-2.5 text-xs shadow-lg">
+      <div class="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-slate-800">
         <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span class="font-bold text-white">Live `client.interactions.create(...)` Network &amp; SDK Call Log</span>
+          <span class="text-[10px] mono px-2 py-0.5 rounded bg-slate-800 text-indigo-300 border border-slate-700">Real-Time Interactions API Telemetry</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="pollLiveTraffic()" class="text-[11px] mono px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700">
+            ↻ Refresh
+          </button>
+          <button onclick="toggleLiveTrafficDrawer()" class="text-[11px] mono px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700">
+            ✕ Close
+          </button>
+        </div>
+      </div>
+      <div id="liveTrafficList" class="space-y-2 max-h-72 overflow-y-auto pr-1">
+        <div class="text-slate-400 text-[11px] mono py-2">
+          No Gemini 4 Argon API calls recorded in this server process yet — run a step to watch live API calls stream in real time.
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 0: CHOOSE A PROVING GROUND (Million Token Engineering Mode Only) -->
+    <section id="provingGroundSection">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+        <div class="flex items-center gap-2 flex-wrap">
           <span class="text-xs font-bold uppercase tracking-wider text-indigo-700 bg-indigo-50 border border-indigo-200 px-2.5 py-0.5 rounded-md">
             1. Select Open-Source Proving Ground
           </span>
           <span class="text-xs text-slate-500">
-            Clicking any project automatically runs its initial compiler, test suite &amp; security audit (~1 second)
+            Click a project card to run its initial compiler, test &amp; security audit (~1s)
           </span>
         </div>
-        <span id="activeSessionBadge" class="text-[11px] mono text-slate-500 bg-white border border-slate-200 px-2.5 py-0.5 rounded-md">Initializing...</span>
+        <div class="flex items-center gap-2">
+          <button onclick="openCustomRepoModal()" class="px-2.5 py-1 rounded-lg bg-white hover:bg-indigo-50 text-indigo-700 border border-indigo-200 text-xs font-semibold transition flex items-center gap-1.5 shadow-2xs">
+            <span>🌐</span>
+            <span>+ Crisis Catalog / Custom Repo</span>
+          </button>
+          <span id="activeSessionBadge" class="text-[11px] mono text-slate-500 bg-white border border-slate-200 px-2.5 py-1 rounded-lg">Initializing...</span>
+        </div>
       </div>
-      <div id="benchmarkCards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5">
+      <div id="benchmarkCards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
         <!-- Populated by JS -->
       </div>
     </section>
@@ -282,12 +315,12 @@
       </div>
 
       <!-- JUDGE TRANSPARENCY BAR: LIVE API TELEMETRY & EXECUTION EXPLAINER -->
-      <div class="mt-4 pt-3 border-t border-slate-200/90 flex flex-col gap-3">
+      <div class="mt-3 pt-2.5 border-t border-slate-200/90 flex flex-col gap-2.5">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div class="flex items-center gap-2 flex-wrap">
             <span class="text-[11px] font-bold text-slate-700 flex items-center gap-1.5">
               <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-              <span>🔬 Live Judge Proof:</span>
+              <span>🔬 Live Telemetry:</span>
             </span>
             <span id="judgeLedgerIdPill" class="text-[11px] mono px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200">
               Ledger interaction.id: awaiting Step 1
@@ -297,31 +330,12 @@
             </span>
           </div>
           <div class="flex items-center gap-2 flex-wrap">
-            <button onclick="toggleLiveTrafficDrawer()" id="liveTrafficBtn" class="text-xs font-bold text-emerald-800 hover:text-emerald-950 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-3 py-1 rounded-lg transition">
-              📡 Live Argon API Traffic <span id="judgeTrafficCountSpan" class="mono">(0 calls)</span> ▾
+            <button onclick="toggleLiveTrafficDrawer()" id="liveTrafficBtn" class="text-[11px] font-bold text-emerald-800 hover:text-emerald-950 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-2.5 py-1 rounded-lg transition">
+              📡 Inspect Live API Calls ▾
             </button>
-            <button onclick="toggleJudgeExplainer()" id="judgeExplainerBtn" class="text-xs font-semibold text-indigo-700 hover:text-indigo-900 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 px-3 py-1 rounded-lg transition">
-              ℹ️ How Live `gemini-4-argon` API &amp; Local Compilers Connect ▾
+            <button onclick="toggleJudgeExplainer()" id="judgeExplainerBtn" class="text-[11px] font-semibold text-indigo-700 hover:text-indigo-900 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 px-2.5 py-1 rounded-lg transition">
+              ℹ️ How Live API &amp; Compilers Connect ▾
             </button>
-          </div>
-        </div>
-
-        <!-- Expandable Live Argon API Traffic Inspector Drawer -->
-        <div id="liveTrafficDrawer" class="hidden p-4 rounded-xl bg-slate-900 text-slate-100 border border-slate-800 space-y-2.5 text-xs">
-          <div class="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-slate-800">
-            <div class="flex items-center gap-2">
-              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span class="font-bold text-white">Live `client.interactions.create(...)` Network &amp; SDK Call Log</span>
-              <span class="text-[10px] mono px-2 py-0.5 rounded bg-slate-800 text-indigo-300 border border-slate-700">Real-Time Interactions API Telemetry</span>
-            </div>
-            <button onclick="pollLiveTraffic()" class="text-[11px] mono px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700">
-              ↻ Refresh Now
-            </button>
-          </div>
-          <div id="liveTrafficList" class="space-y-2 max-h-72 overflow-y-auto pr-1">
-            <div class="text-slate-400 text-[11px] mono py-2">
-              No Gemini 4 Argon API calls recorded in this server process yet — click Step 1 or Step 3 to watch live API calls stream in real time.
-            </div>
           </div>
         </div>
 
@@ -461,10 +475,10 @@
       </div>
     </section>
 
-    <!-- DEEP INSPECTION WORKSPACE: 4 CLEAR TABS -->
+    <!-- DEEP INSPECTION WORKSPACE -->
     <section class="card-surface rounded-2xl overflow-hidden flex flex-col flex-1 min-h-[470px]">
-      <!-- Tab Bar -->
-      <div class="flex flex-wrap items-center justify-between border-b border-slate-200 px-4 bg-slate-50/80">
+      <!-- Codebase Inspection Tab Bar (Shown in Million Token Engineering Mode) -->
+      <div id="codebaseTabsBar" class="flex flex-wrap items-center justify-between border-b border-slate-200 px-4 bg-slate-50/80">
         <div class="flex items-center gap-1 overflow-x-auto">
           <button onclick="switchMainTab('ledger')" id="tabBtn-ledger" class="px-4 py-3 text-xs font-bold border-b-2 border-indigo-600 text-indigo-700 bg-white flex items-center gap-2">
             <span>① Cross-File Ledger &amp; Subagents</span>
@@ -476,13 +490,6 @@
           </button>
           <button onclick="switchMainTab('logs')" id="tabBtn-logs" class="px-4 py-3 text-xs font-bold border-b-2 border-transparent text-slate-600 hover:text-slate-900 flex items-center gap-2">
             <span>③ Real Compiler, Test &amp; Fuzzer Logs</span>
-          </button>
-          <button onclick="switchMainTab('arch')" id="tabBtn-arch" class="px-4 py-3 text-xs font-bold border-b-2 border-transparent text-slate-600 hover:text-slate-900 flex items-center gap-2">
-            <span>④ Interactive Architecture &amp; Playbook (`AGENTS.md`)</span>
-          </button>
-          <button onclick="switchMainTab('track2')" id="tabBtn-track2" class="px-4 py-3 text-xs font-bold border-b-2 border-transparent text-slate-600 hover:text-slate-900 flex items-center gap-2">
-            <span>⑤ 🌍 More Dimensions: Create Virtual Worlds from Real Videos</span>
-            <span class="text-[10px] mono px-1.5 py-0.5 rounded bg-violet-100 text-violet-800 border border-violet-300 font-bold">NEW</span>
           </button>
         </div>
 
@@ -734,105 +741,107 @@
         </div>
       </div>
 
-      <!-- TAB 5: TRACK 2 — REAL-TO-SIM VIDEO-TO-WORLD, ROBOTICS ARTIFACTS & 3D RENDER-CRITIQUE-FIX LOOP -->
-      <div id="tabPane-track2" class="p-5 flex-1 overflow-y-auto hidden space-y-5 bg-white">
-        <!-- Top Callout Banner: Real-World Video -> Game & Robotics Artifacts + Closed-Loop 3D World Synthesis -->
-        <div class="p-4 rounded-2xl bg-gradient-to-r from-indigo-50 via-violet-50/70 to-emerald-50/70 border border-indigo-200">
-          <div class="flex flex-wrap items-start justify-between gap-3 mb-3">
+      <!-- TAB 5: MORE DIMENSIONS — REAL-TO-SIM VIDEO-TO-WORLD, ROBOTICS ARTIFACTS & 3D RENDER-CRITIQUE-FIX LOOP -->
+      <div id="tabPane-track2" class="p-4 sm:p-5 flex-1 overflow-y-auto hidden space-y-4 bg-white">
+        <!-- Compact Studio Header Bar + Collapsible 4-Step Explainer -->
+        <div class="p-3.5 rounded-xl bg-gradient-to-r from-indigo-50/90 via-violet-50/60 to-emerald-50/60 border border-indigo-200/90 space-y-2.5">
+          <div class="flex flex-wrap items-center justify-between gap-3">
             <div>
               <div class="flex items-center gap-2 flex-wrap">
                 <span class="text-[10px] mono uppercase px-2 py-0.5 rounded bg-indigo-600 text-white font-bold">
-                  🌍 More Dimensions • Create Virtual Worlds &amp; Robotics Twins from Real Videos
+                  🌍 More Dimensions
                 </span>
-                <span class="text-[10px] mono px-2 py-0.5 rounded bg-white text-indigo-700 border border-indigo-200 font-semibold">
-                  Real Field Videos (`bear_hike.mp4` • `waterfall_cascade.mp4` • `nz_sheep.mp4`) → 3D Digital Twin + MuJoCo XML + RL Reward
+                <h3 class="text-sm font-extrabold text-slate-900">
+                  Create Virtual Worlds &amp; Robotics Simulation Twins from Real Field Videos
+                </h3>
+                <span id="track2SessionBadge" class="text-[10px] mono px-2 py-0.5 rounded bg-white border border-indigo-200 text-indigo-800 font-semibold">
+                  Virtual World Ready
                 </span>
               </div>
-              <h3 class="text-sm font-extrabold text-slate-900 mt-1">
-                More Dimensions: Feed Real-World Videos → Extract Game &amp; Robotics Training Artifacts → Render, Critique &amp; Upgrade 3D Virtual Worlds in a Loop
-              </h3>
               <p class="text-xs text-slate-600 mt-0.5">
-                Built for <strong>Game Developers</strong> and <strong>Embodied AI / Robot Trainers</strong>: <span class="mono font-semibold text-indigo-700">gemini-4-argon</span> watches your real-world hiking, waterfall, and New Zealand sheep videos, extracts <strong>Biome &amp; Kinematics JSON</strong>, <strong>MuJoCo Physics XML</strong>, <strong>Gymnasium RL Reward Python</strong>, and <strong>Game Engine Blueprints</strong>, and iteratively upgrades a live <strong>Three.js 3D Digital Twin</strong> with a toggleable <strong>Robotics Sensor &amp; Traversability Costmap Overlay</strong>.
+                <span class="mono font-semibold text-indigo-700">gemini-4-argon</span> watches real field videos, extracts <strong>MuJoCo XML + RL Rewards + Game Blueprints</strong>, and iteratively upgrades a live <strong>Three.js 3D World</strong> in a closed loop (<span class="mono">Render → Watch → Critique → Fix</span>).
               </p>
             </div>
             <div class="flex items-center gap-2 flex-wrap">
-              <label class="cursor-pointer px-3 py-1.5 rounded-xl bg-white hover:bg-indigo-50 text-indigo-700 border border-indigo-300 text-xs font-bold shadow-sm transition flex items-center gap-1.5">
-                <span>📤 Upload Your Own Video (`.mp4`/`.mov`)</span>
+              <label class="cursor-pointer px-3 py-1.5 rounded-lg bg-white hover:bg-indigo-50 text-indigo-700 border border-indigo-300 text-xs font-bold shadow-2xs transition flex items-center gap-1.5">
+                <span>📤 Upload Video (`.mp4`/`.mov`)</span>
                 <input id="track2VideoUploadInput" type="file" accept="video/mp4,video/quicktime,video/webm" class="hidden" onchange="handleTrack2VideoUpload(event)" />
               </label>
-              <button onclick="downloadTrack2ArtifactsZip()" type="button" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition flex items-center gap-1.5">
-                <span>⬇️ Download All Artifacts (`.zip`)</span>
+              <button onclick="downloadTrack2ArtifactsZip()" type="button" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-2xs transition flex items-center gap-1.5">
+                <span>⬇️ Download Artifacts (`.zip`)</span>
               </button>
-              <div id="track2SessionBadge" class="text-[11px] mono px-2.5 py-1 rounded-lg bg-white border border-indigo-200 text-indigo-900 font-semibold">
-                Virtual World Session Ready
+            </div>
+          </div>
+
+          <details class="group">
+            <summary class="cursor-pointer text-[11px] font-bold text-indigo-700 hover:text-indigo-900 select-none flex items-center gap-1">
+              <span>ℹ️ How the 4-Step Real-to-Sim Closed Loop Works (Click to expand)</span>
+              <span class="group-open:rotate-180 transition-transform">▾</span>
+            </summary>
+            <div class="mt-2.5 grid grid-cols-1 sm:grid-cols-4 gap-2 text-xs">
+              <div class="p-2.5 rounded-lg bg-white border border-indigo-100">
+                <div class="text-[10px] mono font-bold text-indigo-700">1. INGEST REAL VIDEO</div>
+                <div class="font-bold text-slate-900 mt-0.5">Watch Field Footage (`video/mp4`)</div>
+                <div class="text-[11px] text-slate-500">Streams real camera takes to <span class="mono">gemini-4-argon</span></div>
+              </div>
+              <div class="p-2.5 rounded-lg bg-white border border-indigo-100">
+                <div class="text-[10px] mono font-bold text-emerald-700">2. EXTRACT ARTIFACTS</div>
+                <div class="font-bold text-slate-900 mt-0.5">MuJoCo XML + RL Reward + Game Spec</div>
+                <div class="text-[11px] text-slate-500">Extracts friction $\mu$, slope, kinematics, MJCF &amp; Gym RL</div>
+              </div>
+              <div class="p-2.5 rounded-lg bg-white border border-indigo-100">
+                <div class="text-[10px] mono font-bold text-amber-700">3. RENDER &amp; CRITIQUE 3D</div>
+                <div class="font-bold text-slate-900 mt-0.5">Record WebGL `.mp4` &amp; Score</div>
+                <div class="text-[11px] text-slate-500">Compares rendered 3D scene vs. real video &amp; pinpoints defects</div>
+              </div>
+              <div class="p-2.5 rounded-lg bg-white border border-indigo-100">
+                <div class="text-[10px] mono font-bold text-violet-700">4. CLOSED-LOOP UPGRADE</div>
+                <div class="font-bold text-slate-900 mt-0.5">Stateful Fix (`previous_interaction_id`)</div>
+                <div class="text-[11px] text-slate-500">Synthesizes upgraded 3D world + 3D BBox &amp; Costmap overlay</div>
               </div>
             </div>
-          </div>
-
-          <!-- 4-Step Visual Pipeline for Track 2 Real-to-Sim -->
-          <div class="grid grid-cols-1 sm:grid-cols-4 gap-2.5 text-xs">
-            <div class="p-2.5 rounded-xl bg-white border border-indigo-100">
-              <div class="text-[10px] mono font-bold text-indigo-700">1. INGEST REAL FIELD VIDEO</div>
-              <div class="font-bold text-slate-900 mt-0.5">Watch Real Video (`type="video"`)</div>
-              <div class="text-[11px] text-slate-500">Streams real field footage (Bear hike, Waterfall, NZ Sheep) to <span class="mono">gemini-4-argon</span></div>
-            </div>
-            <div class="p-2.5 rounded-xl bg-white border border-indigo-100">
-              <div class="text-[10px] mono font-bold text-emerald-700">2. EXTRACT SIM ARTIFACTS</div>
-              <div class="font-bold text-slate-900 mt-0.5">MuJoCo XML + RL Reward + Game Spec</div>
-              <div class="text-[11px] text-slate-500">Extracts terrain friction $\mu$, slope, entity kinematics, MuJoCo XML &amp; Gym RL reward</div>
-            </div>
-            <div class="p-2.5 rounded-xl bg-white border border-indigo-100">
-              <div class="text-[10px] mono font-bold text-amber-700">3. RENDER &amp; CRITIQUE 3D TWIN</div>
-              <div class="font-bold text-slate-900 mt-0.5">Record WebGL `.mp4` &amp; Score</div>
-              <div class="text-[11px] text-slate-500">Compares rendered Three.js 3D world against the real video &amp; pinpoints defects</div>
-            </div>
-            <div class="p-2.5 rounded-xl bg-white border border-indigo-100">
-              <div class="text-[10px] mono font-bold text-violet-700">4. CLOSED-LOOP 3D UPGRADE</div>
-              <div class="font-bold text-slate-900 mt-0.5">Stateful Fix (`previous_interaction_id`)</div>
-              <div class="text-[11px] text-slate-500">Synthesizes upgraded 3D game world + Robotics 3D Bounding Box &amp; Costmap overlay</div>
-            </div>
-          </div>
+          </details>
         </div>
 
-        <!-- Scenario Picker + Custom Goal Override -->
+        <!-- Compact 7-Column Scenario Strip + Goal & Loop Control Bar -->
         <div class="space-y-3">
           <div class="flex flex-wrap items-center justify-between gap-2">
             <span class="text-xs font-bold uppercase tracking-wider text-slate-700">
-              1. Select a Real-World Field Video (Bear Hike, Waterfall, NZ Sheep) or Procedural 3D World:
+              1. Choose a Real Field Video or Procedural 3D World (7 Presets):
             </span>
             <span class="text-[11px] text-slate-500">
-              All multimodal video &amp; 3D synthesis calls stream live in <strong>📡 Live Argon API Traffic</strong> above
+              Click any card to switch scenarios immediately
             </span>
           </div>
-          <div id="track2ScenarioCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5"></div>
+          <div id="track2ScenarioCards" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2"></div>
 
-          <!-- Editable Goal & Optional Director Feedback -->
-          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 grid grid-cols-1 lg:grid-cols-12 gap-3 items-end">
+          <!-- Streamlined Goal & Loop Controls -->
+          <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 grid grid-cols-1 lg:grid-cols-12 gap-2.5 items-end">
             <div class="lg:col-span-5">
               <label class="block text-[11px] font-bold text-slate-700 mb-1">
-                Target 3D Virtual World &amp; Robotics Simulation Goal (Used by `gemini-4-argon` when watching the video):
+                Target 3D Virtual World &amp; Simulation Goal:
               </label>
-              <input id="track2GoalInput" type="text" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-xs text-slate-800" />
+              <input id="track2GoalInput" type="text" class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-800" />
             </div>
             <div class="lg:col-span-3">
               <label class="block text-[11px] font-bold text-slate-700 mb-1">
-                Optional Game Dev / Robot Trainer Steering Note:
+                Optional Steering Note for Next Iteration:
               </label>
-              <input id="track2FeedbackInput" type="text" placeholder="e.g. Add more trailside berry bushes & denser pine trees" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-xs text-slate-800" />
+              <input id="track2FeedbackInput" type="text" placeholder="e.g. Add denser pine trees &amp; wet rocks" class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-800" />
             </div>
             <div class="lg:col-span-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-              <button id="track2RunLoopBtn" onclick="runTrack2FullLoop()" class="flex-1 py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-500/15 transition flex items-center justify-center gap-1.5 cta-pulse" title="Execute the full autonomous loop: Record WebGL .mp4 → Watch & Critique with Gemini 4 Argon → Synthesize Upgraded 3D World → Verify Score">
+              <button id="track2RunLoopBtn" onclick="runTrack2FullLoop()" class="flex-1 py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-sm transition flex items-center justify-center gap-1.5 cta-pulse" title="Execute the full autonomous loop: Record WebGL .mp4 → Watch & Critique with Gemini 4 Argon → Synthesize Upgraded 3D World → Verify Score">
                 <span>▶</span>
-                <span id="track2RunLoopBtnText">Run Full Loop: Render → Watch → Critique → Fix</span>
+                <span id="track2RunLoopBtnText">Run Full Loop: Render → Critique → Fix</span>
               </button>
-              <button onclick="runTrack2CritiqueOnly()" id="track2CritiqueOnlyBtn" type="button" class="py-2 px-2.5 rounded-xl bg-white hover:bg-indigo-50 text-indigo-800 border border-indigo-300 text-[11px] font-bold transition shrink-0 flex items-center justify-center gap-1" title="Step 1 & 2 Only (~12s): Record the active 3D WebGL viewport into an .mp4 video and have Gemini 4 Argon watch & critique it without generating a new 3D iteration yet">
+              <button onclick="runTrack2CritiqueOnly()" id="track2CritiqueOnlyBtn" type="button" class="py-2 px-2.5 rounded-xl bg-white hover:bg-indigo-50 text-indigo-800 border border-indigo-300 text-[11px] font-bold transition shrink-0 flex items-center justify-center gap-1" title="Record the active 3D WebGL viewport into an .mp4 video and have Gemini 4 Argon critique it (~12s)">
                 <span>🎬</span>
-                <span>Watch &amp; Critique Only (~12s)</span>
+                <span>Critique Only</span>
               </button>
             </div>
           </div>
 
-          <!-- INLINE TRACK 2 LIVE 4-STAGE PROGRESS & STOPWATCH PANEL (Visible right below the button while running) -->
+          <!-- INLINE LIVE 4-STAGE PROGRESS & STOPWATCH PANEL (Visible while running) -->
           <div id="track2LiveProgressPanel" class="hidden p-4 rounded-xl bg-indigo-950 text-white border-2 border-indigo-400 shadow-lg space-y-3">
             <div class="flex flex-wrap items-center justify-between gap-3">
               <div class="flex items-center gap-3">
@@ -857,12 +866,10 @@
               </div>
             </div>
 
-            <!-- Visual Progress Bar -->
             <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden border border-slate-700">
               <div id="track2ProgressBarFill" class="h-full bg-gradient-to-r from-indigo-500 via-sky-400 to-emerald-400 transition-all duration-300" style="width: 15%"></div>
             </div>
 
-            <!-- 4-Stage Pipeline Stepper Pills -->
             <div class="grid grid-cols-1 sm:grid-cols-4 gap-2 text-[10px] mono">
               <div id="t2StepPill-1" class="px-2.5 py-1.5 rounded-lg border border-indigo-500/40 bg-indigo-900/60 text-indigo-200 font-semibold flex items-center justify-between">
                 <span>1. Record WebGL (.mp4)</span>
@@ -882,21 +889,20 @@
               </div>
             </div>
 
-            <!-- Live In-Flight API Call Ticker (Mirrors #liveBannerCallTicker right inside Track 2) -->
             <div id="track2LiveCallTicker" class="text-[10px] mono bg-slate-900/95 border border-slate-800 rounded-lg px-3 py-2 text-slate-300 space-y-1 max-h-28 overflow-y-auto">
               <div class="text-indigo-300">Dispatching live <span class="text-white font-semibold">client.interactions.create(model="gemini-4-argon", ...)</span> requests...</div>
             </div>
           </div>
 
-          <!-- NEW: ITERATIVE RENDERING EVOLUTION & LOOP PROGRESSION PANEL (Render -> Watch -> Critique -> Fix) -->
-          <div id="track2EvolutionPanel" class="p-4 rounded-xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white border border-indigo-400/50 shadow-md space-y-3">
+          <!-- ITERATIVE RENDERING EVOLUTION & LOOP PROGRESSION PANEL -->
+          <div id="track2EvolutionPanel" class="p-3.5 rounded-xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white border border-indigo-400/50 shadow-sm space-y-2.5">
             <div class="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-indigo-500/30">
               <div class="flex items-center gap-2 flex-wrap">
                 <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 text-[10px] mono font-extrabold uppercase">
                   📈 Closed-Loop Evolution
                 </span>
                 <h3 class="text-xs sm:text-sm font-extrabold text-white">
-                  How <span class="mono text-indigo-300">gemini-4-argon</span> Iteratively Improved the 3D Rendering (<span class="mono text-emerald-300">Render → Watch → Critique → Fix</span>)
+                  Iterative 3D Improvement (<span class="mono text-emerald-300">Render → Watch → Critique → Fix</span>)
                 </h3>
               </div>
               <div class="flex items-center gap-2 flex-wrap">
@@ -910,16 +916,15 @@
               </div>
             </div>
 
-            <!-- Connected Iteration Progression Cards (Populated by renderTrack2EvolutionTimeline) -->
-            <div id="track2EvolutionCards" class="grid grid-cols-1 md:grid-cols-12 gap-3 items-stretch">
+            <div id="track2EvolutionCards" class="grid grid-cols-1 md:grid-cols-12 gap-2.5 items-stretch">
               <!-- Populated dynamically -->
             </div>
 
-            <!-- Side-by-Side Split 3D Comparison Drawer (Toggled by Compare Before vs. After) -->
+            <!-- Side-by-Side Split 3D Comparison Drawer -->
             <div id="track2SplitCompareContainer" class="hidden pt-2 border-t border-indigo-500/30 space-y-2">
               <div class="flex flex-wrap items-center justify-between gap-2">
                 <div class="text-xs font-extrabold text-emerald-300 flex items-center gap-2">
-                  <span>⚖️ Live Side-by-Side 3D WebGL Comparison: Initial Single-Pass Draft vs. Argon-Upgraded 3D World</span>
+                  <span>⚖️ Live Side-by-Side 3D WebGL Comparison: Initial Draft #1 vs. Argon-Upgraded 3D World</span>
                 </div>
                 <button onclick="toggleTrack2SplitCompare()" type="button" class="text-[11px] mono text-indigo-200 hover:text-white underline">
                   ✕ Close Split View
@@ -928,15 +933,15 @@
               <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
                 <div class="rounded-xl overflow-hidden border border-amber-400/50 bg-slate-950">
                   <div class="bg-slate-900 px-3 py-1.5 border-b border-slate-800 flex items-center justify-between gap-2">
-                    <span id="track2SplitLeftTitle" class="text-[11px] font-bold text-amber-300">BEFORE: Iteration #1 — Initial Single-Pass Draft</span>
-                    <span id="track2SplitLeftBadge" class="text-[10px] mono px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-400/40 font-bold">24/100 • 3 Meshes • 0 Lights</span>
+                    <span id="track2SplitLeftTitle" class="text-[11px] font-bold text-amber-300">BEFORE: Iteration #1</span>
+                    <span id="track2SplitLeftBadge" class="text-[10px] mono px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-400/40 font-bold">24/100</span>
                   </div>
                   <iframe id="track2SplitLeftIframe" class="w-full h-[290px] border-0 bg-slate-950" sandbox="allow-scripts allow-same-origin"></iframe>
                 </div>
                 <div class="rounded-xl overflow-hidden border-2 border-emerald-400/70 bg-slate-950 shadow-lg">
                   <div class="bg-slate-900 px-3 py-1.5 border-b border-slate-800 flex items-center justify-between gap-2">
-                    <span id="track2SplitRightTitle" class="text-[11px] font-bold text-emerald-300">AFTER: Iteration #2 — Upgraded via Argon Video Critique</span>
-                    <span id="track2SplitRightBadge" class="text-[10px] mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 font-bold">94/100 • 88 Meshes • 3 Lights</span>
+                    <span id="track2SplitRightTitle" class="text-[11px] font-bold text-emerald-300">AFTER: Iteration #2</span>
+                    <span id="track2SplitRightBadge" class="text-[10px] mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 font-bold">94/100</span>
                   </div>
                   <iframe id="track2SplitRightIframe" class="w-full h-[290px] border-0 bg-slate-950" sandbox="allow-scripts allow-same-origin"></iframe>
                 </div>
@@ -945,63 +950,48 @@
           </div>
         </div>
 
-        <!-- Main Split Workspace: Left = Source Real Video + Live 3D WebGL Twin | Right = Artifacts Hub + Argon Video Critique -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+        <!-- Main Split Workspace: Left 7 Cols = Real Video + 3D WebGL Twin | Right 5 Cols = 3-Tab Inspector (Critique | Artifacts | 3D Code) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
           <!-- Left 7 Cols: Iteration Switcher + Real Video & 3D WebGL Twin + Recorded Sim MP4 -->
           <div class="lg:col-span-7 space-y-3">
             <div class="flex flex-wrap items-center justify-between gap-2 bg-slate-100 p-2 rounded-xl border border-slate-200">
               <div class="flex items-center gap-1.5 flex-wrap">
-                <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 px-1.5">Inspect Iteration:</span>
+                <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 px-1.5">Active Iteration:</span>
                 <div class="flex items-center gap-1.5 flex-wrap" id="track2IterationTabs">
                   <!-- Populated by renderTrack2State() -->
                 </div>
               </div>
-              <span class="text-[10px] mono text-slate-500 hidden sm:inline">Click any iteration tab to inspect its 3D scene &amp; video critique</span>
+              <span class="text-[10px] mono text-slate-500 hidden sm:inline">Switch tabs to compare Draft #1 vs. Upgraded 3D</span>
             </div>
 
-            <!-- Real-World Source Video Player (Shown whenever a Real-to-Sim video scenario is active) -->
+            <!-- Real-World Source Video Player -->
             <div id="track2RealVideoCard" class="p-3 rounded-xl bg-slate-900 border border-indigo-400/40 text-white space-y-2">
               <div class="flex flex-wrap items-center justify-between gap-2">
                 <div class="flex items-center gap-2">
-                  <span class="px-2 py-0.5 rounded bg-indigo-600 text-[10px] mono font-bold uppercase">📹 Real-World Source Video</span>
+                  <span class="px-2 py-0.5 rounded bg-indigo-600 text-[10px] mono font-bold uppercase">📹 Real Field Video</span>
                   <span id="track2RealVideoTitle" class="text-xs font-bold text-slate-100">bear_better.mp4</span>
                 </div>
                 <span id="track2RealVideoMetaBadge" class="text-[10px] mono px-2 py-0.5 rounded bg-slate-800 text-emerald-300 border border-slate-700">
-                  GPS +43.7626, -110.7713 • Google Pixel 8
+                  Real Footage
                 </span>
               </div>
-              <div id="track2CameraTakesBar" class="hidden pt-1 pb-1.5 border-b border-slate-800 flex flex-wrap items-center gap-1.5">
-                <!-- Populated dynamically with all camera takes from /Users/user/Downloads/gemini-argon-4-media -->
-              </div>
-              <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-                <div class="md:col-span-7">
-                  <video id="track2RealVideoPlayer" controls loop muted playsinline class="w-full max-h-52 rounded-lg bg-black border border-slate-700"></video>
-                </div>
-                <div class="md:col-span-5 space-y-1.5 text-[11px] text-slate-300">
-                  <div class="font-bold text-indigo-300">Real-to-Sim Digital Twin Pipeline:</div>
-                  <p class="leading-relaxed text-slate-300">
-                    1. <span class="mono text-white">gemini-4-argon</span> watches this real field video inline (<span class="mono">video/mp4</span>).<br/>
-                    2. Extracts terrain friction $\mu$, slope angle, dynamic entity kinematics, <strong>MuJoCo XML</strong> &amp; <strong>Gym RL Reward</strong>.<br/>
-                    3. Critiques Draft 1 and synthesizes an upgraded <strong>Three.js 3D Digital Twin</strong> below!
-                  </p>
-                </div>
-              </div>
+              <div id="track2CameraTakesBar" class="hidden pt-1 pb-1.5 border-b border-slate-800 flex flex-wrap items-center gap-1.5"></div>
+              <video id="track2RealVideoPlayer" controls loop muted playsinline class="w-full max-h-52 rounded-lg bg-black border border-slate-700"></video>
             </div>
 
             <!-- Live 60FPS Three.js WebGL Virtual World & Robotics Sim Viewport -->
             <div class="rounded-xl overflow-hidden border-2 border-indigo-200 bg-slate-950 shadow-sm">
-              <div class="bg-slate-900 px-3.5 py-2 border-b border-slate-800 flex flex-wrap items-center justify-between gap-2">
+              <div class="bg-slate-900 px-3 py-2 border-b border-slate-800 flex flex-wrap items-center justify-between gap-2">
                 <div class="flex items-center gap-2">
                   <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                  <span class="text-xs font-bold text-white" id="track2ViewportTitle">Live Interactive Three.js 3D Virtual World &amp; Robotics Twin</span>
+                  <span class="text-xs font-bold text-white" id="track2ViewportTitle">Live Interactive Three.js 3D Virtual World</span>
                 </div>
                 <div class="flex items-center gap-1.5 flex-wrap">
-                  <!-- Interactive 3D Viewport Overlay Controls (Moved inside 3D Viewport Toolbar with live state badges) -->
-                  <button onclick="toggleTrack2RoboticsOverlay()" id="track2RoboticsToggleBtn" type="button" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-emerald-950 text-emerald-300 border border-emerald-500/50 text-[10px] mono font-bold transition flex items-center gap-1" title="Toggle 3D Oriented Bounding Boxes, 15m Wildlife Safety Standoff Rings, and Ground Traversability Costmap Grid inside the live 3D scene">
+                  <button onclick="toggleTrack2RoboticsOverlay()" id="track2RoboticsToggleBtn" type="button" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-emerald-950 text-emerald-300 border border-emerald-500/50 text-[10px] mono font-bold transition flex items-center gap-1" title="Toggle 3D Oriented Bounding Boxes, Safety Standoff Rings, and Ground Traversability Costmap Grid inside the live 3D scene">
                     <span>🤖 3D BBoxes &amp; Costmap:</span>
                     <span id="track2RoboticsStateBadge" class="px-1 rounded bg-slate-700 text-slate-200">OFF</span>
                   </button>
-                  <button onclick="cycleTrack2DomainRandomization()" id="track2DomainRandBtn" type="button" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-amber-950 text-amber-300 border border-amber-500/50 text-[10px] mono font-bold transition flex items-center gap-1" title="Cycle Sim-to-Real Domain Randomization lighting &amp; sensor profiles inside the live 3D scene (☀️ Daylight → 🌫️ LiDAR Fog → 🌙 Dusk / Night → 🔥 Thermal IR)">
+                  <button onclick="cycleTrack2DomainRandomization()" id="track2DomainRandBtn" type="button" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-amber-950 text-amber-300 border border-amber-500/50 text-[10px] mono font-bold transition flex items-center gap-1" title="Cycle Sim-to-Real lighting &amp; sensor profiles inside the live 3D scene (☀️ Daylight → 🌫️ LiDAR Fog → 🌙 Dusk / Night → 🔥 Thermal IR)">
                     <span>🌦️ Weather / Sensor:</span>
                     <span id="track2DomainRandStateBadge" class="px-1 rounded bg-amber-500/20 text-amber-200">☀️ Daylight</span>
                   </button>
@@ -1013,16 +1003,12 @@
               <iframe id="track2WebglIframe" class="w-full h-[360px] border-0 bg-slate-950" sandbox="allow-scripts allow-same-origin"></iframe>
             </div>
 
-            <!-- Recorded H.264 MP4 Video Clip of the 3D WebGL Simulation -->
-            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+            <!-- Compact Recorded H.264 MP4 Video Clip Status & Player -->
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
               <div class="flex flex-wrap items-center justify-between gap-2">
-                <div>
-                  <div class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                    <span>🎥 Recorded 3D WebGL Simulation Video (`iter_N.mp4` via `ffmpeg`)</span>
-                  </div>
-                  <p class="text-[11px] text-slate-500">
-                    Captured from the 3D WebGL canvas above into <span class="mono" id="track2VideoPathLabel">awaiting video capture...</span> for closed-loop visual verification.
-                  </p>
+                <div class="text-[11px] text-slate-700 flex items-center gap-1.5 flex-wrap">
+                  <span class="font-bold">🎥 Recorded WebGL Clip (`ffmpeg` `.mp4`):</span>
+                  <span class="mono text-slate-500" id="track2VideoPathLabel">awaiting capture...</span>
                 </div>
                 <span id="track2VideoStatusPill" class="text-[10px] mono px-2 py-0.5 rounded bg-slate-200 text-slate-700 font-semibold">
                   Not Recorded Yet
@@ -1032,90 +1018,105 @@
             </div>
           </div>
 
-          <!-- Right 5 Cols: Real-to-Sim Game & Robotics Artifact Hub + Gemini 4 Argon Multimodal Video Critique -->
-          <div class="lg:col-span-5 space-y-3">
-            <!-- NEW: Real-to-Sim Game & Robotics Training Artifacts Hub -->
-            <div class="p-4 rounded-xl bg-white border-2 border-emerald-200 shadow-sm space-y-3">
-              <div class="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-slate-200">
-                <div>
-                  <span class="text-[10px] mono uppercase text-emerald-700 font-extrabold">📦 Exportable Real-to-Sim Artifacts</span>
-                  <h4 class="text-xs font-extrabold text-slate-900">Game Engine &amp; Robotics Training Artifact Pack</h4>
-                </div>
-                <div class="flex items-center gap-1.5">
-                  <button onclick="copyActiveTrack2Artifact()" id="track2CopyArtifactBtn" type="button" class="px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] mono font-bold transition">
-                    📋 Copy Artifact
-                  </button>
-                  <button onclick="downloadTrack2ArtifactsZip()" type="button" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] mono font-bold transition">
-                    ⬇️ .ZIP Bundle
-                  </button>
-                </div>
-              </div>
-
-              <!-- 4 Artifact Tabs -->
-              <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 text-[10px] font-bold">
-                <button onclick="selectTrack2ArtifactTab('scene_perception')" id="artTab-scene_perception" type="button" class="px-2 py-1.5 rounded-lg bg-emerald-600 text-white transition text-center">
-                  🌍 Perception JSON
-                </button>
-                <button onclick="selectTrack2ArtifactTab('mujoco_xml')" id="artTab-mujoco_xml" type="button" class="px-2 py-1.5 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 transition text-center">
-                  🤖 MuJoCo XML
-                </button>
-                <button onclick="selectTrack2ArtifactTab('rl_reward_py')" id="artTab-rl_reward_py" type="button" class="px-2 py-1.5 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 transition text-center">
-                  🐍 Gym RL Reward
-                </button>
-                <button onclick="selectTrack2ArtifactTab('game_blueprint')" id="artTab-game_blueprint" type="button" class="px-2 py-1.5 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 transition text-center">
-                  🎮 Game Blueprint
-                </button>
-              </div>
-
-              <div id="track2ArtifactDesc" class="text-[11px] text-slate-600 bg-emerald-50/60 border border-emerald-200 rounded-lg px-2.5 py-1.5">
-                <strong>`scene_perception.json`:</strong> Biome classification, surface friction coefficient ($\mu$), terrain slope angle, sensor occlusion hazards, and timestamped dynamic entity kinematics extracted from the video.
-              </div>
-
-              <pre id="track2ArtifactPre" class="p-3 rounded-lg bg-slate-900 text-emerald-100 text-[11px] mono max-h-60 overflow-y-auto whitespace-pre-wrap leading-relaxed"></pre>
+          <!-- Right 5 Cols: Clean 3-Tab Inspector Card (Video Critique | Sim & RL Artifacts | 3D Code) -->
+          <div class="lg:col-span-5 rounded-xl border border-slate-200 bg-white shadow-xs overflow-hidden flex flex-col">
+            <!-- 3-Tab Switcher Header -->
+            <div class="grid grid-cols-3 bg-slate-100 p-1 border-b border-slate-200 gap-1">
+              <button onclick="switchTrack2InspectorTab('critique')" id="t2InspTab-critique" type="button" class="py-2 px-2 rounded-lg text-[11px] font-extrabold transition bg-white text-indigo-700 shadow-2xs border border-slate-200/80 text-center">
+                🎬 Video Critique
+              </button>
+              <button onclick="switchTrack2InspectorTab('artifacts')" id="t2InspTab-artifacts" type="button" class="py-2 px-2 rounded-lg text-[11px] font-bold transition text-slate-600 hover:text-slate-900 text-center">
+                📦 Sim Artifacts (4)
+              </button>
+              <button onclick="switchTrack2InspectorTab('code')" id="t2InspTab-code" type="button" class="py-2 px-2 rounded-lg text-[11px] font-bold transition text-slate-600 hover:text-slate-900 text-center">
+                💻 3D Code &amp; Diff
+              </button>
             </div>
 
-            <!-- Multimodal Video Critique Card -->
-            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
-              <div class="flex items-center justify-between gap-2 pb-2 border-b border-slate-200">
+            <!-- PANE 1: MULTIMODAL VIDEO CRITIQUE (Default Active) -->
+            <div id="t2InspPane-critique" class="p-4 space-y-3">
+              <div class="flex items-center justify-between gap-2 pb-2 border-b border-slate-100">
                 <div>
                   <span class="text-[10px] mono uppercase text-indigo-700 font-bold">Gemini 4 Argon Video Understanding</span>
-                  <h4 class="text-xs font-extrabold text-slate-900">Multimodal Video Critique vs. Real Video &amp; Goal</h4>
+                  <h4 class="text-xs font-extrabold text-slate-900">Critique vs. Real Field Video &amp; Goal</h4>
                 </div>
                 <span id="track2ScoreBadge" class="text-xs mono font-extrabold px-2.5 py-1 rounded-lg bg-slate-200 text-slate-700">
-                  Awaiting Video Critique
+                  Awaiting Critique
                 </span>
-              </div>
-
-              <!-- Server-Side Interaction IDs for Track 2 -->
-              <div class="space-y-1 text-[10px] mono bg-white p-2.5 rounded-lg border border-slate-200">
-                <div class="flex items-center justify-between gap-2">
-                  <span class="text-slate-500">Video Critique `interaction.id`:</span>
-                  <span id="track2CritiqueIdSpan" class="text-indigo-700 font-semibold break-all">not run yet</span>
-                </div>
-                <div class="flex items-center justify-between gap-2">
-                  <span class="text-slate-500">3D Synthesis `interaction.id`:</span>
-                  <span id="track2SynthIdSpan" class="text-emerald-700 font-semibold break-all">initial draft</span>
-                </div>
               </div>
 
               <div id="track2CritiqueBody" class="space-y-2.5 text-xs">
                 <div class="p-5 text-center text-slate-500 text-xs">
-                  Click <strong>▶ Watch Real Video → Critique → Upgrade 3D Twin</strong> above to have <span class="mono font-semibold text-indigo-700">gemini-4-argon</span> watch the real-world video, update the perception artifacts, critique Draft 1, and synthesize an upgraded 3D Virtual World!
+                  Click <strong>▶ Run Full Loop</strong> above to have <span class="mono font-semibold text-indigo-700">gemini-4-argon</span> watch the real-world video, critique the 3D scene, and synthesize an upgraded 3D Virtual World!
+                </div>
+              </div>
+
+              <!-- Compact Server-Side Interaction IDs Footer -->
+              <div class="pt-2 border-t border-slate-100 space-y-1 text-[10px] mono text-slate-500">
+                <div class="flex items-center justify-between gap-2">
+                  <span>Critique `interaction.id`:</span>
+                  <span id="track2CritiqueIdSpan" class="text-indigo-700 font-semibold truncate max-w-[220px]">not run yet</span>
+                </div>
+                <div class="flex items-center justify-between gap-2">
+                  <span>3D Synth `interaction.id`:</span>
+                  <span id="track2SynthIdSpan" class="text-emerald-700 font-semibold truncate max-w-[220px]">initial draft</span>
                 </div>
               </div>
             </div>
 
-            <!-- Implemented 3D Features & Raw Three.js Source Code Inspector -->
-            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2.5">
-              <div class="flex items-center justify-between">
-                <span class="text-xs font-bold text-slate-800">Iteration Summary &amp; `sim_world.html` Code</span>
-                <button onclick="document.getElementById('track2CodePre').classList.toggle('hidden')" class="text-[11px] font-semibold text-indigo-600 hover:text-indigo-800 underline">
-                  Toggle Three.js Source Code ▾
+            <!-- PANE 2: EXPORTABLE REAL-TO-SIM ARTIFACTS (MuJoCo XML, RL Reward, Perception JSON, Game Blueprint) -->
+            <div id="t2InspPane-artifacts" class="hidden p-4 space-y-3">
+              <div class="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-slate-100">
+                <div>
+                  <span class="text-[10px] mono uppercase text-emerald-700 font-extrabold">📦 Exportable Real-to-Sim Pack</span>
+                  <h4 class="text-xs font-extrabold text-slate-900">Game Engine &amp; Robotics Training Artifacts</h4>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <button onclick="copyActiveTrack2Artifact()" id="track2CopyArtifactBtn" type="button" class="px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] mono font-bold transition">
+                    📋 Copy
+                  </button>
+                  <button onclick="downloadTrack2ArtifactsZip()" type="button" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] mono font-bold transition">
+                    ⬇️ .ZIP
+                  </button>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 text-[10px] font-bold">
+                <button onclick="selectTrack2ArtifactTab('scene_perception')" id="artTab-scene_perception" type="button" class="px-2 py-1.5 rounded-lg bg-indigo-600 text-white transition text-center">
+                  🌍 Perception
+                </button>
+                <button onclick="selectTrack2ArtifactTab('mujoco_xml')" id="artTab-mujoco_xml" type="button" class="px-2 py-1.5 rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 transition text-center">
+                  🤖 MuJoCo XML
+                </button>
+                <button onclick="selectTrack2ArtifactTab('rl_reward_py')" id="artTab-rl_reward_py" type="button" class="px-2 py-1.5 rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 transition text-center">
+                  🐍 RL Reward
+                </button>
+                <button onclick="selectTrack2ArtifactTab('game_blueprint')" id="artTab-game_blueprint" type="button" class="px-2 py-1.5 rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 transition text-center">
+                  🎮 Blueprint
+                </button>
+              </div>
+
+              <div id="track2ArtifactDesc" class="text-[11px] text-slate-600 bg-emerald-50/60 border border-emerald-200 rounded-lg px-2.5 py-1.5">
+                <strong>`scene_perception.json`:</strong> Biome classification, surface friction ($\mu$), slope grade, and dynamic entity kinematics.
+              </div>
+
+              <pre id="track2ArtifactPre" class="p-3 rounded-lg bg-slate-900 text-emerald-100 text-[11px] mono max-h-96 overflow-y-auto whitespace-pre-wrap leading-relaxed"></pre>
+            </div>
+
+            <!-- PANE 3: THREE.JS SOURCE CODE & IMPLEMENTED 3D FEATURES -->
+            <div id="t2InspPane-code" class="hidden p-4 space-y-3">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <div>
+                  <span class="text-[10px] mono uppercase text-indigo-700 font-bold">Three.js WebGL Scene Code</span>
+                  <h4 class="text-xs font-extrabold text-slate-900">Implemented Features &amp; `sim_world.html`</h4>
+                </div>
+                <button onclick="navigator.clipboard.writeText(document.getElementById('track2CodePre').textContent || '')" type="button" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] mono font-bold transition">
+                  📋 Copy HTML
                 </button>
               </div>
               <p id="track2ChangeSummaryText" class="text-[11px] text-slate-600 leading-relaxed"></p>
               <div id="track2FeaturesList" class="flex flex-wrap gap-1.5"></div>
-              <pre id="track2CodePre" class="hidden p-3 rounded-lg bg-slate-900 text-slate-100 text-[11px] mono max-h-64 overflow-y-auto whitespace-pre-wrap"></pre>
+              <pre id="track2CodePre" class="p-3 rounded-lg bg-slate-900 text-slate-100 text-[11px] mono max-h-96 overflow-y-auto whitespace-pre-wrap"></pre>
             </div>
           </div>
         </div>
@@ -2173,32 +2174,94 @@
       }).join('');
     }
 
+    let activeEngineeringSubTab = 'ledger';
+
+    function switchAppMode(mode) {
+      if (mode === 'track2') {
+        switchMainTab('track2');
+      } else if (mode === 'arch') {
+        switchMainTab('arch');
+      } else {
+        switchMainTab(activeEngineeringSubTab || 'ledger');
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
     function switchMainTab(tab) {
-      ['ledger', 'diffs', 'logs', 'arch', 'track2'].forEach(t => {
-        const pane = document.getElementById(`tabPane-${t}`);
-        const btn = document.getElementById(`tabBtn-${t}`);
-        if (!pane || !btn) return;
-        if (t === tab) {
-          pane.classList.remove('hidden');
-          btn.className = 'px-4 py-3 text-xs font-bold border-b-2 border-indigo-600 text-indigo-700 bg-white flex items-center gap-2';
+      const isEngineering = (tab === 'ledger' || tab === 'diffs' || tab === 'logs');
+      if (isEngineering) {
+        activeEngineeringSubTab = tab;
+      }
+
+      // 1. Toggle top-level header mode pill styling
+      const activeMode = isEngineering ? 'engineering' : tab;
+      ['engineering', 'track2', 'arch'].forEach(m => {
+        const mBtn = document.getElementById(`modeBtn-${m}`);
+        if (!mBtn) return;
+        if (m === activeMode) {
+          mBtn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-extrabold transition flex items-center gap-1.5 bg-white text-indigo-700 shadow-xs border border-slate-200/80';
         } else {
-          pane.classList.add('hidden');
-          btn.className = 'px-4 py-3 text-xs font-bold border-b-2 border-transparent text-slate-600 hover:text-slate-900 flex items-center gap-2';
+          mBtn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 text-slate-600 hover:text-slate-900';
         }
       });
+
+      // 2. Show/hide Million Token Engineering top sections so More Dimensions & Architecture have 0 clutter above them
+      ['provingGroundSection', 'guidedWizardSection', 'verdictComparisonGrid', 'codebaseTabsBar'].forEach(secId => {
+        const el = document.getElementById(secId);
+        if (!el) return;
+        if (isEngineering) {
+          el.classList.remove('hidden');
+        } else {
+          el.classList.add('hidden');
+        }
+      });
+
+      // 3. Toggle content panes & codebase sub-tab buttons
+      ['ledger', 'diffs', 'logs', 'arch', 'track2'].forEach(t => {
+        const pane = document.getElementById(`tabPane-${t}`);
+        if (pane) {
+          if (t === tab) pane.classList.remove('hidden');
+          else pane.classList.add('hidden');
+        }
+        const btn = document.getElementById(`tabBtn-${t}`);
+        if (btn) {
+          if (t === tab) {
+            btn.className = 'px-4 py-3 text-xs font-bold border-b-2 border-indigo-600 text-indigo-700 bg-white flex items-center gap-2';
+          } else {
+            btn.className = 'px-4 py-3 text-xs font-bold border-b-2 border-transparent text-slate-600 hover:text-slate-900 flex items-center gap-2';
+          }
+        }
+      });
+
       if (tab === 'track2' && !track2Session) {
         initTrack2();
       }
     }
 
     function openTrack2Studio() {
-      switchMainTab('track2');
-      const el = document.getElementById('tabBtn-track2');
-      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      switchAppMode('track2');
+    }
+
+    function switchTrack2InspectorTab(tabKey) {
+      ['critique', 'artifacts', 'code'].forEach(k => {
+        const btn = document.getElementById(`t2InspTab-${k}`);
+        const pane = document.getElementById(`t2InspPane-${k}`);
+        if (btn) {
+          if (k === tabKey) {
+            btn.className = 'py-2 px-2 rounded-lg text-[11px] font-extrabold transition bg-white text-indigo-700 shadow-2xs border border-slate-200/80 text-center';
+          } else {
+            btn.className = 'py-2 px-2 rounded-lg text-[11px] font-bold transition text-slate-600 hover:text-slate-900 text-center';
+          }
+        }
+        if (pane) {
+          if (k === tabKey) pane.classList.remove('hidden');
+          else pane.classList.add('hidden');
+        }
+      });
     }
 
     // -------------------------------------------------------------------------
-    // Track 2: Real-to-Sim Video-to-World & Robotics Artifact Studio
+    // More Dimensions: Real-to-Sim Video-to-World & Robotics Artifact Studio
     // -------------------------------------------------------------------------
     let track2Scenarios = [];
     let activeTrack2ScenarioId = 'real_bear_hike';
@@ -2239,29 +2302,25 @@
         const isRealVideo = Boolean(s.real_video_url);
         const takeCount = (s.camera_takes && s.camera_takes.length) ? s.camera_takes.length : (isRealVideo ? 1 : 0);
         const borderCls = active
-          ? 'border-2 border-indigo-600 bg-indigo-50/60 shadow-sm'
+          ? 'border-2 border-indigo-600 bg-indigo-50/70 shadow-xs'
           : 'border border-slate-200 bg-white hover:border-indigo-300';
         const pillBadge = isRealVideo
-          ? `<span class="text-[9px] mono px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold shrink-0">📹 ${takeCount > 1 ? takeCount + ' TAKES' : 'REAL FOOTAGE'}</span>`
-          : `<span class="text-[9px] mono px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200 font-semibold shrink-0">🎮 PROMPT → 3D GAME</span>`;
+          ? `<span class="text-[9px] mono px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold shrink-0">${takeCount > 1 ? takeCount + ' TAKES' : 'VIDEO'}</span>`
+          : `<span class="text-[9px] mono px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200 font-semibold shrink-0">3D GAME</span>`;
         const rawTitle = String(s.title || '');
         const iconPrefix = icons[s.id] || '🎬';
         const displayTitle = rawTitle.startsWith(iconPrefix) ? rawTitle : `${iconPrefix} ${rawTitle}`;
-        const statusText = active
-          ? (isRealVideo ? '● Active Real-to-Sim Twin' : '● Active Procedural 3D Game World')
-          : (isRealVideo ? 'Click to Load Real Video + 3D Twin' : 'Click to Load Procedural 3D Game');
         return `
-          <button onclick="selectTrack2Scenario('${s.id}')" type="button" class="text-left p-3 rounded-xl transition flex flex-col justify-between gap-2 ${borderCls}">
+          <button onclick="selectTrack2Scenario('${s.id}')" type="button" class="text-left p-2.5 rounded-xl transition flex flex-col justify-between gap-1.5 ${borderCls}">
             <div>
-              <div class="flex items-center justify-between gap-1.5 mb-1">
-                <span class="text-xs font-extrabold text-slate-900 truncate">${escapeHtml(displayTitle)}</span>
-                ${pillBadge}
+              <div class="flex items-center justify-between gap-1 mb-0.5">
+                <span class="text-[11px] font-extrabold text-slate-900 truncate" title="${escapeHtml(displayTitle)}">${escapeHtml(displayTitle)}</span>
               </div>
-              <div class="text-[10px] font-semibold text-indigo-700 mb-1 truncate">${escapeHtml(s.category || '')}</div>
-              <p class="text-[11px] text-slate-600 line-clamp-2 leading-relaxed">${escapeHtml(s.draft1_summary)}</p>
+              <div class="text-[10px] text-slate-500 truncate">${escapeHtml(s.category || '')}</div>
             </div>
-            <div class="text-[10px] mono font-bold ${active ? 'text-indigo-700' : 'text-slate-400'}">
-              ${statusText}
+            <div class="flex items-center justify-between gap-1 pt-1 border-t border-slate-100">
+              ${pillBadge}
+              <span class="text-[10px] mono font-bold ${active ? 'text-indigo-700' : 'text-slate-400'}">${active ? '● Active' : 'Load'}</span>
             </div>
           </button>
         `;
